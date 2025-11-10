@@ -18,6 +18,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "mongoose": "^8.19.3",
     "pinia": "^3.0.3",
     "vue": "^3.5.22",
