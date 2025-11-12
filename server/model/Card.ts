@@ -125,7 +125,7 @@ const cardSchema = new Schema<ICard>(
     },
 
     // 擁有者
-    owner: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
@@ -143,7 +143,7 @@ const cardSchema = new Schema<ICard>(
 );
 
 // 索引
-cardSchema.index({ owner: 1 });
+cardSchema.index({ user: 1 });
 
 // SM-2 改良版算法計算下次複習時間（支援配置參數）
 cardSchema.methods.calculateNextReview = function (

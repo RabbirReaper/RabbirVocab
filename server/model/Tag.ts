@@ -25,7 +25,7 @@ const tagSchema = new Schema<ITag>(
     },
 
     // 擁有者
-    owner: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
@@ -49,7 +49,7 @@ const tagSchema = new Schema<ITag>(
 );
 
 // 索引
-tagSchema.index({ owner: 1 });
+tagSchema.index({ user: 1 });
 
 // 增加使用次數
 tagSchema.methods.incrementUsage = function (): Promise<ITag> {

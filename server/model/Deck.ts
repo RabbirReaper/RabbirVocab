@@ -16,7 +16,7 @@ const deckSchema = new Schema<IDeck>(
     },
 
     // 擁有者
-    owner: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
@@ -94,7 +94,7 @@ const deckSchema = new Schema<IDeck>(
 );
 
 // 索引
-deckSchema.index({ owner: 1 });
+deckSchema.index({ user: 1 });
 
 // 更新卡組統計
 deckSchema.methods.updateStats = async function (): Promise<void> {

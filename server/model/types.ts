@@ -92,7 +92,7 @@ export interface IDeck extends Document {
   _id: Types.ObjectId;
   name: string;
   description?: string;
-  owner: Types.ObjectId;
+  user: Types.ObjectId;
   settings: {
     newCardsPerDay: number;
     reviewCardsPerDay: number;
@@ -171,7 +171,7 @@ export interface ICard extends Document {
   status: CardStatus;
   srs: ICardSRS;
   stats: ICardStats;
-  owner: Types.ObjectId;      // 改為 owner
+  user: Types.ObjectId;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -292,7 +292,7 @@ export interface ITag extends Document {
   name: string;
   color: string;
   description?: string;
-  owner: Types.ObjectId;
+  user: Types.ObjectId;
   usageCount: number;
   isSystem: boolean;
   createdAt: Date;
