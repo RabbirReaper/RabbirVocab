@@ -38,10 +38,6 @@ export interface IUser extends Document {
   studySettings: {
     newCardsPerDay: number;
     reviewCardsPerDay: number;
-    easyInterval: number;
-    graduatingInterval: number;
-    // SRS 演算法參數（可由前端調整）
-    srsConfig?: ISRSConfig;
   };
   stats: {
     totalCards: number;
@@ -97,6 +93,8 @@ export interface IDeck extends Document {
     newCardsPerDay: number;
     reviewCardsPerDay: number;
     isPublic: boolean;
+    // SRS 演算法參數（可由前端調整，每個牌組獨立設定）
+    srsConfig?: ISRSConfig;
   };
   stats: {
     totalCards: number;

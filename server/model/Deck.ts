@@ -36,6 +36,49 @@ const deckSchema = new Schema<IDeck>(
         type: Boolean,
         default: false,
       },
+      // SRS 演算法配置（每個牌組可獨立設定）
+      srsConfig: {
+        learningSteps: {
+          type: [Number],
+          default: [15, 1440, 8640], // 15分鐘, 1天, 6天
+        },
+        graduatingInterval: {
+          type: Number,
+          default: 15,
+        },
+        easyInterval: {
+          type: Number,
+          default: 60,
+        },
+        relearningSteps: {
+          type: [Number],
+          default: [20], // 20分鐘
+        },
+        minimumInterval: {
+          type: Number,
+          default: 2,
+        },
+        leechThreshold: {
+          type: Number,
+          default: 8,
+        },
+        easyBonus: {
+          type: Number,
+          default: 1.3,
+        },
+        hardInterval: {
+          type: Number,
+          default: 1.2,
+        },
+        minEaseFactor: {
+          type: Number,
+          default: 1.3,
+        },
+        maxEaseFactor: {
+          type: Number,
+          default: 2.5,
+        },
+      },
     },
 
     // 統計資訊
