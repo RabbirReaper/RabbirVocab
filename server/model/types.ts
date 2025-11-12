@@ -26,6 +26,8 @@ export interface ISRSConfig {
 // ============================================
 // User 相關類型
 // ============================================
+export type UserRole = 'user' | 'pro' | 'admin' | 'super_admin';
+
 export interface IUser extends Document {
   _id: Types.ObjectId;
   username: string;
@@ -52,6 +54,31 @@ export interface IUser extends Document {
   lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
+
+  // 權限角色
+  role: UserRole;
+
+  // 訂閱資訊（如果需要付費功能）
+  subscription?: {
+    plan: 'free' | 'pro';
+    startDate?: Date;
+    endDate?: Date;
+    isActive: boolean;
+  };
+
+  // AI 使用額度（可選）
+  aiQuota?: {
+    daily: {               // 日額度（free 用戶使用）
+      limit: number;       // 每日額度上限
+      used: number;        // 已使用
+      resetDate: Date;     // 重置日期（隔天 00:00）
+    };
+    monthly: {             // 月額度（pro 用戶使用）
+      limit: number;       // 每月額度上限
+      used: number;        // 已使用
+      resetDate: Date;     // 重置日期（下個月 1 號）
+    };
+  };
 
   // 方法
   comparePassword(candidatePassword: string): Promise<boolean>;
