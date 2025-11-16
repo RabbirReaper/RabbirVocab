@@ -35,18 +35,6 @@ const userSchema = new Schema<IUser>(
       default: null,
     },
 
-    // 學習設定
-    studySettings: {
-      newCardsPerDay: {
-        type: Number,
-        default: 20,
-      },
-      reviewCardsPerDay: {
-        type: Number,
-        default: 200,
-      },
-    },
-
     // 統計資訊
     stats: {
       totalCards: {

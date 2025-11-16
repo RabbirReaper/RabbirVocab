@@ -35,10 +35,6 @@ export interface IUser extends Document {
   password: string;
   displayName?: string;
   avatar?: string;
-  studySettings: {
-    newCardsPerDay: number;
-    reviewCardsPerDay: number;
-  };
   stats: {
     totalCards: number;
     cardsLearned: number;
