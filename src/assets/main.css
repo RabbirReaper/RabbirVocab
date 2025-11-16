@@ -1,162 +1,370 @@
-/* Tailwind CSS Directives */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+/* Tailwind CSS v4 - 單一導入 */
+@import "tailwindcss";
+
+/* Tailwind v4 主題配置 */
+@theme {
+  /* 自定義顏色 - 主色 (綠色) */
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-primary-300: #86efac;
+  --color-primary-400: #4ade80;
+  --color-primary-500: #22c55e;
+  --color-primary-600: #16a34a;
+  --color-primary-700: #15803d;
+  --color-primary-800: #166534;
+  --color-primary-900: #14532d;
+  --color-primary-950: #052e16;
+
+  /* 輔助色 (藍色) */
+  --color-secondary-50: #eff6ff;
+  --color-secondary-100: #dbeafe;
+  --color-secondary-200: #bfdbfe;
+  --color-secondary-300: #93c5fd;
+  --color-secondary-400: #60a5fa;
+  --color-secondary-500: #3b82f6;
+  --color-secondary-600: #2563eb;
+  --color-secondary-700: #1d4ed8;
+  --color-secondary-800: #1e40af;
+  --color-secondary-900: #1e3a8a;
+  --color-secondary-950: #172554;
+
+  /* 功能色 */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* 陰影 */
+  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  --shadow-soft-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+
+  /* 動畫 */
+  --animate-fade-in: fade-in 0.3s ease-in-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-slide-down: slide-down 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
 
 /* 引入自定義基礎樣式 */
 @import './base.css';
 
 /* 應用程式主容器 */
 #app {
-  @apply w-full min-h-screen;
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* 主要內容區域 */
 .main-content {
-  @apply container-custom py-8;
-}
-
-/* 響應式佈局 */
-@media (min-width: 1024px) {
-  #app {
-    @apply flex items-center justify-center;
-  }
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1rem;
 }
 
 /* 自定義元件樣式 */
-@layer components {
-  /* 學習卡片樣式 */
-  .study-card {
-    @apply card hover:shadow-soft-lg transition-shadow duration-300;
-    @apply cursor-pointer;
-  }
+.study-card {
+  background-color: white;
+  border: 1px solid rgb(243 244 246);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
 
-  .study-card:hover {
-    @apply -translate-y-1;
-  }
+.dark .study-card {
+  background-color: rgb(31 41 55);
+  border-color: rgb(55 65 81);
+}
 
-  /* 導航按鈕 */
-  .nav-link {
-    @apply px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300;
-    @apply hover:bg-gray-100 dark:hover:bg-gray-800;
-    @apply transition-colors duration-200;
-  }
+.study-card:hover {
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.25rem);
+}
 
-  .nav-link.active {
-    @apply bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300;
-    @apply font-medium;
-  }
+/* 導航按鈕 */
+.nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: rgb(55 65 81);
+  transition: background-color 0.2s, color 0.2s;
+}
 
-  /* 表單容器 */
-  .form-group {
-    @apply mb-6;
-  }
+.dark .nav-link {
+  color: rgb(209 213 219);
+}
 
-  .form-label {
-    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
-  }
+.nav-link:hover {
+  background-color: rgb(243 244 246);
+}
 
-  .form-error {
-    @apply text-sm text-error mt-1;
-  }
+.dark .nav-link:hover {
+  background-color: rgb(31 41 55);
+}
 
-  /* 載入狀態 */
-  .loading {
-    @apply flex items-center justify-center p-8;
-  }
+.nav-link.active {
+  background-color: #dcfce7;
+  color: #15803d;
+  font-weight: 500;
+}
 
-  .spinner {
-    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600;
-  }
+.dark .nav-link.active {
+  background-color: #14532d;
+  color: #86efac;
+}
 
-  /* 通知/提示 */
-  .notification {
-    @apply fixed top-4 right-4 p-4 rounded-lg shadow-soft-lg;
-    @apply animate-slide-down z-50;
-  }
+/* 表單容器 */
+.form-group {
+  margin-bottom: 1.5rem;
+}
 
-  .notification-success {
-    @apply bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-100;
-    @apply border border-green-200 dark:border-green-700;
-  }
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(55 65 81);
+  margin-bottom: 0.5rem;
+}
 
-  .notification-error {
-    @apply bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-100;
-    @apply border border-red-200 dark:border-red-700;
-  }
+.dark .form-label {
+  color: rgb(209 213 219);
+}
 
-  .notification-info {
-    @apply bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-100;
-    @apply border border-blue-200 dark:border-blue-700;
-  }
+.form-error {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
 
-  /* 徽章 */
-  .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
-  }
+/* 載入狀態 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
 
-  .badge-primary {
-    @apply bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200;
-  }
+.spinner {
+  animation: spin 1s linear infinite;
+  border-radius: 9999px;
+  height: 2rem;
+  width: 2rem;
+  border-bottom: 2px solid #16a34a;
+}
 
-  .badge-secondary {
-    @apply bg-secondary-100 dark:bg-secondary-900 text-secondary-800 dark:text-secondary-200;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
-  /* 分隔線 */
-  .divider {
-    @apply border-t border-gray-200 dark:border-gray-700 my-6;
-  }
+/* 通知/提示 */
+.notification {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  animation: slide-down 0.3s ease-out;
+  z-index: 50;
+}
 
-  /* 空狀態 */
-  .empty-state {
-    @apply text-center py-12;
-  }
+.notification-success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
 
-  .empty-state-icon {
-    @apply mx-auto h-12 w-12 text-gray-400 dark:text-gray-600;
-  }
+.dark .notification-success {
+  background-color: #14532d;
+  color: #dcfce7;
+  border-color: #15803d;
+}
 
-  .empty-state-title {
-    @apply mt-4 text-lg font-medium text-gray-900 dark:text-gray-100;
-  }
+.notification-error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
 
-  .empty-state-description {
-    @apply mt-2 text-sm text-gray-500 dark:text-gray-400;
-  }
+.dark .notification-error {
+  background-color: #7f1d1d;
+  color: #fecaca;
+  border-color: #991b1b;
+}
+
+.notification-info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.dark .notification-info {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+  border-color: #1d4ed8;
+}
+
+/* 徽章 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.dark .badge-primary {
+  background-color: #14532d;
+  color: #bbf7d0;
+}
+
+.badge-secondary {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.dark .badge-secondary {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.badge-success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.dark .badge-success {
+  background-color: #14532d;
+  color: #bbf7d0;
+}
+
+.badge-warning {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.dark .badge-warning {
+  background-color: #7c2d12;
+  color: #fed7aa;
+}
+
+.badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.dark .badge-info {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
+}
+
+/* 分隔線 */
+.divider {
+  border-top: 1px solid rgb(229 231 235);
+  margin: 1.5rem 0;
+}
+
+.dark .divider {
+  border-color: rgb(55 65 81);
+}
+
+/* 空狀態 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.empty-state-icon {
+  margin: 0 auto;
+  height: 3rem;
+  width: 3rem;
+  color: rgb(156 163 175);
+}
+
+.dark .empty-state-icon {
+  color: rgb(75 85 99);
+}
+
+.empty-state-title {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgb(17 24 39);
+}
+
+.dark .empty-state-title {
+  color: rgb(243 244 246);
+}
+
+.empty-state-description {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgb(107 114 128);
+}
+
+.dark .empty-state-description {
+  color: rgb(156 163 175);
 }
 
 /* 實用工具類別 */
-@layer utilities {
-  /* 文字截斷 */
-  .truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+/* 文字截斷 */
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-  .truncate-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+.truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-  /* 玻璃擬態效果 */
-  .glass {
-    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg;
-    @apply border border-gray-200/50 dark:border-gray-700/50;
-  }
+/* 玻璃擬態效果 */
+.glass {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
 
-  /* 聚焦環 */
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
-    @apply dark:focus:ring-offset-gray-900;
-  }
+.dark .glass {
+  background-color: rgba(31, 41, 55, 0.8);
+  border-color: rgba(55, 65, 81, 0.5);
+}
 
-  /* 禁用狀態 */
-  .disabled {
-    @apply opacity-50 cursor-not-allowed pointer-events-none;
-  }
+/* 聚焦環 */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-500), 0 0 0 4px rgba(34, 197, 94, 0.2);
+}
+
+/* 禁用狀態 */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
