@@ -125,14 +125,14 @@ export const useDeckStore = defineStore('deck', () => {
     return newDeck
   }
 
-  function updateDeck(id: string, updates: Partial<Deck>) {
+  function updateDeck(id: string, updates: Partial<Omit<Deck, 'id' | 'createdAt'>>) {
     const index = decks.value.findIndex(deck => deck.id === id)
     if (index !== -1) {
       decks.value[index] = {
         ...decks.value[index],
         ...updates,
         updatedAt: new Date().toISOString()
-      }
+      } as Deck
     }
   }
 

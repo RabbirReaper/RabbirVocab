@@ -126,14 +126,14 @@ export const useCardStore = defineStore('card', () => {
     return newCard
   }
 
-  function updateCard(id: string, updates: Partial<Card>) {
+  function updateCard(id: string, updates: Partial<Omit<Card, 'id' | 'createdAt'>>) {
     const index = cards.value.findIndex(card => card.id === id)
     if (index !== -1) {
       cards.value[index] = {
         ...cards.value[index],
         ...updates,
         updatedAt: new Date().toISOString()
-      }
+      } as Card
     }
   }
 
