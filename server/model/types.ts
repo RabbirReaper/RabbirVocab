@@ -100,7 +100,6 @@ export interface IDeck extends Document {
     masteredCards: number;
   };
   tags: string[];
-  coverImage?: string;
   color: string;
   isDeleted: boolean;
   createdAt: Date;

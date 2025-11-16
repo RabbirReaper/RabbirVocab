@@ -113,12 +113,6 @@ const deckSchema = new Schema<IDeck>(
       },
     ],
 
-    // 封面圖片
-    coverImage: {
-      type: String,
-      default: null,
-    },
-
     // 顏色主題
     color: {
       type: String,
