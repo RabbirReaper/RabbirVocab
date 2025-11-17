@@ -6,7 +6,6 @@
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
           <RouterLink to="/app/dashboard" class="flex items-center space-x-2">
-            <span class="text-2xl">🐰</span>
             <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
           </RouterLink>
 
@@ -44,10 +43,7 @@
 
           <!-- User Menu -->
           <div class="flex items-center space-x-4">
-            <button
-              @click="toggleDarkMode"
-              class="p-2 rounded-lg bg-hover-color"
-            >
+            <button @click="toggleDarkMode" class="p-2 rounded-lg bg-hover-color">
               <span v-if="isDark">🌙</span>
               <span v-else>☀️</span>
             </button>

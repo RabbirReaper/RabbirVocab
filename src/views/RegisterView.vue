@@ -3,7 +3,6 @@
     <div class="card max-w-md w-full">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-2">
-          <span class="text-4xl">🐰</span>
           <h1 class="text-3xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
         </div>
         <p class="text-secondary-color">建立新帳號</p>
@@ -66,15 +65,16 @@
           />
         </div>
 
-        <button type="submit" class="btn btn-primary w-full">
-          註冊
-        </button>
+        <button type="submit" class="btn btn-primary w-full">註冊</button>
       </form>
 
       <div class="mt-6 text-center">
         <p class="text-sm text-secondary-color">
           已經有帳號了？
-          <RouterLink to="/login" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+          <RouterLink
+            to="/login"
+            class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+          >
             立即登入
           </RouterLink>
         </p>
