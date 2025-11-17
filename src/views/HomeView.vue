@@ -5,7 +5,7 @@
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
           <div class="flex items-center space-x-2">
-            <h1 class="text-2xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
+            <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</div>
           </div>
           <div class="space-x-4">
             <RouterLink to="/login" class="btn btn-secondary">登入</RouterLink>

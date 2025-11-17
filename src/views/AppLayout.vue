@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
           <RouterLink to="/app/dashboard" class="flex items-center space-x-2">
-            <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
+            <div class="text-xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</div>
           </RouterLink>
 
           <!-- Navigation Links -->
