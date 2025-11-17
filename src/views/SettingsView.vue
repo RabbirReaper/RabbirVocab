@@ -27,7 +27,7 @@
               type="text"
               :value="authStore.currentUser?.username"
               disabled
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-disabled text-tertiary-color"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-tertiary-color"
             />
           </div>
 
@@ -38,7 +38,7 @@
             <input
               type="text"
               :value="authStore.currentUser?.displayName"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
           </div>
 
@@ -49,7 +49,7 @@
             <input
               type="email"
               :value="authStore.currentUser?.email"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
           </div>
 
@@ -58,7 +58,7 @@
               語言偏好
             </label>
             <select
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             >
               <option value="zh-TW">繁體中文</option>
               <option value="zh-CN">简体中文</option>
@@ -78,7 +78,7 @@
       <h2 class="text-xl font-bold text-primary-color mb-4">預設學習設定</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-secondary-color mb-1">
             每日新卡片數
           </label>
           <input
@@ -86,13 +86,13 @@
             value="20"
             min="1"
             max="100"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
           />
           <p class="text-xs text-tertiary-color mt-1">建議：10-30張</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-secondary-color mb-1">
             每日最大複習數
           </label>
           <input
@@ -100,13 +100,13 @@
             value="100"
             min="10"
             max="500"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
           />
           <p class="text-xs text-tertiary-color mt-1">建議：50-200張</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-secondary-color mb-1">
             Easy 倍數
           </label>
           <input
@@ -115,12 +115,12 @@
             min="1.5"
             max="4.0"
             step="0.1"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-secondary-color mb-1">
             Hard 倍數
           </label>
           <input
@@ -129,7 +129,7 @@
             min="1.0"
             max="2.0"
             step="0.1"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
           />
         </div>
       </div>
@@ -149,24 +149,24 @@
             <input
               type="password"
               placeholder="目前密碼"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
             <div></div>
             <input
               type="password"
               placeholder="新密碼"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
             <input
               type="password"
               placeholder="確認新密碼"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
           </div>
           <button class="btn btn-secondary mt-2">更新密碼</button>
         </div>
 
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <div class="border-t border-primary-color pt-4">
           <h3 class="text-sm font-medium text-red-600 dark:text-red-400 mb-2">危險區域</h3>
           <p class="text-sm text-secondary-color mb-3">
             刪除帳號後，所有數據將永久消失且無法復原。

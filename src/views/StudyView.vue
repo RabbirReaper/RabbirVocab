@@ -46,7 +46,7 @@
                 {{ currentCard.front }}
               </div>
             </div>
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <div class="border-t border-primary-color pt-6">
               <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">答案</div>
               <div class="text-2xl font-semibold text-primary-600 dark:text-primary-400">
                 {{ currentCard.back }}
@@ -57,7 +57,7 @@
       </div>
 
       <!-- 操作按鈕 -->
-      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div class="mt-8 pt-6 border-t border-primary-color">
         <div v-if="!showAnswer" class="text-center">
           <button @click="showAnswer = true" class="btn btn-primary btn-lg">顯示答案</button>
         </div>

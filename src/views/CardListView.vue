@@ -5,7 +5,7 @@
       <div class="flex items-center space-x-4">
         <select
           v-model="selectedDeck"
-          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-primary-color"
+          class="px-4 py-2 border border-primary-color rounded-lg text-primary-color"
         >
           <option value="">所有卡組</option>
           <option v-for="deck in deckStore.decks" :key="deck.id" :value="deck.id">

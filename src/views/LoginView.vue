@@ -11,7 +11,7 @@
 
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="username" class="block text-sm font-medium text-secondary-color mb-1">
             使用者名稱
           </label>
           <input
@@ -19,13 +19,13 @@
             v-model="username"
             type="text"
             required
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             placeholder="請輸入使用者名稱"
           />
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="password" class="block text-sm font-medium text-secondary-color mb-1">
             密碼
           </label>
           <input
@@ -33,7 +33,7 @@
             v-model="password"
             type="password"
             required
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             placeholder="請輸入密碼"
           />
         </div>

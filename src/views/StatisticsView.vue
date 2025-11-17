@@ -125,7 +125,7 @@
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
-            <tr class="border-b border-gray-200 dark:border-gray-700">
+            <tr class="border-b border-primary-color">
               <th class="text-left py-3 px-4 text-sm font-semibold text-secondary-color">卡組</th>
               <th class="text-left py-3 px-4 text-sm font-semibold text-secondary-color">複習數</th>
               <th class="text-left py-3 px-4 text-sm font-semibold text-secondary-color">準確率</th>
@@ -137,7 +137,7 @@
             <tr
               v-for="record in recentRecords"
               :key="record.id"
-              class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+              class="border-b border-primary-color bg-hover-color"
             >
               <td class="py-3 px-4 text-sm text-primary-color">{{ record.deckName }}</td>
               <td class="py-3 px-4 text-sm text-secondary-color">{{ record.reviewCount }}</td>

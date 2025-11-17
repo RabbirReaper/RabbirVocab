@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="mt-4 pt-4 border-t border-primary-color">
           <RouterLink
             :to="`/app/study/${deck.id}`"
             class="btn btn-primary btn-sm w-full"
@@ -74,7 +74,7 @@
               v-model="newDeckName"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-primary-color"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
               placeholder="例如：日常英語單字"
             />
           </div>
@@ -87,7 +87,7 @@
               id="deckDescription"
               v-model="newDeckDescription"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-primary-color"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
               placeholder="簡單描述這個卡組的內容..."
             ></textarea>
           </div>
