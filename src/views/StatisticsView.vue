@@ -52,7 +52,7 @@
         <div
           v-for="day in weekDays"
           :key="day.name"
-          class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+          class="text-center p-4 bg-secondary-color rounded-lg"
         >
           <div class="text-xs text-tertiary-color mb-2">{{ day.name }}</div>
           <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ day.count }}</div>
@@ -70,7 +70,7 @@
             <span class="text-secondary-color">新卡片</span>
             <span class="text-primary-color font-medium">{{ cardStats.new }}張 ({{ cardStats.newPercent }}%)</span>
           </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div class="w-full bg-progress rounded-full h-3">
             <div
               class="bg-primary-600 dark:bg-primary-500 h-3 rounded-full"
               :style="{ width: cardStats.newPercent + '%' }"
@@ -83,7 +83,7 @@
             <span class="text-secondary-color">學習中</span>
             <span class="text-primary-color font-medium">{{ cardStats.learning }}張 ({{ cardStats.learningPercent }}%)</span>
           </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div class="w-full bg-progress rounded-full h-3">
             <div
               class="bg-warning-600 dark:bg-warning-500 h-3 rounded-full"
               :style="{ width: cardStats.learningPercent + '%' }"
@@ -96,7 +96,7 @@
             <span class="text-secondary-color">複習中</span>
             <span class="text-primary-color font-medium">{{ cardStats.review }}張 ({{ cardStats.reviewPercent }}%)</span>
           </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div class="w-full bg-progress rounded-full h-3">
             <div
               class="bg-secondary-600 dark:bg-secondary-500 h-3 rounded-full"
               :style="{ width: cardStats.reviewPercent + '%' }"
@@ -109,7 +109,7 @@
             <span class="text-secondary-color">已掌握</span>
             <span class="text-primary-color font-medium">{{ cardStats.mastered }}張 ({{ cardStats.masteredPercent }}%)</span>
           </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div class="w-full bg-progress rounded-full h-3">
             <div
               class="bg-success-600 dark:bg-success-500 h-3 rounded-full"
               :style="{ width: cardStats.masteredPercent + '%' }"

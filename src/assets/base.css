@@ -10,6 +10,8 @@
     --bg-tertiary: #f3f4f6;
     --bg-hover: #f3f4f6;
     --bg-navbar: #ffffff;
+    --bg-progress: #e5e7eb;
+    --bg-disabled: #f3f4f6;
 
     /* 文字色 */
     --text-primary: #111827;
@@ -42,6 +44,8 @@
     --bg-tertiary: #374151;
     --bg-hover: #374151;
     --bg-navbar: #1f2937;
+    --bg-progress: #374151;
+    --bg-disabled: #374151;
 
     /* 文字色 */
     --text-primary: #f3f4f6;
@@ -372,6 +376,16 @@
 
 .bg-hover-color:hover {
   background-color: var(--bg-hover);
+}
+
+.bg-progress {
+  background-color: var(--bg-progress);
+  transition: background-color 0.3s ease;
+}
+
+.bg-disabled {
+  background-color: var(--bg-disabled);
+  transition: background-color 0.3s ease;
 }
 
 /* 通用邊框顏色 */

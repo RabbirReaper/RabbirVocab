@@ -18,7 +18,7 @@
             {{ studiedCount }} / {{ totalDueCards }}
           </span>
         </div>
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div class="w-full bg-progress rounded-full h-2">
           <div
             class="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all"
             :style="{ width: progressPercentage + '%' }"

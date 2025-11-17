@@ -45,7 +45,7 @@
         <div
           v-for="card in cards"
           :key="card.id"
-          class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          class="flex items-center justify-between p-4 bg-secondary-color rounded-lg bg-hover-color transition-colors"
         >
           <div class="flex-1">
             <div class="font-semibold text-primary-color">{{ card.front }}</div>
