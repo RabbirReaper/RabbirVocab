@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-linear-to-br from-primary-50 to-secondary-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
+  <div class="min-h-screen page-bg flex items-center justify-center px-4">
     <div class="card max-w-md w-full">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-2">
           <span class="text-4xl">🐰</span>
           <h1 class="text-3xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
         </div>
-        <p class="text-gray-600 dark:text-gray-400">建立新帳號</p>
+        <p class="text-secondary-color">建立新帳號</p>
       </div>
 
       <form @submit.prevent="handleRegister" class="space-y-4">
@@ -72,7 +72,7 @@
       </form>
 
       <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-sm text-secondary-color">
           已經有帳號了？
           <RouterLink to="/login" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
             立即登入

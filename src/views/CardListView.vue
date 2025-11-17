@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">所有卡片</h1>
+      <h1 class="text-3xl font-bold text-primary-color">所有卡片</h1>
       <div class="flex items-center space-x-4">
         <select
           v-model="selectedDeck"
-          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-primary-color"
         >
           <option value="">所有卡組</option>
           <option v-for="deck in deckStore.decks" :key="deck.id" :value="deck.id">
@@ -18,23 +18,23 @@
     <!-- 統計 -->
     <div class="grid md:grid-cols-4 gap-6">
       <div class="card">
-        <p class="text-sm text-gray-600 dark:text-gray-400">總卡片數</p>
-        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ filteredCards.length }}</p>
+        <p class="text-sm text-secondary-color">總卡片數</p>
+        <p class="text-3xl font-bold text-primary-color mt-1">{{ filteredCards.length }}</p>
       </div>
       <div class="card">
-        <p class="text-sm text-gray-600 dark:text-gray-400">新卡片</p>
+        <p class="text-sm text-secondary-color">新卡片</p>
         <p class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
           {{ filteredCards.filter(c => c.status === 'new').length }}
         </p>
       </div>
       <div class="card">
-        <p class="text-sm text-gray-600 dark:text-gray-400">學習中</p>
+        <p class="text-sm text-secondary-color">學習中</p>
         <p class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">
           {{ filteredCards.filter(c => c.status === 'learning').length }}
         </p>
       </div>
       <div class="card">
-        <p class="text-sm text-gray-600 dark:text-gray-400">已掌握</p>
+        <p class="text-sm text-secondary-color">已掌握</p>
         <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">
           {{ filteredCards.filter(c => c.status === 'mastered').length }}
         </p>
@@ -51,20 +51,20 @@
         >
           <div class="flex-1">
             <div class="flex items-center space-x-3 mb-2">
-              <span class="font-semibold text-gray-900 dark:text-white">{{ card.front }}</span>
+              <span class="font-semibold text-primary-color">{{ card.front }}</span>
               <span :class="getStatusBadgeClass(card.status)" class="badge">
                 {{ getStatusText(card.status) }}
               </span>
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">{{ card.back }}</div>
+            <div class="text-sm text-secondary-color">{{ card.back }}</div>
             <div class="flex items-center space-x-4 mt-2">
-              <span class="text-xs text-gray-500 dark:text-gray-500">
+              <span class="text-xs text-tertiary-color">
                 卡組: {{ getDeckName(card.deck) }}
               </span>
-              <span class="text-xs text-gray-500 dark:text-gray-500">
+              <span class="text-xs text-tertiary-color">
                 間隔: {{ card.interval }}天
               </span>
-              <span class="text-xs text-gray-500 dark:text-gray-500">
+              <span class="text-xs text-tertiary-color">
                 難度: {{ card.easeFactor.toFixed(2) }}
               </span>
             </div>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div v-if="filteredCards.length === 0" class="text-center py-12 text-gray-500 dark:text-gray-500">
+      <div v-if="filteredCards.length === 0" class="text-center py-12 text-tertiary-color">
         沒有找到卡片
       </div>
     </div>

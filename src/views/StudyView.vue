@@ -8,13 +8,13 @@
       >
         ← 返回卡組
       </RouterLink>
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ deck.name }}</h1>
+      <h1 class="text-3xl font-bold text-primary-color">{{ deck.name }}</h1>
 
       <!-- 進度條 -->
       <div class="mt-4">
         <div class="flex justify-between text-sm mb-2">
-          <span class="text-gray-600 dark:text-gray-400">學習進度</span>
-          <span class="text-gray-900 dark:text-white font-medium">
+          <span class="text-secondary-color">學習進度</span>
+          <span class="text-primary-color font-medium">
             {{ studiedCount }} / {{ totalDueCards }}
           </span>
         </div>
@@ -34,7 +34,7 @@
           <!-- 卡片正面/背面 -->
           <div v-if="!showAnswer" class="space-y-4">
             <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide">問題</div>
-            <div class="text-4xl font-bold text-gray-900 dark:text-white">
+            <div class="text-4xl font-bold text-primary-color">
               {{ currentCard.front }}
             </div>
           </div>
@@ -42,7 +42,7 @@
           <div v-else class="space-y-6">
             <div>
               <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">問題</div>
-              <div class="text-3xl font-bold text-gray-900 dark:text-white">
+              <div class="text-3xl font-bold text-primary-color">
                 {{ currentCard.front }}
               </div>
             </div>
@@ -101,8 +101,8 @@
     <!-- 完成畫面 -->
     <div v-else class="card text-center py-12">
       <div class="text-6xl mb-4">🎉</div>
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">太棒了！</h2>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">你已經完成今天的所有複習</p>
+      <h2 class="text-2xl font-bold text-primary-color mb-2">太棒了！</h2>
+      <p class="text-secondary-color mb-6">你已經完成今天的所有複習</p>
       <RouterLink :to="`/app/decks/${deckId}`" class="btn btn-primary">
         返回卡組
       </RouterLink>

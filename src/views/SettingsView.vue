@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-4xl space-y-6">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">個人設定</h1>
+    <h1 class="text-3xl font-bold text-primary-color">個人設定</h1>
 
     <!-- 個人資料 -->
     <div class="card">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">個人資料</h2>
+      <h2 class="text-xl font-bold text-primary-color mb-4">個人資料</h2>
       <div class="space-y-4">
         <div class="flex items-center space-x-6">
           <img
@@ -14,13 +14,13 @@
           />
           <div>
             <button class="btn btn-secondary btn-sm">更換頭像</button>
-            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">建議尺寸：200x200px</p>
+            <p class="text-xs text-tertiary-color mt-1">建議尺寸：200x200px</p>
           </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-secondary-color mb-1">
               使用者名稱
             </label>
             <input
@@ -32,7 +32,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-secondary-color mb-1">
               顯示名稱
             </label>
             <input
@@ -43,7 +43,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-secondary-color mb-1">
               電子郵件
             </label>
             <input
@@ -54,7 +54,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-secondary-color mb-1">
               語言偏好
             </label>
             <select
@@ -75,7 +75,7 @@
 
     <!-- 學習設定 -->
     <div class="card">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">預設學習設定</h2>
+      <h2 class="text-xl font-bold text-primary-color mb-4">預設學習設定</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -88,7 +88,7 @@
             max="100"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
-          <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">建議：10-30張</p>
+          <p class="text-xs text-tertiary-color mt-1">建議：10-30張</p>
         </div>
 
         <div>
@@ -102,7 +102,7 @@
             max="500"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
-          <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">建議：50-200張</p>
+          <p class="text-xs text-tertiary-color mt-1">建議：50-200張</p>
         </div>
 
         <div>
@@ -141,10 +141,10 @@
 
     <!-- 帳號設定 -->
     <div class="card">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">帳號與安全</h2>
+      <h2 class="text-xl font-bold text-primary-color mb-4">帳號與安全</h2>
       <div class="space-y-4">
         <div>
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">修改密碼</h3>
+          <h3 class="text-sm font-medium text-secondary-color mb-2">修改密碼</h3>
           <div class="grid md:grid-cols-2 gap-4">
             <input
               type="password"
@@ -168,7 +168,7 @@
 
         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
           <h3 class="text-sm font-medium text-red-600 dark:text-red-400 mb-2">危險區域</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          <p class="text-sm text-secondary-color mb-3">
             刪除帳號後，所有數據將永久消失且無法復原。
           </p>
           <button class="btn bg-red-500 hover:bg-red-600 text-white border-0">

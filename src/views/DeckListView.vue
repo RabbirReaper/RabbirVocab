@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">我的卡組</h1>
+      <h1 class="text-3xl font-bold text-primary-color">我的卡組</h1>
       <button @click="showCreateModal = true" class="btn btn-primary">
         ➕ 建立新卡組
       </button>
@@ -16,28 +16,28 @@
         class="card hover:shadow-lg transition-shadow group cursor-pointer"
       >
         <div class="flex justify-between items-start mb-3">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3 class="text-xl font-bold text-primary-color group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
             {{ deck.name }}
           </h3>
           <span class="text-2xl">📚</span>
         </div>
 
-        <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+        <p class="text-secondary-color mb-4 line-clamp-2">
           {{ deck.description }}
         </p>
 
         <div class="flex items-center justify-between text-sm">
           <div class="flex space-x-4">
             <div>
-              <span class="text-gray-500 dark:text-gray-500">總計</span>
-              <span class="ml-1 font-semibold text-gray-900 dark:text-white">{{ deck.cardCount }}</span>
+              <span class="text-tertiary-color">總計</span>
+              <span class="ml-1 font-semibold text-primary-color">{{ deck.cardCount }}</span>
             </div>
             <div>
-              <span class="text-gray-500 dark:text-gray-500">新卡</span>
+              <span class="text-tertiary-color">新卡</span>
               <span class="ml-1 font-semibold text-primary-600 dark:text-primary-400">{{ deck.newCount }}</span>
             </div>
             <div>
-              <span class="text-gray-500 dark:text-gray-500">複習</span>
+              <span class="text-tertiary-color">複習</span>
               <span class="ml-1 font-semibold text-warning-600 dark:text-warning-400">{{ deck.reviewCount }}</span>
             </div>
           </div>
@@ -62,11 +62,11 @@
       @click="showCreateModal = false"
     >
       <div class="card max-w-md w-full mx-4" @click.stop>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">建立新卡組</h2>
+        <h2 class="text-2xl font-bold text-primary-color mb-4">建立新卡組</h2>
 
         <form @submit.prevent="handleCreateDeck" class="space-y-4">
           <div>
-            <label for="deckName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label for="deckName" class="block text-sm font-medium text-secondary-color mb-1">
               卡組名稱
             </label>
             <input
@@ -74,20 +74,20 @@
               v-model="newDeckName"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-primary-color"
               placeholder="例如：日常英語單字"
             />
           </div>
 
           <div>
-            <label for="deckDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label for="deckDescription" class="block text-sm font-medium text-secondary-color mb-1">
               描述
             </label>
             <textarea
               id="deckDescription"
               v-model="newDeckDescription"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-primary-color"
               placeholder="簡單描述這個卡組的內容..."
             ></textarea>
           </div>

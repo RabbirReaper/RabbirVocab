@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen page-bg">
     <!-- Navbar -->
-    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <nav class="page-bg">
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
@@ -46,7 +46,7 @@
           <div class="flex items-center space-x-4">
             <button
               @click="toggleDarkMode"
-              class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              class="p-2 rounded-lg bg-hover-color"
             >
               <span v-if="isDark">🌙</span>
               <span v-else>☀️</span>
@@ -55,14 +55,14 @@
             <div class="relative">
               <button
                 @click="showUserMenu = !showUserMenu"
-                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                class="flex items-center space-x-2 p-2 rounded-lg bg-hover-color"
               >
                 <img
                   :src="authStore.currentUser?.avatar"
                   :alt="authStore.currentUser?.displayName"
                   class="w-8 h-8 rounded-full"
                 />
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span class="text-sm font-medium text-secondary-color">
                   {{ authStore.currentUser?.displayName }}
                 </span>
               </button>
@@ -70,18 +70,18 @@
               <!-- Dropdown Menu -->
               <div
                 v-if="showUserMenu"
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                class="absolute right-0 mt-2 w-48 bg-primary-color rounded-lg shadow-lg border border-primary-color z-50"
               >
                 <RouterLink
                   to="/app/settings"
-                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                  class="block px-4 py-2 text-sm text-secondary-color bg-hover-color rounded-t-lg"
                   @click="showUserMenu = false"
                 >
                   個人設定
                 </RouterLink>
                 <button
                   @click="handleLogout"
-                  class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 bg-hover-color rounded-b-lg"
                 >
                   登出
                 </button>
@@ -130,7 +130,8 @@ const handleLogout = () => {
 // 初始化暗色模式
 onMounted(() => {
   const theme = localStorage.getItem('theme')
-  isDark.value = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  isDark.value =
+    theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
   if (isDark.value) {
     document.documentElement.classList.add('dark')
   }
