@@ -160,7 +160,7 @@ export interface ICard extends Document {
   // 多媒體
   audio?: ICardAudio;         // 音檔
 
-  tags: string[];
+  tags: Types.ObjectId[];
   status: CardStatus;
   srs: ICardSRS;
   stats: ICardStats;

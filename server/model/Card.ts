@@ -46,8 +46,8 @@ const cardSchema = new Schema<ICard>(
     // 標籤
     tags: [
       {
-        type: String,
-        trim: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Tag',
       },
     ],
 
