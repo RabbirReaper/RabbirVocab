@@ -16,9 +16,9 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="container mx-auto px-4 py-20">
+    <div class="container mx-auto px-4 py-20 grid-background">
       <div class="text-center max-w-3xl mx-auto">
-        <h2 class="text-5xl font-bold text-primary-color mb-6">智慧學習，高效記憶</h2>
+        <h2 class="text-5xl font-bold gradient-text mb-6">智慧學習，高效記憶</h2>
         <p class="text-xl text-secondary-color mb-8">
           使用間隔重複系統 (SRS) 演算法，讓你的單字記憶更持久、更有效
         </p>
