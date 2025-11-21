@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen page-bg flex items-center justify-center px-4">
-    <div class="card max-w-md w-full">
+    <div class="card-modern max-w-md w-full relative z-10">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-2">
           <h1 class="text-3xl font-bold text-primary-600 dark:text-primary-400">RabbirVocab</h1>
@@ -18,7 +18,7 @@
             v-model="username"
             type="text"
             required
-            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
+            class="input-modern"
             placeholder="請輸入使用者名稱"
           />
         </div>
@@ -32,7 +32,7 @@
             v-model="email"
             type="email"
             required
-            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
+            class="input-modern"
             placeholder="your@email.com"
           />
         </div>
@@ -46,7 +46,7 @@
             v-model="password"
             type="password"
             required
-            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
+            class="input-modern"
             placeholder="請輸入密碼"
           />
         </div>
@@ -60,12 +60,12 @@
             v-model="confirmPassword"
             type="password"
             required
-            class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
+            class="input-modern"
             placeholder="再次輸入密碼"
           />
         </div>
 
-        <button type="submit" class="btn btn-primary w-full">註冊</button>
+        <button type="submit" class="btn-modern w-full">註冊</button>
       </form>
 
       <div class="mt-6 text-center">
