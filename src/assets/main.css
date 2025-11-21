@@ -402,6 +402,38 @@
   font-size: 1.125rem;
 }
 
+/* 頂部漸層光暈效果 - Tailwind 風格 */
+.gradient-glow {
+  position: relative;
+}
+
+.gradient-glow::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.3) 0%,
+    rgba(59, 130, 246, 0.2) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .gradient-glow::before {
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.2) 0%,
+    rgba(59, 130, 246, 0.15) 30%,
+    transparent 70%
+  );
+}
+
 /* 文字截斷 */
 .truncate-2 {
   display: -webkit-box;

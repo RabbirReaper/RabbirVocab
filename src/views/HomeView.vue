@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen page-bg">
+  <div class="min-h-screen page-bg gradient-glow">
     <!-- Navbar -->
-    <nav class="navbar backdrop-blur-sm shadow-sm">
+    <nav class="navbar backdrop-blur-sm shadow-sm relative z-10">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
           <div class="flex items-center space-x-2">
@@ -16,7 +16,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="container mx-auto px-4 py-20 grid-background">
+    <div class="container mx-auto px-4 py-20 grid-background relative z-10">
       <div class="text-center max-w-3xl mx-auto">
         <h2 class="text-5xl font-bold gradient-text mb-6">智慧學習，高效記憶</h2>
         <p class="text-xl text-secondary-color mb-8">
