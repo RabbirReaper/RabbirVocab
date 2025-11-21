@@ -27,19 +27,19 @@
 
       <!-- Features -->
       <div class="grid md:grid-cols-3 gap-8 mt-20">
-        <div class="card-modern text-center">
+        <div class="card-modern glow-border text-center">
           <div class="text-4xl mb-4">🧠</div>
           <h3 class="text-xl font-semibold mb-2 text-primary-color">科學演算法</h3>
           <p class="text-secondary-color">基於認知科學的間隔重複演算法，在最佳時機複習單字</p>
         </div>
 
-        <div class="card-modern text-center">
+        <div class="card-modern glow-border text-center">
           <div class="text-4xl mb-4">📊</div>
           <h3 class="text-xl font-semibold mb-2 text-primary-color">學習統計</h3>
           <p class="text-secondary-color">詳細的學習數據分析，追蹤你的進步軌跡</p>
         </div>
 
-        <div class="card-modern text-center">
+        <div class="card-modern glow-border text-center">
           <div class="text-4xl mb-4">🎯</div>
           <h3 class="text-xl font-semibold mb-2 text-primary-color">個人化學習</h3>
           <p class="text-secondary-color">自訂學習目標和節奏，打造專屬於你的學習計畫</p>

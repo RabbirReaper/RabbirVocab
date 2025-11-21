@@ -434,6 +434,69 @@
   );
 }
 
+/* 發光邊框效果 - Tailwind 風格 */
+.glow-border {
+  position: relative;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(135deg, #22d3ee, #3b82f6, #a855f7);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.glow-border:hover::before {
+  opacity: 1;
+}
+
+/* 現代化輸入框效果 - Tailwind 風格 */
+.input-modern {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #111827;
+}
+
+.input-modern:focus {
+  outline: none;
+  border-color: #06b6d4;
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-modern::placeholder {
+  color: #9ca3af;
+}
+
+.dark .input-modern {
+  background: #1e293b;
+  border-color: rgba(148, 163, 184, 0.1);
+  color: #f3f4f6;
+}
+
+.dark .input-modern::placeholder {
+  color: #6b7280;
+}
+
 /* 文字截斷 */
 .truncate-2 {
   display: -webkit-box;
