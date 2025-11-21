@@ -378,6 +378,30 @@
   border-color: rgba(148, 163, 184, 0.1);
 }
 
+/* 現代化按鈕效果 - Tailwind 風格 */
+.btn-modern {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(135deg, #06b6d4, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-modern:hover {
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-modern.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
 /* 文字截斷 */
 .truncate-2 {
   display: -webkit-box;

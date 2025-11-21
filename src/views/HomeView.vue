@@ -22,7 +22,7 @@
         <p class="text-xl text-secondary-color mb-8">
           使用間隔重複系統 (SRS) 演算法，讓你的單字記憶更持久、更有效
         </p>
-        <RouterLink to="/register" class="btn btn-primary btn-lg"> 開始免費使用 </RouterLink>
+        <RouterLink to="/register" class="btn-modern btn-lg"> 開始免費使用 </RouterLink>
       </div>
 
       <!-- Features -->
