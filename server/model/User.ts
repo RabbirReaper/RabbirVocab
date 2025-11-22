@@ -8,7 +8,6 @@ const userSchema = new Schema<IUser>(
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       minlength: 3,
     },
@@ -67,6 +66,28 @@ const userSchema = new Schema<IUser>(
     lastLogin: {
       type: Date,
       default: Date.now,
+    },
+
+    // 權限角色
+    role: {
+      type: String,
+      enum: ['user', 'pro', 'admin', 'super_admin'],
+      default: 'user',
+    },
+
+    // 訂閱資訊
+    subscription: {
+      plan: {
+        type: String,
+        enum: ['free', 'pro'],
+        default: 'free',
+      },
+      startDate: Date,
+      endDate: Date,
+      isActive: {
+        type: Boolean,
+        default: false,
+      },
     },
   },
   {
