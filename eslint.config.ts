@@ -20,15 +20,25 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  
+
   {
     ...pluginVitest.configs.recommended,
     files: ['src/**/__tests__/*'],
   },
-  
+
   {
     ...pluginPlaywright.configs['flat/recommended'],
     files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
   },
+
+  // Server 型別定義檔案例外規則
+  {
+    name: 'server/type-definitions',
+    files: ['server/types/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-namespace': 'off', // 允許在型別定義中使用 namespace
+    },
+  },
+
   skipFormatting,
 )

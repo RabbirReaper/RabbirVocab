@@ -22,7 +22,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "typeRoots": ["./node_modules/@types", "./server/types"]
   },
   "include": ["server/**/*"],
   "exclude": ["node_modules", "dist", "src", "e2e", "vitest.config.ts"]
