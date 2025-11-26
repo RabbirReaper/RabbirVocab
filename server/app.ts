@@ -22,12 +22,14 @@ const __dirname = path.dirname(__filename)
 export const createApp = (): Application => {
   const app = express()
 
-  // 安全性 middleware (需要配置以允許靜態資源)
-  app.use(
-    helmet({
-      contentSecurityPolicy: false, // 如果前端有內聯腳本，需要關閉或配置
-    }),
-  )
+  // 安全性 middleware (生產環境需要配置以允許靜態資源)
+  if (process.env.NODE_ENV !== 'production') {
+    app.use(
+      helmet({
+        contentSecurityPolicy: false,
+      }),
+    )
+  }
 
   // CORS 配置 (需要在所有路由之前)
   app.use(
@@ -41,11 +43,6 @@ export const createApp = (): Application => {
   app.use(express.json({ limit: '2mb' }))
   app.use(express.urlencoded({ limit: '2mb', extended: true }))
 
-  // 提供前端靜態文件 (生產環境)
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../../dist')))
-  }
-
   // Logger (開發環境)
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
@@ -55,8 +52,7 @@ export const createApp = (): Application => {
   app.use(createSessionMiddleware())
 
   // 健康檢查
-  app.get('/health', (req, res) => {
-    console.log('session data:', req.session)
+  app.get('/health', (_req, res) => {
     res.status(200).json({
       success: true,
       message: 'Server is running',
@@ -69,11 +65,21 @@ export const createApp = (): Application => {
   app.use('/api/auth', authRoutes)
   // app.use('/api', apiRoutes) // 未來可以添加更多路由
 
-  // SPA 路由處理 - 所有非 /api 開頭的路由都返回 index.html
-  // 這樣可以支援前端路由 (Vue Router)
+  // 提供前端靜態文件 (生產環境) - 必須在 API 路由之後
   if (process.env.NODE_ENV === 'production') {
-    app.get(/^\/(?!api).*/, (_req, res) => {
-      res.sendFile(path.resolve(__dirname, '../../dist', 'index.html'))
+    const staticPath = path.resolve(__dirname, '..')
+
+    // 提供靜態資源
+    app.use(express.static(staticPath))
+
+    // SPA 路由處理 - 所有非 API 路由都返回 index.html
+    app.use((_req, res, next) => {
+      // 如果是 API 路由,跳到下一個 middleware (讓後面的 404 處理器處理)
+      if (_req.path.startsWith('/api')) {
+        return next()
+      }
+      // 否則返回前端 index.html
+      res.sendFile(path.resolve(staticPath, 'index.html'))
     })
   }
 
@@ -90,7 +96,7 @@ export const createApp = (): Application => {
  * 啟動伺服器
  */
 export const startServer = async (): Promise<void> => {
-  const PORT = process.env.PORT || 80
+  const PORT = process.env.PORT || 8080
 
   try {
     // 連接資料庫
