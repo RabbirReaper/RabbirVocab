@@ -63,8 +63,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
   req.session.role = user.role
 
   res.status(201).json({
-    success: true,
-    message: '註冊成功',
+    message: 'success',
     data: {
       user: {
         id: user._id,
@@ -118,8 +117,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   req.session.role = user.role
 
   res.status(200).json({
-    success: true,
-    message: '登入成功',
+    message: 'success',
     data: {
       user: {
         id: user._id,
@@ -151,8 +149,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   res.clearCookie('sessionId') // 自定義的 session cookie 名稱（與 config/session.ts 中設置一致）
 
   res.status(200).json({
-    success: true,
-    message: '登出成功',
+    message: 'success',
   })
 })
 
@@ -175,7 +172,7 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
   }
 
   res.status(200).json({
-    success: true,
+    message: 'success',
     data: {
       user: {
         id: user._id,
@@ -233,8 +230,7 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
   }
 
   res.status(200).json({
-    success: true,
-    message: '更新成功',
+    message: 'success',
     data: {
       user: {
         id: user._id,
@@ -288,7 +284,6 @@ export const changePassword = asyncHandler(async (req: Request, res: Response) =
   await user.save()
 
   res.status(200).json({
-    success: true,
-    message: '密碼修改成功',
+    message: 'success',
   })
 })

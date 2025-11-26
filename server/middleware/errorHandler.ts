@@ -23,11 +23,9 @@ interface MongooseValidationErrorItem {
  */
 const sendErrorDev = (err: AppError, res: Response) => {
   res.status(err.statusCode).json({
-    success: false,
+    message: err.message,
     error: {
       ...err,
-      message: err.message,
-      statusCode: err.statusCode,
       stack: err.stack,
     },
   })
@@ -40,22 +38,14 @@ const sendErrorProd = (err: AppError, res: Response) => {
   // 可操作的、可信任的錯誤：發送詳細訊息給客戶端
   if (err.isOperational) {
     res.status(err.statusCode).json({
-      success: false,
-      error: {
-        message: err.message,
-        statusCode: err.statusCode,
-      },
+      message: err.message,
     })
   } else {
     // 程式錯誤或未知錯誤：不洩露錯誤細節
     console.error('❌ ERROR:', err)
 
     res.status(500).json({
-      success: false,
-      error: {
-        message: '伺服器發生錯誤',
-        statusCode: 500,
-      },
+      message: '伺服器發生錯誤',
     })
   }
 }
@@ -137,10 +127,6 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
  */
 export const notFoundHandler = (req: Request, res: Response) => {
   res.status(404).json({
-    success: false,
-    error: {
-      message: `找不到路由: ${req.method} ${req.originalUrl}`,
-      statusCode: 404,
-    },
+    message: `找不到路由: ${req.method} ${req.originalUrl}`,
   })
 }
