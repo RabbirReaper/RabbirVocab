@@ -8,9 +8,7 @@ import { createSessionMiddleware } from './config/session.js'
 import { connectDatabase } from './config/database.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
-// Routes
-import authRoutes from './routes/authRoutes.js'
-// import apiRoutes from './routes/index.js' // 未來可以整合所有 API 路由
+import apiRoutes from './routes/index.js' // 未來可以整合所有 API 路由
 
 // ES Module 環境下獲取 __dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -61,9 +59,7 @@ export const createApp = (): Application => {
     })
   })
 
-  // API Routes
-  app.use('/api/auth', authRoutes)
-  // app.use('/api', apiRoutes) // 未來可以添加更多路由
+  app.use('/api', apiRoutes) // 未來可以添加更多路由
 
   // 提供前端靜態文件 (生產環境) - 必須在 API 路由之後
   if (process.env.NODE_ENV === 'production') {
