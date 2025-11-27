@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { api } from '@/api/modules'
+import type { ApiError } from '@/api/types'
 
 export interface User {
   id: string
@@ -37,8 +38,9 @@ export const useAuthStore = defineStore('auth', () => {
         role: userData.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
-    } catch (err: any) {
-      error.value = err.message || '登入失敗'
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '登入失敗'
       throw err
     } finally {
       isLoading.value = false
@@ -61,8 +63,9 @@ export const useAuthStore = defineStore('auth', () => {
         role: userData.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
-    } catch (err: any) {
-      error.value = err.message || '註冊失敗'
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '註冊失敗'
       throw err
     } finally {
       isLoading.value = false
@@ -102,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
         role: userData.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
-    } catch (err) {
+    } catch {
       // Session 無效，清除狀態
       user.value = null
       localStorage.removeItem('user')

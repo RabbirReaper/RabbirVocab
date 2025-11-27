@@ -1,14 +1,20 @@
 // ==================== 通用類型 ====================
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   message: string
   data: T
+}
+
+export interface ApiErrorResponse {
+  error: {
+    message: string
+  }
 }
 
 export interface ApiError {
   message: string
   statusCode: number
-  originalError?: any
+  originalError?: unknown
 }
 
 // ==================== 用戶相關類型 ====================

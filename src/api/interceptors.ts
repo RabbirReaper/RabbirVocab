@@ -1,4 +1,5 @@
 import type { AxiosInstance, AxiosError } from 'axios'
+import type { ApiErrorResponse } from './types'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 
@@ -20,7 +21,7 @@ export function setupInterceptors(client: AxiosInstance) {
       // 提取 data 字段（後端格式：{ message, data }）
       return response.data
     },
-    (error: AxiosError<any>) => {
+    (error: AxiosError<ApiErrorResponse>) => {
       if (error.response) {
         const status = error.response.status
         // 直接使用後端返回的錯誤訊息

@@ -114,7 +114,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
-import { useCardStore } from '@/stores/card'
+import { useCardStore, type Card } from '@/stores/card'
 
 const route = useRoute()
 const deckStore = useDeckStore()
@@ -123,7 +123,7 @@ const cardStore = useCardStore()
 const deckId = route.params.deckId as string
 const deck = computed(() => deckStore.getDeckById(deckId))
 
-const dueCards = ref<any[]>([])
+const dueCards = ref<Card[]>([])
 const currentCardIndex = ref(0)
 const showAnswer = ref(false)
 const studiedCount = ref(0)
