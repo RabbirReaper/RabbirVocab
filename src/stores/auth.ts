@@ -17,6 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const isInitialized = ref(false)
 
   // 計算屬性
   const isAuthenticated = computed(() => !!user.value)
@@ -72,25 +73,39 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 登出
+  // 清除認證狀態（不呼叫 API，用於 401 等被動登出情況）
+  function clearAuthState() {
+    user.value = null
+    error.value = null
+    localStorage.removeItem('user')
+  }
+
+  // 登出（主動登出，會呼叫 API）
   async function logout() {
     try {
       await api.auth.logout()
     } catch (err) {
       console.error('登出 API 調用失敗:', err)
     } finally {
-      user.value = null
-      error.value = null
-      localStorage.removeItem('user')
+      clearAuthState()
     }
   }
 
   // 初始化認證（驗證 session）
   async function initializeAuth() {
+    // 防止重複初始化
+    if (isInitialized.value) {
+      return
+    }
+
     // 先從 localStorage 讀取（快速顯示 UI）
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      user.value = JSON.parse(savedUser)
+      try {
+        user.value = JSON.parse(savedUser)
+      } catch {
+        localStorage.removeItem('user')
+      }
     }
 
     // 向後端驗證 session 是否有效
@@ -106,24 +121,29 @@ export const useAuthStore = defineStore('auth', () => {
       }
       localStorage.setItem('user', JSON.stringify(user.value))
     } catch {
-      // Session 無效，清除狀態
+      // Session 無效，清除狀態 (interceptor 已經處理了 clearAuthState)
+      // 這裡只需要確保狀態是清空的
       user.value = null
       localStorage.removeItem('user')
+    } finally {
+      isInitialized.value = true
     }
   }
 
-  // 初始化時恢復登入狀態
-  initializeAuth()
+  // 不在這裡自動初始化，由路由守衛控制
+  // initializeAuth()
 
   return {
     user,
     isLoading,
     error,
+    isInitialized,
     isAuthenticated,
     currentUser,
     login,
     register,
     logout,
+    clearAuthState,
     initializeAuth,
   }
 })

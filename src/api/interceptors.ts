@@ -30,8 +30,14 @@ export function setupInterceptors(client: AxiosInstance) {
         // 401: 未授權，清除登入狀態並重定向
         if (status === 401) {
           const authStore = useAuthStore()
-          authStore.logout()
-          if (router.currentRoute.value.path !== '/login') {
+          // 使用 clearAuthState 而不是 logout，避免再次呼叫 API 造成無限循環
+          authStore.clearAuthState()
+
+          // 只在需要認證的頁面才重定向到登入頁
+          const currentRoute = router.currentRoute.value
+          const requiresAuth = currentRoute.meta.requiresAuth === true
+
+          if (requiresAuth && currentRoute.path !== '/login') {
             router.push('/login')
           }
         }
