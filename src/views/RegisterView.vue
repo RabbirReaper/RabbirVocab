@@ -8,6 +8,14 @@
         <p class="text-secondary-color">建立新帳號</p>
       </div>
 
+      <!-- 錯誤訊息顯示 -->
+      <div
+        v-if="authStore.error"
+        class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-lg text-red-700 dark:text-red-400 text-sm"
+      >
+        {{ authStore.error }}
+      </div>
+
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
           <label for="username" class="block text-sm font-medium text-secondary-color mb-1">
@@ -18,8 +26,10 @@
             v-model="username"
             type="text"
             required
+            minlength="3"
             class="input-modern"
             placeholder="請輸入使用者名稱"
+            :disabled="authStore.isLoading"
           />
         </div>
 
@@ -34,6 +44,7 @@
             required
             class="input-modern"
             placeholder="your@email.com"
+            :disabled="authStore.isLoading"
           />
         </div>
 
@@ -46,8 +57,10 @@
             v-model="password"
             type="password"
             required
+            minlength="6"
             class="input-modern"
             placeholder="請輸入密碼"
+            :disabled="authStore.isLoading"
           />
         </div>
 
@@ -62,10 +75,13 @@
             required
             class="input-modern"
             placeholder="再次輸入密碼"
+            :disabled="authStore.isLoading"
           />
         </div>
 
-        <button type="submit" class="btn-modern w-full">註冊</button>
+        <button type="submit" class="btn-modern w-full" :disabled="authStore.isLoading">
+          {{ authStore.isLoading ? '註冊中...' : '註冊' }}
+        </button>
       </form>
 
       <div class="mt-6 text-center">
@@ -96,13 +112,32 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 
-const handleRegister = () => {
-  if (password.value !== confirmPassword.value) {
-    alert('密碼不一致')
+const handleRegister = async () => {
+  // 清除之前的錯誤
+  authStore.error = null
+
+  // 前端驗證
+  if (username.value.length < 3) {
+    authStore.error = '使用者名稱長度至少需要 3 個字元'
     return
   }
 
-  authStore.register(username.value, email.value, password.value)
-  router.push('/app/dashboard')
+  if (password.value.length < 6) {
+    authStore.error = '密碼長度至少需要 6 個字元'
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    authStore.error = '密碼不一致'
+    return
+  }
+
+  try {
+    await authStore.register(username.value, email.value, password.value)
+    router.push('/app/dashboard')
+  } catch (error) {
+    // 錯誤已在 authStore 中處理（如：email 已存在）
+    console.error('註冊失敗:', error)
+  }
 }
 </script>

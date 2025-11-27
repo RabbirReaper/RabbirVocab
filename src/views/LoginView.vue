@@ -8,18 +8,27 @@
         <p class="text-secondary-color">登入你的帳號</p>
       </div>
 
+      <!-- 錯誤訊息顯示 -->
+      <div
+        v-if="authStore.error"
+        class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-lg text-red-700 dark:text-red-400 text-sm"
+      >
+        {{ authStore.error }}
+      </div>
+
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
-          <label for="username" class="block text-sm font-medium text-secondary-color mb-1">
-            使用者名稱
+          <label for="email" class="block text-sm font-medium text-secondary-color mb-1">
+            電子郵件
           </label>
           <input
-            id="username"
-            v-model="username"
-            type="text"
+            id="email"
+            v-model="email"
+            type="email"
             required
             class="input-modern"
-            placeholder="請輸入使用者名稱"
+            placeholder="your@email.com"
+            :disabled="authStore.isLoading"
           />
         </div>
 
@@ -34,10 +43,13 @@
             required
             class="input-modern"
             placeholder="請輸入密碼"
+            :disabled="authStore.isLoading"
           />
         </div>
 
-        <button type="submit" class="btn-modern w-full">登入</button>
+        <button type="submit" class="btn-modern w-full" :disabled="authStore.isLoading">
+          {{ authStore.isLoading ? '登入中...' : '登入' }}
+        </button>
       </form>
 
       <div class="mt-6 text-center">
@@ -63,11 +75,16 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
 
-const handleLogin = () => {
-  authStore.login(username.value, password.value)
-  router.push('/app/dashboard')
+const handleLogin = async () => {
+  try {
+    await authStore.login(email.value, password.value)
+    router.push('/app/dashboard')
+  } catch (error) {
+    // 錯誤已在 authStore 中處理
+    console.error('登入失敗:', error)
+  }
 }
 </script>

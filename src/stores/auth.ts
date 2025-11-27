@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { api } from '@/api/modules'
 
 export interface User {
   id: string
@@ -7,68 +8,104 @@ export interface User {
   email: string
   displayName: string
   avatar?: string
-  languagePreference: string
+  role?: string
 }
 
 export const useAuthStore = defineStore('auth', () => {
   // 狀態
   const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
   // 計算屬性
-  const isAuthenticated = computed(() => !!user.value && !!token.value)
+  const isAuthenticated = computed(() => !!user.value)
   const currentUser = computed(() => user.value)
 
-  // 動作
-  function login(username: string, password: string) {
-    // 模擬登入（使用假資料）
-    user.value = {
-      id: '1',
-      username,
-      email: `${username}@example.com`,
-      displayName: username,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username,
-      languagePreference: 'zh-TW'
+  // 登入
+  async function login(email: string, password: string) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const userData = await api.auth.login({ email, password })
+      user.value = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        displayName: userData.displayName,
+        avatar: userData.avatar,
+        role: userData.role,
+      }
+      localStorage.setItem('user', JSON.stringify(user.value))
+    } catch (err: any) {
+      error.value = err.message || '登入失敗'
+      throw err
+    } finally {
+      isLoading.value = false
     }
-    token.value = 'fake-jwt-token-' + Date.now()
-
-    // 儲存到 localStorage
-    localStorage.setItem('user', JSON.stringify(user.value))
-    localStorage.setItem('token', token.value)
   }
 
-  function register(username: string, email: string, password: string) {
-    // 模擬註冊（使用假資料）
-    user.value = {
-      id: '1',
-      username,
-      email,
-      displayName: username,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username,
-      languagePreference: 'zh-TW'
+  // 註冊
+  async function register(username: string, email: string, password: string) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const userData = await api.auth.register({ username, email, password })
+      user.value = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        displayName: userData.displayName,
+        avatar: userData.avatar,
+        role: userData.role,
+      }
+      localStorage.setItem('user', JSON.stringify(user.value))
+    } catch (err: any) {
+      error.value = err.message || '註冊失敗'
+      throw err
+    } finally {
+      isLoading.value = false
     }
-    token.value = 'fake-jwt-token-' + Date.now()
-
-    // 儲存到 localStorage
-    localStorage.setItem('user', JSON.stringify(user.value))
-    localStorage.setItem('token', token.value)
   }
 
-  function logout() {
-    user.value = null
-    token.value = null
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
+  // 登出
+  async function logout() {
+    try {
+      await api.auth.logout()
+    } catch (err) {
+      console.error('登出 API 調用失敗:', err)
+    } finally {
+      user.value = null
+      error.value = null
+      localStorage.removeItem('user')
+    }
   }
 
-  function initializeAuth() {
-    // 從 localStorage 恢復登入狀態
+  // 初始化認證（驗證 session）
+  async function initializeAuth() {
+    // 先從 localStorage 讀取（快速顯示 UI）
     const savedUser = localStorage.getItem('user')
-    const savedToken = localStorage.getItem('token')
-
-    if (savedUser && savedToken) {
+    if (savedUser) {
       user.value = JSON.parse(savedUser)
-      token.value = savedToken
+    }
+
+    // 向後端驗證 session 是否有效
+    try {
+      const userData = await api.auth.getMe()
+      user.value = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        displayName: userData.displayName,
+        avatar: userData.avatar,
+        role: userData.role,
+      }
+      localStorage.setItem('user', JSON.stringify(user.value))
+    } catch (err) {
+      // Session 無效，清除狀態
+      user.value = null
+      localStorage.removeItem('user')
     }
   }
 
@@ -77,12 +114,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
-    token,
+    isLoading,
+    error,
     isAuthenticated,
     currentUser,
     login,
     register,
     logout,
-    initializeAuth
+    initializeAuth,
   }
 })
