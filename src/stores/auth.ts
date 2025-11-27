@@ -28,14 +28,14 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const userData = await api.auth.login({ email, password })
+      const response = await api.auth.login({ email, password })
       user.value = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        displayName: userData.displayName,
-        avatar: userData.avatar,
-        role: userData.role,
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        displayName: response.user.displayName,
+        avatar: response.user.avatar,
+        role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
     } catch (err) {
@@ -53,14 +53,14 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const userData = await api.auth.register({ username, email, password })
+      const response = await api.auth.register({ username, email, password })
       user.value = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        displayName: userData.displayName,
-        avatar: userData.avatar,
-        role: userData.role,
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        displayName: response.user.displayName,
+        avatar: response.user.avatar,
+        role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
     } catch (err) {
@@ -95,14 +95,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     // 向後端驗證 session 是否有效
     try {
-      const userData = await api.auth.getMe()
+      const response = await api.auth.getMe()
       user.value = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        displayName: userData.displayName,
-        avatar: userData.avatar,
-        role: userData.role,
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        displayName: response.user.displayName,
+        avatar: response.user.avatar,
+        role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
     } catch {

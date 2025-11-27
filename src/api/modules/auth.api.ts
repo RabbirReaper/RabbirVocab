@@ -4,24 +4,23 @@ import type {
   LoginRequest,
   RegisterRequest,
   AuthResponse,
-  UserDto,
 } from '../types'
 
 export const authApi = {
   /**
    * 用戶註冊
    */
-  register: async (data: RegisterRequest): Promise<UserDto> => {
+  register: async (data: RegisterRequest): Promise<AuthResponse> => {
     const response = (await apiClient.post('/auth/register', data)) as ApiResponse<AuthResponse>
-    return response.data.user
+    return response.data
   },
 
   /**
    * 用戶登入
    */
-  login: async (data: LoginRequest): Promise<UserDto> => {
+  login: async (data: LoginRequest): Promise<AuthResponse> => {
     const response = (await apiClient.post('/auth/login', data)) as ApiResponse<AuthResponse>
-    return response.data.user
+    return response.data
   },
 
   /**
@@ -34,8 +33,8 @@ export const authApi = {
   /**
    * 獲取當前用戶資訊（驗證 session）
    */
-  getMe: async (): Promise<UserDto> => {
+  getMe: async (): Promise<AuthResponse> => {
     const response = (await apiClient.get('/auth/me')) as ApiResponse<AuthResponse>
-    return response.data.user
+    return response.data
   },
 }
