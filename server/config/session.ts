@@ -12,9 +12,6 @@ export const sessionConfig = {
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/rabbirvocab',
     touchAfter: 24 * 3600, // 24 小時內只更新一次 session（降低資料庫負載）
-    crypto: {
-      secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
-    },
   }),
 
   // Cookie 設定
