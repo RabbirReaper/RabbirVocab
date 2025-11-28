@@ -90,20 +90,9 @@ export interface IDeck extends Document {
     // SRS 演算法參數（可由前端調整，每個牌組獨立設定）
     srsConfig?: ISRSConfig;
   };
-  stats: {
-    totalCards: number;
-    newCards: number;
-    learningCards: number;
-    reviewCards: number;
-  };
-  tags: string[];
-  color: string;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
-  
-  // 方法
-  updateStats(): Promise<void>;
 }
 
 // ============================================
