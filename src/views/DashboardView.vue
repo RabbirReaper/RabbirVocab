@@ -65,7 +65,10 @@
             <span class="text-primary-color font-medium">15 / 50</span>
           </div>
           <div class="w-full bg-progress rounded-full h-2">
-            <div class="bg-primary-600 dark:bg-primary-500 h-2 rounded-full" style="width: 30%"></div>
+            <div
+              class="bg-primary-600 dark:bg-primary-500 h-2 rounded-full"
+              style="width: 30%"
+            ></div>
           </div>
         </div>
 
@@ -75,7 +78,10 @@
             <span class="text-primary-color font-medium">8 / 20</span>
           </div>
           <div class="w-full bg-progress rounded-full h-2">
-            <div class="bg-secondary-600 dark:bg-secondary-500 h-2 rounded-full" style="width: 40%"></div>
+            <div
+              class="bg-secondary-600 dark:bg-secondary-500 h-2 rounded-full"
+              style="width: 40%"
+            ></div>
           </div>
         </div>
       </div>

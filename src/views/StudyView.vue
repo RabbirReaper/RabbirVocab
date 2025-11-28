@@ -41,13 +41,17 @@
 
           <div v-else class="space-y-6">
             <div>
-              <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">問題</div>
+              <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">
+                問題
+              </div>
               <div class="text-3xl font-bold text-primary-color">
                 {{ currentCard.front }}
               </div>
             </div>
             <div class="border-t border-primary-color pt-6">
-              <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">答案</div>
+              <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">
+                答案
+              </div>
               <div class="text-2xl font-semibold text-primary-600 dark:text-primary-400">
                 {{ currentCard.back }}
               </div>
@@ -103,9 +107,7 @@
       <div class="text-6xl mb-4">🎉</div>
       <h2 class="text-2xl font-bold text-primary-color mb-2">太棒了！</h2>
       <p class="text-secondary-color mb-6">你已經完成今天的所有複習</p>
-      <RouterLink :to="`/app/decks/${deckId}`" class="btn btn-primary">
-        返回卡組
-      </RouterLink>
+      <RouterLink :to="`/app/decks/${deckId}`" class="btn btn-primary"> 返回卡組 </RouterLink>
     </div>
   </div>
 </template>
@@ -158,13 +160,19 @@ const getHardInterval = () => {
 
 const getGoodInterval = () => {
   if (!currentCard.value) return '3d'
-  const interval = currentCard.value.interval === 0 ? 1 : Math.floor(currentCard.value.interval * currentCard.value.easeFactor)
+  const interval =
+    currentCard.value.interval === 0
+      ? 1
+      : Math.floor(currentCard.value.interval * currentCard.value.easeFactor)
   return `${interval}d`
 }
 
 const getEasyInterval = () => {
   if (!currentCard.value) return '7d'
-  const interval = currentCard.value.interval === 0 ? 4 : Math.floor(currentCard.value.interval * currentCard.value.easeFactor * 1.3)
+  const interval =
+    currentCard.value.interval === 0
+      ? 4
+      : Math.floor(currentCard.value.interval * currentCard.value.easeFactor * 1.3)
   return `${interval}d`
 }
 

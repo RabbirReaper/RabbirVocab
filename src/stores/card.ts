@@ -31,7 +31,7 @@ export const useCardStore = defineStore('card', () => {
       interval: 30,
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '2',
@@ -44,7 +44,7 @@ export const useCardStore = defineStore('card', () => {
       interval: 7,
       dueDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '3',
@@ -57,7 +57,7 @@ export const useCardStore = defineStore('card', () => {
       interval: 1,
       dueDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '4',
@@ -70,7 +70,7 @@ export const useCardStore = defineStore('card', () => {
       interval: 0,
       dueDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '5',
@@ -83,8 +83,8 @@ export const useCardStore = defineStore('card', () => {
       interval: 14,
       dueDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    },
   ])
 
   const currentCard = ref<Card | null>(null)
@@ -94,18 +94,16 @@ export const useCardStore = defineStore('card', () => {
 
   // 動作
   function getCardsByDeck(deckId: string): Card[] {
-    return cards.value.filter(card => card.deck === deckId)
+    return cards.value.filter((card) => card.deck === deckId)
   }
 
   function getDueCards(deckId: string): Card[] {
     const now = new Date()
-    return cards.value.filter(card =>
-      card.deck === deckId && new Date(card.dueDate) <= now
-    )
+    return cards.value.filter((card) => card.deck === deckId && new Date(card.dueDate) <= now)
   }
 
   function getCardById(id: string): Card | undefined {
-    return cards.value.find(card => card.id === id)
+    return cards.value.find((card) => card.id === id)
   }
 
   function createCard(deckId: string, front: string, back: string, tags: string[] = []) {
@@ -120,25 +118,25 @@ export const useCardStore = defineStore('card', () => {
       interval: 0,
       dueDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }
     cards.value.push(newCard)
     return newCard
   }
 
   function updateCard(id: string, updates: Partial<Omit<Card, 'id' | 'createdAt'>>) {
-    const index = cards.value.findIndex(card => card.id === id)
+    const index = cards.value.findIndex((card) => card.id === id)
     if (index !== -1) {
       cards.value[index] = {
         ...cards.value[index],
         ...updates,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       } as Card
     }
   }
 
   function deleteCard(id: string) {
-    const index = cards.value.findIndex(card => card.id === id)
+    const index = cards.value.findIndex((card) => card.id === id)
     if (index !== -1) {
       cards.value.splice(index, 1)
     }
@@ -182,7 +180,7 @@ export const useCardStore = defineStore('card', () => {
       interval: newInterval,
       easeFactor: newEaseFactor,
       status: newStatus,
-      dueDate: dueDate.toISOString()
+      dueDate: dueDate.toISOString(),
     })
   }
 
@@ -196,6 +194,6 @@ export const useCardStore = defineStore('card', () => {
     createCard,
     updateCard,
     deleteCard,
-    reviewCard
+    reviewCard,
   }
 })

@@ -3,15 +3,16 @@
     <!-- 卡組標題 -->
     <div class="flex justify-between items-start">
       <div>
-        <RouterLink to="/app/decks" class="text-primary-600 dark:text-primary-400 hover:underline mb-2 inline-block">
+        <RouterLink
+          to="/app/decks"
+          class="text-primary-600 dark:text-primary-400 hover:underline mb-2 inline-block"
+        >
           ← 返回卡組列表
         </RouterLink>
         <h1 class="text-3xl font-bold text-primary-color">{{ deck.name }}</h1>
         <p class="text-secondary-color mt-2">{{ deck.description }}</p>
       </div>
-      <RouterLink :to="`/app/study/${deck.id}`" class="btn btn-primary">
-        🎯 開始學習
-      </RouterLink>
+      <RouterLink :to="`/app/study/${deck.id}`" class="btn btn-primary"> 🎯 開始學習 </RouterLink>
     </div>
 
     <!-- 統計卡片 -->
@@ -22,15 +23,21 @@
       </div>
       <div class="card">
         <p class="text-sm text-secondary-color">新卡片</p>
-        <p class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">{{ deck.newCount }}</p>
+        <p class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
+          {{ deck.newCount }}
+        </p>
       </div>
       <div class="card">
         <p class="text-sm text-secondary-color">待複習</p>
-        <p class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">{{ deck.reviewCount }}</p>
+        <p class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">
+          {{ deck.reviewCount }}
+        </p>
       </div>
       <div class="card">
         <p class="text-sm text-secondary-color">已掌握</p>
-        <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">{{ deck.masteredCount }}</p>
+        <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">
+          {{ deck.masteredCount }}
+        </p>
       </div>
     </div>
 
@@ -55,9 +62,7 @@
             <span :class="getStatusBadgeClass(card.status)" class="badge">
               {{ getStatusText(card.status) }}
             </span>
-            <span class="text-sm text-tertiary-color">
-              間隔: {{ card.interval }}天
-            </span>
+            <span class="text-sm text-tertiary-color"> 間隔: {{ card.interval }}天 </span>
           </div>
         </div>
       </div>
@@ -71,9 +76,7 @@
       <h2 class="text-xl font-bold text-primary-color mb-4">學習設定</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-secondary-color mb-1">
-            每日新卡片數
-          </label>
+          <label class="block text-sm font-medium text-secondary-color mb-1"> 每日新卡片數 </label>
           <input
             type="number"
             :value="deck.srsConfig.newCardsPerDay"
@@ -82,9 +85,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-secondary-color mb-1">
-            每日複習數
-          </label>
+          <label class="block text-sm font-medium text-secondary-color mb-1"> 每日複習數 </label>
           <input
             type="number"
             :value="deck.srsConfig.reviewsPerDay"
@@ -134,7 +135,11 @@
           </div>
 
           <div class="flex space-x-3">
-            <button type="button" @click="showAddCardModal = false" class="btn btn-secondary flex-1">
+            <button
+              type="button"
+              @click="showAddCardModal = false"
+              class="btn btn-secondary flex-1"
+            >
               取消
             </button>
             <button type="submit" class="btn btn-primary flex-1">新增</button>
@@ -173,7 +178,7 @@ const handleAddCard = () => {
   if (deck.value) {
     deckStore.updateDeck(deckId, {
       cardCount: deck.value.cardCount + 1,
-      newCount: deck.value.newCount + 1
+      newCount: deck.value.newCount + 1,
     })
   }
 }
@@ -183,7 +188,7 @@ const getStatusText = (status: string) => {
     new: '新卡',
     learning: '學習中',
     review: '複習',
-    mastered: '已掌握'
+    mastered: '已掌握',
   }
   return statusMap[status] || status
 }
@@ -193,7 +198,7 @@ const getStatusBadgeClass = (status: string) => {
     new: 'badge-primary',
     learning: 'badge-warning',
     review: 'badge-info',
-    mastered: 'badge-success'
+    mastered: 'badge-success',
   }
   return classMap[status] || ''
 }

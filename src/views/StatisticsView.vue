@@ -55,7 +55,9 @@
           class="text-center p-4 bg-secondary-color rounded-lg"
         >
           <div class="text-xs text-tertiary-color mb-2">{{ day.name }}</div>
-          <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ day.count }}</div>
+          <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">
+            {{ day.count }}
+          </div>
           <div class="text-xs text-secondary-color mt-1">{{ day.minutes }}分</div>
         </div>
       </div>
@@ -68,7 +70,9 @@
         <div>
           <div class="flex justify-between text-sm mb-2">
             <span class="text-secondary-color">新卡片</span>
-            <span class="text-primary-color font-medium">{{ cardStats.new }}張 ({{ cardStats.newPercent }}%)</span>
+            <span class="text-primary-color font-medium"
+              >{{ cardStats.new }}張 ({{ cardStats.newPercent }}%)</span
+            >
           </div>
           <div class="w-full bg-progress rounded-full h-3">
             <div
@@ -81,7 +85,9 @@
         <div>
           <div class="flex justify-between text-sm mb-2">
             <span class="text-secondary-color">學習中</span>
-            <span class="text-primary-color font-medium">{{ cardStats.learning }}張 ({{ cardStats.learningPercent }}%)</span>
+            <span class="text-primary-color font-medium"
+              >{{ cardStats.learning }}張 ({{ cardStats.learningPercent }}%)</span
+            >
           </div>
           <div class="w-full bg-progress rounded-full h-3">
             <div
@@ -94,7 +100,9 @@
         <div>
           <div class="flex justify-between text-sm mb-2">
             <span class="text-secondary-color">複習中</span>
-            <span class="text-primary-color font-medium">{{ cardStats.review }}張 ({{ cardStats.reviewPercent }}%)</span>
+            <span class="text-primary-color font-medium"
+              >{{ cardStats.review }}張 ({{ cardStats.reviewPercent }}%)</span
+            >
           </div>
           <div class="w-full bg-progress rounded-full h-3">
             <div
@@ -107,7 +115,9 @@
         <div>
           <div class="flex justify-between text-sm mb-2">
             <span class="text-secondary-color">已掌握</span>
-            <span class="text-primary-color font-medium">{{ cardStats.mastered }}張 ({{ cardStats.masteredPercent }}%)</span>
+            <span class="text-primary-color font-medium"
+              >{{ cardStats.mastered }}張 ({{ cardStats.masteredPercent }}%)</span
+            >
           </div>
           <div class="w-full bg-progress rounded-full h-3">
             <div
@@ -167,16 +177,16 @@ const weekDays = [
   { name: '週四', count: 61, minutes: 42 },
   { name: '週五', count: 44, minutes: 30 },
   { name: '週六', count: 70, minutes: 55 },
-  { name: '週日', count: 65, minutes: 48 }
+  { name: '週日', count: 65, minutes: 48 },
 ]
 
 const cardStats = computed(() => {
   const cards = cardStore.cards
   const total = cards.length
-  const newCards = cards.filter(c => c.status === 'new').length
-  const learning = cards.filter(c => c.status === 'learning').length
-  const review = cards.filter(c => c.status === 'review').length
-  const mastered = cards.filter(c => c.status === 'mastered').length
+  const newCards = cards.filter((c) => c.status === 'new').length
+  const learning = cards.filter((c) => c.status === 'learning').length
+  const review = cards.filter((c) => c.status === 'review').length
+  const mastered = cards.filter((c) => c.status === 'mastered').length
 
   return {
     new: newCards,
@@ -186,16 +196,44 @@ const cardStats = computed(() => {
     review,
     reviewPercent: total > 0 ? Math.round((review / total) * 100) : 0,
     mastered,
-    masteredPercent: total > 0 ? Math.round((mastered / total) * 100) : 0
+    masteredPercent: total > 0 ? Math.round((mastered / total) * 100) : 0,
   }
 })
 
 const recentRecords = [
-  { id: 1, deckName: '日常英語單字', reviewCount: 25, accuracy: 92, duration: 18, date: '2024-01-15' },
-  { id: 2, deckName: 'TOEFL 核心詞彙', reviewCount: 40, accuracy: 85, duration: 32, date: '2024-01-15' },
+  {
+    id: 1,
+    deckName: '日常英語單字',
+    reviewCount: 25,
+    accuracy: 92,
+    duration: 18,
+    date: '2024-01-15',
+  },
+  {
+    id: 2,
+    deckName: 'TOEFL 核心詞彙',
+    reviewCount: 40,
+    accuracy: 85,
+    duration: 32,
+    date: '2024-01-15',
+  },
   { id: 3, deckName: '商業英文', reviewCount: 15, accuracy: 95, duration: 12, date: '2024-01-14' },
-  { id: 4, deckName: '日常英語單字', reviewCount: 30, accuracy: 88, duration: 22, date: '2024-01-14' },
-  { id: 5, deckName: 'TOEFL 核心詞彙', reviewCount: 35, accuracy: 90, duration: 28, date: '2024-01-13' }
+  {
+    id: 4,
+    deckName: '日常英語單字',
+    reviewCount: 30,
+    accuracy: 88,
+    duration: 22,
+    date: '2024-01-14',
+  },
+  {
+    id: 5,
+    deckName: 'TOEFL 核心詞彙',
+    reviewCount: 35,
+    accuracy: 90,
+    duration: 28,
+    date: '2024-01-13',
+  },
 ]
 
 const getAccuracyClass = (accuracy: number) => {

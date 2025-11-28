@@ -24,19 +24,19 @@
       <div class="card">
         <p class="text-sm text-secondary-color">新卡片</p>
         <p class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
-          {{ filteredCards.filter(c => c.status === 'new').length }}
+          {{ filteredCards.filter((c) => c.status === 'new').length }}
         </p>
       </div>
       <div class="card">
         <p class="text-sm text-secondary-color">學習中</p>
         <p class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">
-          {{ filteredCards.filter(c => c.status === 'learning').length }}
+          {{ filteredCards.filter((c) => c.status === 'learning').length }}
         </p>
       </div>
       <div class="card">
         <p class="text-sm text-secondary-color">已掌握</p>
         <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">
-          {{ filteredCards.filter(c => c.status === 'mastered').length }}
+          {{ filteredCards.filter((c) => c.status === 'mastered').length }}
         </p>
       </div>
     </div>
@@ -58,12 +58,8 @@
             </div>
             <div class="text-sm text-secondary-color">{{ card.back }}</div>
             <div class="flex items-center space-x-4 mt-2">
-              <span class="text-xs text-tertiary-color">
-                卡組: {{ getDeckName(card.deck) }}
-              </span>
-              <span class="text-xs text-tertiary-color">
-                間隔: {{ card.interval }}天
-              </span>
+              <span class="text-xs text-tertiary-color"> 卡組: {{ getDeckName(card.deck) }} </span>
+              <span class="text-xs text-tertiary-color"> 間隔: {{ card.interval }}天 </span>
               <span class="text-xs text-tertiary-color">
                 難度: {{ card.easeFactor.toFixed(2) }}
               </span>
@@ -116,7 +112,7 @@ const getStatusText = (status: string) => {
     new: '新卡',
     learning: '學習中',
     review: '複習',
-    mastered: '已掌握'
+    mastered: '已掌握',
   }
   return statusMap[status] || status
 }
@@ -126,7 +122,7 @@ const getStatusBadgeClass = (status: string) => {
     new: 'badge-primary',
     learning: 'badge-warning',
     review: 'badge-info',
-    mastered: 'badge-success'
+    mastered: 'badge-success',
   }
   return classMap[status] || ''
 }

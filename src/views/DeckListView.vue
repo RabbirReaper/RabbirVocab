@@ -2,9 +2,7 @@
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-primary-color">我的卡組</h1>
-      <button @click="showCreateModal = true" class="btn btn-primary">
-        ➕ 建立新卡組
-      </button>
+      <button @click="showCreateModal = true" class="btn btn-primary">➕ 建立新卡組</button>
     </div>
 
     <!-- 卡組列表 -->
@@ -16,7 +14,9 @@
         class="card hover:shadow-lg transition-shadow group cursor-pointer"
       >
         <div class="flex justify-between items-start mb-3">
-          <h3 class="text-xl font-bold text-primary-color group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3
+            class="text-xl font-bold text-primary-color group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
+          >
             {{ deck.name }}
           </h3>
           <span class="text-2xl">📚</span>
@@ -34,11 +34,15 @@
             </div>
             <div>
               <span class="text-tertiary-color">新卡</span>
-              <span class="ml-1 font-semibold text-primary-600 dark:text-primary-400">{{ deck.newCount }}</span>
+              <span class="ml-1 font-semibold text-primary-600 dark:text-primary-400">{{
+                deck.newCount
+              }}</span>
             </div>
             <div>
               <span class="text-tertiary-color">複習</span>
-              <span class="ml-1 font-semibold text-warning-600 dark:text-warning-400">{{ deck.reviewCount }}</span>
+              <span class="ml-1 font-semibold text-warning-600 dark:text-warning-400">{{
+                deck.reviewCount
+              }}</span>
             </div>
           </div>
         </div>
@@ -80,7 +84,10 @@
           </div>
 
           <div>
-            <label for="deckDescription" class="block text-sm font-medium text-secondary-color mb-1">
+            <label
+              for="deckDescription"
+              class="block text-sm font-medium text-secondary-color mb-1"
+            >
               描述
             </label>
             <textarea

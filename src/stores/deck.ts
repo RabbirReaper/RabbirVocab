@@ -40,10 +40,10 @@ export const useDeckStore = defineStore('deck', () => {
         reviewsPerDay: 100,
         easyMultiplier: 2.5,
         hardMultiplier: 1.2,
-        lapseSteps: [10]
+        lapseSteps: [10],
       },
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '2',
@@ -59,10 +59,10 @@ export const useDeckStore = defineStore('deck', () => {
         reviewsPerDay: 150,
         easyMultiplier: 2.5,
         hardMultiplier: 1.2,
-        lapseSteps: [10]
+        lapseSteps: [10],
       },
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '3',
@@ -78,11 +78,11 @@ export const useDeckStore = defineStore('deck', () => {
         reviewsPerDay: 80,
         easyMultiplier: 2.5,
         hardMultiplier: 1.2,
-        lapseSteps: [10]
+        lapseSteps: [10],
       },
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    },
   ])
 
   const currentDeck = ref<Deck | null>(null)
@@ -94,7 +94,7 @@ export const useDeckStore = defineStore('deck', () => {
 
   // 動作
   function getDeckById(id: string): Deck | undefined {
-    return decks.value.find(deck => deck.id === id)
+    return decks.value.find((deck) => deck.id === id)
   }
 
   function setCurrentDeck(id: string) {
@@ -116,28 +116,28 @@ export const useDeckStore = defineStore('deck', () => {
         reviewsPerDay: 100,
         easyMultiplier: 2.5,
         hardMultiplier: 1.2,
-        lapseSteps: [10]
+        lapseSteps: [10],
       },
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }
     decks.value.push(newDeck)
     return newDeck
   }
 
   function updateDeck(id: string, updates: Partial<Omit<Deck, 'id' | 'createdAt'>>) {
-    const index = decks.value.findIndex(deck => deck.id === id)
+    const index = decks.value.findIndex((deck) => deck.id === id)
     if (index !== -1) {
       decks.value[index] = {
         ...decks.value[index],
         ...updates,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       } as Deck
     }
   }
 
   function deleteDeck(id: string) {
-    const index = decks.value.findIndex(deck => deck.id === id)
+    const index = decks.value.findIndex((deck) => deck.id === id)
     if (index !== -1) {
       decks.value.splice(index, 1)
     }
@@ -153,6 +153,6 @@ export const useDeckStore = defineStore('deck', () => {
     setCurrentDeck,
     createDeck,
     updateDeck,
-    deleteDeck
+    deleteDeck,
   }
 })

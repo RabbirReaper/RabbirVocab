@@ -20,9 +20,7 @@
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-secondary-color mb-1">
-              使用者名稱
-            </label>
+            <label class="block text-sm font-medium text-secondary-color mb-1"> 使用者名稱 </label>
             <input
               type="text"
               :value="authStore.currentUser?.username"
@@ -32,9 +30,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-secondary-color mb-1">
-              顯示名稱
-            </label>
+            <label class="block text-sm font-medium text-secondary-color mb-1"> 顯示名稱 </label>
             <input
               type="text"
               :value="authStore.currentUser?.displayName"
@@ -43,9 +39,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-secondary-color mb-1">
-              電子郵件
-            </label>
+            <label class="block text-sm font-medium text-secondary-color mb-1"> 電子郵件 </label>
             <input
               type="email"
               :value="authStore.currentUser?.email"
@@ -54,9 +48,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-secondary-color mb-1">
-              語言偏好
-            </label>
+            <label class="block text-sm font-medium text-secondary-color mb-1"> 語言偏好 </label>
             <select
               class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             >
@@ -78,9 +70,7 @@
       <h2 class="text-xl font-bold text-primary-color mb-4">預設學習設定</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-secondary-color mb-1">
-            每日新卡片數
-          </label>
+          <label class="block text-sm font-medium text-secondary-color mb-1"> 每日新卡片數 </label>
           <input
             type="number"
             value="20"
@@ -106,9 +96,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-secondary-color mb-1">
-            Easy 倍數
-          </label>
+          <label class="block text-sm font-medium text-secondary-color mb-1"> Easy 倍數 </label>
           <input
             type="number"
             value="2.5"
@@ -120,9 +108,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-secondary-color mb-1">
-            Hard 倍數
-          </label>
+          <label class="block text-sm font-medium text-secondary-color mb-1"> Hard 倍數 </label>
           <input
             type="number"
             value="1.2"
@@ -171,9 +157,7 @@
           <p class="text-sm text-secondary-color mb-3">
             刪除帳號後，所有數據將永久消失且無法復原。
           </p>
-          <button class="btn bg-red-500 hover:bg-red-600 text-white border-0">
-            刪除帳號
-          </button>
+          <button class="btn bg-red-500 hover:bg-red-600 text-white border-0">刪除帳號</button>
         </div>
       </div>
     </div>
