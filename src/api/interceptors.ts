@@ -12,7 +12,7 @@ export function setupInterceptors(client: AxiosInstance) {
       }
       return config
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   )
 
   // 響應攔截器
@@ -25,8 +25,8 @@ export function setupInterceptors(client: AxiosInstance) {
       if (error.response) {
         const status = error.response.status
         // 直接使用後端返回的錯誤訊息
-        const message = error.response.data?.error?.message || '請求失敗'
-
+        const message = error.response.data.message || '請求失敗'
+        // console.log('API Response Error:', status, error.response)
         // 401: 未授權，清除登入狀態並重定向
         if (status === 401) {
           const authStore = useAuthStore()
@@ -55,6 +55,6 @@ export function setupInterceptors(client: AxiosInstance) {
           originalError: error,
         })
       }
-    }
+    },
   )
 }

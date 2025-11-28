@@ -6,6 +6,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface ApiErrorResponse {
+  message: string
   error: {
     message: string
   }
