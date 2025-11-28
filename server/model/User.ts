@@ -24,16 +24,6 @@ const userSchema = new Schema<IUser>(
       minlength: 6,
     },
 
-    // 個人資料
-    displayName: {
-      type: String,
-      trim: true,
-    },
-    avatar: {
-      type: String,
-      default: null,
-    },
-
     // 統計資訊
     stats: {
       totalCards: {

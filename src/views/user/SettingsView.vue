@@ -6,34 +6,12 @@
     <div class="card">
       <h2 class="text-xl font-bold text-primary-color mb-4">個人資料</h2>
       <div class="space-y-4">
-        <div class="flex items-center space-x-6">
-          <img
-            :src="authStore.currentUser?.avatar"
-            :alt="authStore.currentUser?.displayName"
-            class="w-20 h-20 rounded-full"
-          />
-          <div>
-            <button class="btn btn-secondary btn-sm">更換頭像</button>
-            <p class="text-xs text-tertiary-color mt-1">建議尺寸：200x200px</p>
-          </div>
-        </div>
-
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-secondary-color mb-1"> 使用者名稱 </label>
             <input
               type="text"
               :value="authStore.currentUser?.username"
-              disabled
-              class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-tertiary-color"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-secondary-color mb-1"> 顯示名稱 </label>
-            <input
-              type="text"
-              :value="authStore.currentUser?.displayName"
               class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
             />
           </div>
@@ -43,7 +21,8 @@
             <input
               type="email"
               :value="authStore.currentUser?.email"
-              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-primary-color"
+              disabled
+              class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-tertiary-color"
             />
           </div>
 

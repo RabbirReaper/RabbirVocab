@@ -33,8 +33,6 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  displayName?: string;
-  avatar?: string;
   stats: {
     totalCards: number;
     cardsLearned: number;

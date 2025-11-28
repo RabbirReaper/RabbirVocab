@@ -69,8 +69,6 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        displayName: user.displayName,
-        avatar: user.avatar,
         role: user.role,
       },
     },
@@ -123,8 +121,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        displayName: user.displayName,
-        avatar: user.avatar,
         role: user.role,
         stats: user.stats,
       },
@@ -178,8 +174,6 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        displayName: user.displayName,
-        avatar: user.avatar,
         role: user.role,
         stats: user.stats,
         subscription: user.subscription,
@@ -203,13 +197,11 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
     throw new UnauthorizedError('未登入')
   }
 
-  const { username, displayName, avatar } = req.body
+  const { username } = req.body
 
-  // 只允許更新特定欄位
+  // 只允許更新 username
   const allowedUpdates: {
     username?: string
-    displayName?: string
-    avatar?: string
   } = {}
   if (username !== undefined) {
     if (username.length < 3) {
@@ -217,8 +209,6 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
     }
     allowedUpdates.username = username
   }
-  if (displayName !== undefined) allowedUpdates.displayName = displayName
-  if (avatar !== undefined) allowedUpdates.avatar = avatar
 
   const user = await User.findByIdAndUpdate(userId, allowedUpdates, {
     new: true,
@@ -236,8 +226,6 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
         id: user._id,
         username: user.username,
         email: user.email,
-        displayName: user.displayName,
-        avatar: user.avatar,
         role: user.role,
       },
     },

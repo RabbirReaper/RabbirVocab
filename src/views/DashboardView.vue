@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-primary-color">
-        歡迎回來，{{ authStore.currentUser?.displayName }}！
+        歡迎回來，{{ authStore.currentUser?.username }}！
       </h1>
     </div>
 

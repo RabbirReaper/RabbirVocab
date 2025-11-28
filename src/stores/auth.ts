@@ -7,8 +7,6 @@ export interface User {
   id: string
   username: string
   email: string
-  displayName: string
-  avatar?: string
   role?: string
 }
 
@@ -34,8 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.user.id,
         username: response.user.username,
         email: response.user.email,
-        displayName: response.user.displayName,
-        avatar: response.user.avatar,
         role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
@@ -59,8 +55,6 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.user.id,
         username: response.user.username,
         email: response.user.email,
-        displayName: response.user.displayName,
-        avatar: response.user.avatar,
         role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))
@@ -115,8 +109,6 @@ export const useAuthStore = defineStore('auth', () => {
         id: response.user.id,
         username: response.user.username,
         email: response.user.email,
-        displayName: response.user.displayName,
-        avatar: response.user.avatar,
         role: response.user.role,
       }
       localStorage.setItem('user', JSON.stringify(user.value))

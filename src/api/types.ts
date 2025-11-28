@@ -24,8 +24,6 @@ export interface UserDto {
   id: string
   username: string
   email: string
-  displayName: string
-  avatar?: string
   role: 'user' | 'pro' | 'admin' | 'super_admin'
   stats?: {
     totalCards: number

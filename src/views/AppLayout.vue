@@ -53,13 +53,8 @@
                 @click="showUserMenu = !showUserMenu"
                 class="flex items-center space-x-2 p-2 rounded-lg bg-hover-color"
               >
-                <img
-                  :src="authStore.currentUser?.avatar"
-                  :alt="authStore.currentUser?.displayName"
-                  class="w-8 h-8 rounded-full"
-                />
                 <span class="text-sm font-medium text-secondary-color">
-                  {{ authStore.currentUser?.displayName }}
+                  {{ authStore.currentUser?.username }}
                 </span>
               </button>
 
