@@ -161,8 +161,8 @@ export interface ICard extends Document {
   createdAt: Date;
   updatedAt: Date;
 
-  // 方法（更新為支援配置參數）
-  calculateNextReview(quality: number, config?: ISRSConfig, duration?: number): void;
+  // 方法（使用 Deck 的 SRS 配置）
+  calculateNextReview(quality: number, config: Required<ISRSConfig>, duration?: number): void;
   isDue(): boolean;
   isLeech(threshold?: number): boolean;
 }

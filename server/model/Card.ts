@@ -160,10 +160,10 @@ const cardSchema = new Schema<ICard>(
 // 索引
 cardSchema.index({ user: 1 })
 
-// SM-2 改良版算法計算下次複習時間（支援配置參數）
+// SM-2 改良版算法計算下次複習時間（使用 Deck 的 SRS 配置）
 cardSchema.methods.calculateNextReview = function (
   quality: number,
-  config?: ISRSConfig,
+  config: Required<ISRSConfig>,
   duration: number = 0,
 ): void {
   // quality: 0-3
@@ -172,22 +172,7 @@ cardSchema.methods.calculateNextReview = function (
   // 2: 正確且容易
   // 3: 完美記得
 
-  // 預設配置
-  const defaultConfig: Required<ISRSConfig> = {
-    learningSteps: [15, 1440, 8640], // 15分鐘, 1天, 6天
-    graduatingInterval: 15, // 畢業間隔（天）
-    easyInterval: 60, // 簡單間隔（天）
-    relearningSteps: [20], // 重新學習階段（分鐘）
-    minimumInterval: 2, // 最短間隔（天）
-    leechThreshold: 8, // 低效卡臨界值
-    easyBonus: 1.3, // 容易加成
-    hardInterval: 1.2, // 困難間隔倍數
-    minEaseFactor: 1.3, // 最小難度係數
-    maxEaseFactor: 2.5, // 最大難度係數
-  }
-
-  // 合併使用者配置
-  const cfg = { ...defaultConfig, ...config }
+  const cfg = config
 
   const now = new Date()
   const isNewOrLearning = this.status === 'new' || this.status === 'learning'
