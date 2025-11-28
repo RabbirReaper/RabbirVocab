@@ -95,7 +95,6 @@ export interface IDeck extends Document {
     newCards: number;
     learningCards: number;
     reviewCards: number;
-    masteredCards: number;
   };
   tags: string[];
   color: string;
@@ -110,7 +109,7 @@ export interface IDeck extends Document {
 // ============================================
 // Card 相關類型
 // ============================================
-export type CardStatus = 'new' | 'learning' | 'review' | 'mastered';
+export type CardStatus = 'new' | 'learning' | 'review';
 
 // 圖片資訊
 export interface ICardImage {
@@ -136,11 +135,17 @@ export interface ICardSRS {
   lapseCount: number;           // 遺忘次數（用於低效卡檢測）
 }
 
-export interface ICardStats {
-  totalReviews: number;
-  correctCount: number;
-  wrongCount: number;
-  averageTime: number;
+// 複習歷史類型
+export type ReviewHistoryType = 'learning' | 'review' | 'relearning';
+
+// 複習歷史記錄
+export interface IReviewHistoryEntry {
+  date: Date;                    // 複習日期時間
+  type: ReviewHistoryType;       // 複習類型：學習/複習/重新學習
+  rating: number;                // 評等 (0-3)
+  interval: number;              // 與上次複習的時間間隔（秒）
+  easeFactor?: number;           // 輕鬆度（學習階段可為空，學習最後一階段會有）
+  duration: number;              // 耗時（秒）
 }
 
 export interface ICard extends Document {
@@ -161,14 +166,14 @@ export interface ICard extends Document {
   tags: Types.ObjectId[];
   status: CardStatus;
   srs: ICardSRS;
-  stats: ICardStats;
+  reviewHistory: IReviewHistoryEntry[];  // 複習歷史記錄
   user: Types.ObjectId;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 
   // 方法（更新為支援配置參數）
-  calculateNextReview(quality: number, config?: ISRSConfig): void;
+  calculateNextReview(quality: number, config?: ISRSConfig, duration?: number): void;
   isDue(): boolean;
   isLeech(threshold?: number): boolean;
 }

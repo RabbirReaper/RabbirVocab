@@ -99,10 +99,6 @@ const deckSchema = new Schema<IDeck>(
         type: Number,
         default: 0,
       },
-      masteredCards: {
-        type: Number,
-        default: 0,
-      },
     },
 
     // 標籤
@@ -151,7 +147,6 @@ deckSchema.methods.updateStats = async function (): Promise<void> {
   this.stats.newCards = 0;
   this.stats.learningCards = 0;
   this.stats.reviewCards = 0;
-  this.stats.masteredCards = 0;
 
   stats.forEach((stat) => {
     this.stats.totalCards += stat.count;
@@ -164,9 +159,6 @@ deckSchema.methods.updateStats = async function (): Promise<void> {
         break;
       case 'review':
         this.stats.reviewCards = stat.count;
-        break;
-      case 'mastered':
-        this.stats.masteredCards = stat.count;
         break;
     }
   });
