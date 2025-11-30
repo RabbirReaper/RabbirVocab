@@ -24,7 +24,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@andresaya/edge-tts": "^1.6.2",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^5.1.0",
