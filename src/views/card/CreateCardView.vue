@@ -25,31 +25,88 @@
       <!-- 2. 正面 -->
       <div class="card">
         <h2 class="text-xl font-bold text-primary-color mb-4">正面</h2>
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-secondary-color mb-2">單字 *</label>
-            <div class="flex space-x-2">
-              <input
-                v-model="formData.front"
-                type="text"
-                required
-                class="flex-1 px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="例如：apple"
-              />
+            <input
+              v-model="formData.front"
+              type="text"
+              required
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="例如：apple"
+            />
+          </div>
+
+          <!-- TTS 測試區塊 -->
+          <div
+            class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50"
+          >
+            <h3 class="text-sm font-semibold text-primary-color mb-3 flex items-center">
+              <span class="text-lg mr-2">🔊</span>
+              語音測試
+            </h3>
+
+            <!-- 語音選擇 -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-secondary-color mb-1">選擇語音</label>
+              <select
+                v-model="ttsVoice"
+                :disabled="ttsLoading"
+                class="w-full px-3 py-2 text-sm border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option v-for="voice in voices" :key="voice.value" :value="voice.value">
+                  {{ voice.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- 按鈕區 -->
+            <div class="flex gap-2 mb-3">
               <button
                 type="button"
-                @click="playTTS"
-                :disabled="isTTSPlaying"
-                class="btn btn-secondary px-6"
-                :class="{ 'opacity-50 cursor-not-allowed': isTTSPlaying }"
-                title="播放發音"
+                @click="handleTTS"
+                :disabled="ttsLoading || !formData.front"
+                class="btn btn-primary flex-1"
+                :class="{ 'opacity-50 cursor-not-allowed': ttsLoading || !formData.front }"
               >
-                {{ isTTSPlaying ? '🔊 播放中...' : '🔊 播放' }}
+                <span v-if="ttsLoading" class="inline-block animate-spin mr-2">⏳</span>
+                <span v-else class="mr-2">▶</span>
+                {{ ttsLoading ? '生成中...' : '生成語音' }}
+              </button>
+              <button
+                type="button"
+                @click="clearAudio"
+                :disabled="ttsLoading || !audioUrl"
+                class="btn btn-secondary px-4"
+                :class="{ 'opacity-50 cursor-not-allowed': ttsLoading || !audioUrl }"
+              >
+                <span>✖</span>
               </button>
             </div>
-            <p class="text-xs text-tertiary-color mt-1">
-              <!-- TODO: 未來支援音檔上傳（Cloudflare R2） -->
-              優先使用 Edge TTS（高品質），備援使用 Web Speech API，未來支援自訂音檔上傳
+
+            <!-- 訊息顯示 -->
+            <div
+              v-if="ttsMessage"
+              class="mb-3 px-3 py-2 rounded text-sm"
+              :class="{
+                'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300': ttsLoading,
+                'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300':
+                  !ttsLoading && ttsMessage.includes('成功'),
+                'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300':
+                  ttsMessage.includes('錯誤') || ttsMessage.includes('失敗'),
+              }"
+            >
+              {{ ttsMessage }}
+            </div>
+
+            <!-- 音訊播放器 -->
+            <div v-if="audioUrl" class="mt-3">
+              <label class="block text-xs font-medium text-secondary-color mb-1">播放音訊</label>
+              <audio id="ttsAudio" :src="audioUrl" controls class="w-full"></audio>
+            </div>
+
+            <p class="text-xs text-tertiary-color mt-3">
+              優先使用 Edge TTS（高品質），未來支援自訂音檔上傳（Cloudflare R2）
             </p>
           </div>
         </div>
@@ -243,18 +300,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore } from '@/stores/card'
-import { useTTS } from '@/composables/useTTS'
+import { EdgeTTS } from 'edge-tts-universal/browser'
 import type { CreateCardRequest } from '@/api/types'
 
 const router = useRouter()
 const route = useRoute()
 const deckStore = useDeckStore()
 const cardStore = useCardStore()
-const { playTTS: playTTSAudio, isPlaying: isTTSPlaying } = useTTS()
 
 // 表單資料
 const formData = ref<CreateCardRequest>({
@@ -278,27 +334,97 @@ const newTagName = ref('')
 const availableTags = ref(['基礎', '進階', '商務', '旅遊'])
 const selectedTags = ref<string[]>([])
 
+// ===== TTS 測試功能 =====
+const ttsVoice = ref('en-US-EmmaMultilingualNeural') // 語音選擇
+const ttsLoading = ref(false) // 載入狀態
+const ttsMessage = ref('') // 訊息顯示
+const audioUrl = ref('') // 音訊 URL
+
+// 可用的語音選項
+const voices = [
+  { value: 'en-US-EmmaMultilingualNeural', label: 'English (US) - Emma' },
+  { value: 'en-GB-SoniaNeural', label: 'English (UK) - Sonia' },
+  { value: 'zh-CN-XiaoxiaoNeural', label: '中文 (簡體) - 曉曉' },
+  { value: 'zh-TW-HsiaoChenNeural', label: '中文 (台灣) - 曉臻' },
+  { value: 'ja-JP-NanamiNeural', label: '日本語 - Nanami' },
+]
+
+// 執行 TTS - 修復版本，使用 edge-tts-universal
+const handleTTS = async () => {
+  if (!formData.value.front.trim()) {
+    ttsMessage.value = '請輸入單字！'
+    return
+  }
+
+  ttsLoading.value = true
+  ttsMessage.value = '正在生成語音...'
+
+  try {
+    // 清除舊的音訊 URL
+    if (audioUrl.value) {
+      URL.revokeObjectURL(audioUrl.value)
+      audioUrl.value = ''
+    }
+
+    // 建立 TTS 實例（使用 edge-tts-universal/browser）
+    const tts = new EdgeTTS(formData.value.front, ttsVoice.value)
+
+    // 合成語音
+    const result = await tts.synthesize()
+
+    // 檢查是否有音訊數據
+    if (!result || !result.audio) {
+      throw new Error('未收到音訊數據')
+    }
+
+    // 建立 Blob 和 URL
+    const blob = new Blob([result.audio], { type: 'audio/mpeg' })
+    audioUrl.value = URL.createObjectURL(blob)
+
+    ttsMessage.value = '語音生成成功！'
+
+    // 自動播放
+    nextTick(() => {
+      const audioElement = document.getElementById('ttsAudio') as HTMLAudioElement
+      if (audioElement) {
+        audioElement.play().catch((err) => {
+          console.warn('自動播放失敗:', err)
+          ttsMessage.value = '語音生成成功！請手動播放'
+        })
+      }
+    })
+  } catch (error) {
+    console.error('TTS Error:', error)
+    const errorMessage = error instanceof Error ? error.message : '未知錯誤'
+
+    // 提供更友善的錯誤訊息
+    if (errorMessage.includes('WebSocket') || errorMessage.includes('network')) {
+      ttsMessage.value = '無法連接到 Microsoft Edge TTS 服務，請檢查網路連線後再試。'
+    } else if (errorMessage.includes('timeout')) {
+      ttsMessage.value = '連線逾時，請稍後再試。'
+    } else {
+      ttsMessage.value = `錯誤: ${errorMessage}`
+    }
+  } finally {
+    ttsLoading.value = false
+  }
+}
+
+// 清除音訊
+const clearAudio = () => {
+  if (audioUrl.value) {
+    URL.revokeObjectURL(audioUrl.value)
+    audioUrl.value = ''
+  }
+  ttsMessage.value = ''
+}
+
 // 載入卡組列表
 onMounted(async () => {
   if (deckStore.decks.length === 0) {
     await deckStore.fetchDecks()
   }
 })
-
-// TTS 播放 - 使用 composable（自動降級：Edge TTS → Web Speech API）
-const playTTS = async () => {
-  if (!formData.value.front) {
-    alert('請先輸入單字')
-    return
-  }
-
-  try {
-    await playTTSAudio(formData.value.front, 'en-US')
-  } catch (err) {
-    console.error('TTS 播放失敗:', err)
-    alert(err instanceof Error ? err.message : '播放失敗，請稍後再試')
-  }
-}
 
 // AI 生成（佔位功能）
 const generateWithAI = () => {
