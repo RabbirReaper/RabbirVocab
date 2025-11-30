@@ -8,6 +8,14 @@ import { createSessionMiddleware } from './config/session.js'
 import { connectDatabase } from './config/database.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
+// 預先載入所有模型以註冊 Mongoose schemas
+import './model/User.js'
+import './model/Deck.js'
+import './model/Card.js'
+import './model/Tag.js'
+import './model/Review.js'
+import './model/StudySession.js'
+
 import apiRoutes from './routes/index.js' // 未來可以整合所有 API 路由
 
 // ES Module 環境下獲取 __dirname

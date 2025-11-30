@@ -154,9 +154,7 @@ export const getAllCardsInDeck = asyncHandler(async (req: Request, res: Response
   const cards = await Card.find({
     deck: deckId,
     isDeleted: false,
-  })
-    .populate('tags')
-    .sort({ createdAt: -1 })
+  }).sort({ createdAt: -1 })
 
   res.status(200).json({
     message: 'success',
