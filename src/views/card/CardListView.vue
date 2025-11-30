@@ -36,7 +36,7 @@
       <div class="card">
         <p class="text-sm text-secondary-color">已掌握</p>
         <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">
-          {{ filteredCards.filter((c) => c.status === 'mastered').length }}
+          {{ filteredCards.filter((c) => c.interval >= 21).length }}
         </p>
       </div>
     </div>
@@ -56,7 +56,7 @@
                 {{ getStatusText(card.status) }}
               </span>
             </div>
-            <div class="text-sm text-secondary-color">{{ card.back }}</div>
+            <div class="text-sm text-secondary-color">{{ card.back.word }}</div>
             <div class="flex items-center space-x-4 mt-2">
               <span class="text-xs text-tertiary-color"> 卡組: {{ getDeckName(card.deck) }} </span>
               <span class="text-xs text-tertiary-color"> 間隔: {{ card.interval }}天 </span>

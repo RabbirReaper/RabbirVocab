@@ -94,7 +94,29 @@
         <RouterLink to="/app/decks" class="btn btn-primary btn-sm">查看全部</RouterLink>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-4">
+      <!-- Loading 狀態 -->
+      <div v-if="deckStore.loading" class="grid md:grid-cols-3 gap-4">
+        <div v-for="i in 3" :key="i" class="card animate-pulse">
+          <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+          <div class="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Error 狀態 -->
+      <div v-else-if="deckStore.error" class="card bg-red-50 dark:bg-red-900/20">
+        <p class="text-red-600 dark:text-red-400">{{ deckStore.error }}</p>
+        <button @click="deckStore.fetchDecks()" class="btn btn-primary mt-4">重試</button>
+      </div>
+
+      <!-- 空狀態 -->
+      <div v-else-if="deckStore.decks.length === 0" class="text-center py-12">
+        <p class="text-secondary-color mb-4">還沒有任何卡組</p>
+        <RouterLink to="/app/decks" class="btn btn-primary">建立第一個卡組</RouterLink>
+      </div>
+
+      <!-- 卡組列表 -->
+      <div v-else class="grid md:grid-cols-3 gap-4">
         <RouterLink
           v-for="deck in deckStore.decks"
           :key="deck.id"
@@ -133,10 +155,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useDeckStore } from '@/stores/deck'
 
 const authStore = useAuthStore()
 const deckStore = useDeckStore()
+
+onMounted(async () => {
+  await deckStore.fetchDecks()
+})
 </script>

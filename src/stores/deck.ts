@@ -1,5 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { api } from '@/api/modules'
+import type { DeckDto, UpdateDeckRequest, ApiError } from '@/api/types'
 
 export interface SRSConfig {
   newCardsPerDay: number
@@ -7,6 +9,13 @@ export interface SRSConfig {
   easyMultiplier: number
   hardMultiplier: number
   lapseSteps: number[]
+}
+
+export interface DeckStats {
+  cardCount: number
+  newCount: number
+  reviewCount: number
+  masteredCount: number
 }
 
 export interface Deck {
@@ -25,74 +34,134 @@ export interface Deck {
 
 export const useDeckStore = defineStore('deck', () => {
   // 狀態
-  const decks = ref<Deck[]>([
-    {
-      id: '1',
-      name: '日常英語單字',
-      description: '常用的日常生活英語單字',
-      user: '1',
-      cardCount: 150,
-      newCount: 20,
-      reviewCount: 45,
-      masteredCount: 85,
-      srsConfig: {
-        newCardsPerDay: 20,
-        reviewsPerDay: 100,
-        easyMultiplier: 2.5,
-        hardMultiplier: 1.2,
-        lapseSteps: [10],
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      name: 'TOEFL 核心詞彙',
-      description: 'TOEFL 考試必備詞彙',
-      user: '1',
-      cardCount: 300,
-      newCount: 50,
-      reviewCount: 120,
-      masteredCount: 130,
-      srsConfig: {
-        newCardsPerDay: 30,
-        reviewsPerDay: 150,
-        easyMultiplier: 2.5,
-        hardMultiplier: 1.2,
-        lapseSteps: [10],
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: '3',
-      name: '商業英文',
-      description: '商務場合常用英文詞彙與句型',
-      user: '1',
-      cardCount: 80,
-      newCount: 10,
-      reviewCount: 25,
-      masteredCount: 45,
-      srsConfig: {
-        newCardsPerDay: 15,
-        reviewsPerDay: 80,
-        easyMultiplier: 2.5,
-        hardMultiplier: 1.2,
-        lapseSteps: [10],
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ])
-
+  const decks = ref<Deck[]>([])
   const currentDeck = ref<Deck | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   // 計算屬性
   const totalDecks = computed(() => decks.value.length)
   const totalCards = computed(() => decks.value.reduce((sum, deck) => sum + deck.cardCount, 0))
   const totalReviews = computed(() => decks.value.reduce((sum, deck) => sum + deck.reviewCount, 0))
 
-  // 動作
+  // 轉換函數：將 API 返回的 DeckDto 轉換為前端 Deck
+  function transformDeckDto(dto: DeckDto, stats?: DeckStats): Deck {
+    return {
+      id: dto._id,
+      name: dto.name,
+      description: dto.description,
+      user: dto.user,
+      cardCount: stats?.cardCount || 0,
+      newCount: stats?.newCount || 0,
+      reviewCount: stats?.reviewCount || 0,
+      masteredCount: stats?.masteredCount || 0,
+      srsConfig: {
+        newCardsPerDay: dto.settings.newCardsPerDay,
+        reviewsPerDay: dto.settings.reviewCardsPerDay,
+        easyMultiplier: dto.settings.srsConfig.easyBonus,
+        hardMultiplier: dto.settings.srsConfig.hardInterval,
+        lapseSteps: dto.settings.srsConfig.relearningSteps,
+      },
+      createdAt: dto.createdAt,
+      updatedAt: dto.updatedAt,
+    }
+  }
+
+  // API Actions
+  async function fetchDecks() {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.deck.getDecks()
+      decks.value = response.decks.map((dto) => transformDeckDto(dto))
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '獲取卡組失敗'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchDeck(id: string) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.deck.getDeck(id)
+      const deck = transformDeckDto(response.deck)
+      const index = decks.value.findIndex((d) => d.id === id)
+      if (index !== -1) {
+        decks.value[index] = deck
+      } else {
+        decks.value.push(deck)
+      }
+      currentDeck.value = deck
+      return deck
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '獲取卡組失敗'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function createDeck(name: string, description?: string) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.deck.createDeck({ name, description })
+      const newDeck = transformDeckDto(response.deck)
+      decks.value.push(newDeck)
+      return newDeck
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '建立卡組失敗'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function updateDeck(id: string, updates: { name?: string; description?: string }) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.deck.updateDeck(id, updates as UpdateDeckRequest)
+      const updatedDeck = transformDeckDto(response.deck)
+      const index = decks.value.findIndex((d) => d.id === id)
+      if (index !== -1) {
+        decks.value[index] = updatedDeck
+      }
+      return updatedDeck
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '更新卡組失敗'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteDeck(id: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await api.deck.deleteDeck(id)
+      const index = decks.value.findIndex((d) => d.id === id)
+      if (index !== -1) {
+        decks.value.splice(index, 1)
+      }
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '刪除卡組失敗'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 本地 Actions
   function getDeckById(id: string): Deck | undefined {
     return decks.value.find((deck) => deck.id === id)
   }
@@ -101,58 +170,31 @@ export const useDeckStore = defineStore('deck', () => {
     currentDeck.value = getDeckById(id) || null
   }
 
-  function createDeck(name: string, description: string) {
-    const newDeck: Deck = {
-      id: String(Date.now()),
-      name,
-      description,
-      user: '1',
-      cardCount: 0,
-      newCount: 0,
-      reviewCount: 0,
-      masteredCount: 0,
-      srsConfig: {
-        newCardsPerDay: 20,
-        reviewsPerDay: 100,
-        easyMultiplier: 2.5,
-        hardMultiplier: 1.2,
-        lapseSteps: [10],
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-    decks.value.push(newDeck)
-    return newDeck
-  }
-
-  function updateDeck(id: string, updates: Partial<Omit<Deck, 'id' | 'createdAt'>>) {
-    const index = decks.value.findIndex((deck) => deck.id === id)
-    if (index !== -1) {
-      decks.value[index] = {
-        ...decks.value[index],
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      } as Deck
-    }
-  }
-
-  function deleteDeck(id: string) {
-    const index = decks.value.findIndex((deck) => deck.id === id)
-    if (index !== -1) {
-      decks.value.splice(index, 1)
+  function updateDeckStats(deckId: string, stats: DeckStats) {
+    const deck = decks.value.find((d) => d.id === deckId)
+    if (deck) {
+      deck.cardCount = stats.cardCount
+      deck.newCount = stats.newCount
+      deck.reviewCount = stats.reviewCount
+      deck.masteredCount = stats.masteredCount
     }
   }
 
   return {
     decks,
     currentDeck,
+    loading,
+    error,
     totalDecks,
     totalCards,
     totalReviews,
     getDeckById,
     setCurrentDeck,
+    fetchDecks,
+    fetchDeck,
     createDeck,
     updateDeck,
     deleteDeck,
+    updateDeckStats,
   }
 })
