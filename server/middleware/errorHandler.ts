@@ -82,6 +82,12 @@ const handleValidationError = (err: mongoose.Error.ValidationError): AppError =>
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  // 如果 response 已經發送，則無法再發送錯誤回應
+  if (res.headersSent) {
+    console.error('❌ ERROR (headers already sent):', err)
+    return
+  }
+
   let error: AppError = {
     ...(err as AppError),
     name: err.name,

@@ -58,9 +58,17 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     password,
   })
 
-  // 設置 session
+  // 設置 session 並確保保存成功
   req.session.userId = user._id.toString()
   req.session.role = user.role
+
+  // 等待 session 保存完成
+  await new Promise<void>((resolve, reject) => {
+    req.session.save((err) => {
+      if (err) reject(err)
+      else resolve()
+    })
+  })
 
   res.status(201).json({
     message: 'success',
@@ -110,9 +118,17 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   user.lastLogin = new Date()
   await user.save()
 
-  // 設置 session
+  // 設置 session 並確保保存成功
   req.session.userId = user._id.toString()
   req.session.role = user.role
+
+  // 等待 session 保存完成
+  await new Promise<void>((resolve, reject) => {
+    req.session.save((err) => {
+      if (err) reject(err)
+      else resolve()
+    })
+  })
 
   res.status(200).json({
     message: 'success',
