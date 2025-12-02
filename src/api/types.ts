@@ -184,3 +184,38 @@ export interface GetCardsResponse {
 export interface GetCardResponse {
   card: CardDto
 }
+
+// ==================== AI 相關類型 ====================
+
+export interface GenerateContentRequest {
+  model: string
+  input: string
+  stream: boolean
+}
+
+export interface GenerateContentResponse {
+  id: string
+  object: string
+  created_at: number
+  status: string
+  model: string
+  output: Array<{
+    id: string
+    type: string
+    role: string
+    status: string
+    content: Array<{
+      type: string
+      text: string
+    }>
+  }>
+  usage: {
+    input_tokens: number
+    output_tokens: number
+    total_tokens: number
+    output_tokens_details: {
+      reasoning_tokens: number
+    }
+  }
+  previous_response_id: string | null
+}

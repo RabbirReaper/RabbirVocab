@@ -134,16 +134,44 @@
               <label class="block text-sm font-medium text-secondary-color">
                 內容說明（Markdown）*
               </label>
-              <button type="button" @click="generateWithAI" class="btn btn-sm btn-secondary">
-                ✨ AI 生成
+              <button
+                type="button"
+                @click="generateWithAI"
+                :disabled="aiLoading || !formData.front"
+                class="btn btn-sm btn-secondary"
+                :class="{ 'opacity-50 cursor-not-allowed': aiLoading || !formData.front }"
+              >
+                <span v-if="aiLoading" class="inline-block animate-spin mr-1">⏳</span>
+                <span v-else class="mr-1">✨</span>
+                {{ aiLoading ? 'AI 生成中...' : 'AI 生成' }}
               </button>
             </div>
+
+            <!-- AI 訊息顯示 -->
+            <div
+              v-if="aiMessage"
+              class="mb-2 px-3 py-2 rounded text-sm"
+              :class="{
+                'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300': aiLoading,
+                'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300':
+                  !aiLoading && aiMessage.includes('成功'),
+                'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300':
+                  aiMessage.includes('失敗') || aiMessage.includes('錯誤'),
+                'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300':
+                  aiMessage.includes('請先'),
+              }"
+            >
+              {{ aiMessage }}
+            </div>
+
             <textarea
+              ref="contentTextarea"
               v-model="formData.back.content"
-              rows="8"
+              @input="autoResize"
               required
-              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-sm resize-none overflow-hidden"
               placeholder="# 例句&#10;- An apple a day keeps the doctor away.&#10;&#10;# 詞性&#10;n. 名詞&#10;&#10;# 補充&#10;複數形式：apples"
+              rows="3"
             ></textarea>
             <p class="text-xs text-tertiary-color mt-1">
               支援 Markdown 格式，製作階段不需要渲染，背誦時才會顯示格式化內容
@@ -306,6 +334,7 @@ import { useDeckStore } from '@/stores/deck'
 import { useCardStore } from '@/stores/card'
 import { EdgeTTS } from 'edge-tts-universal/browser'
 import type { CreateCardRequest } from '@/api/types'
+import { aiApi } from '@/api/modules'
 
 const router = useRouter()
 const route = useRoute()
@@ -424,15 +453,59 @@ onMounted(async () => {
   if (deckStore.decks.length === 0) {
     await deckStore.fetchDecks()
   }
+  // 初始化 textarea 高度
+  await nextTick()
+  autoResize()
 })
 
-// AI 生成（佔位功能）
-const generateWithAI = () => {
-  alert('AI 生成功能開發中，敬請期待！')
-  // TODO: 未來整合 AI API
-  // 預期功能：根據 formData.value.front 調用 AI API 生成背面內容
-  // const response = await api.ai.generateCardContent({ word: formData.value.front })
-  // formData.value.back.content = response.content
+// AI 生成狀態
+const aiLoading = ref(false)
+const aiMessage = ref('')
+
+// Textarea 自動調整高度
+const contentTextarea = ref<HTMLTextAreaElement | null>(null)
+
+const autoResize = () => {
+  if (contentTextarea.value) {
+    contentTextarea.value.style.height = 'auto'
+    contentTextarea.value.style.height = contentTextarea.value.scrollHeight + 'px'
+  }
+}
+
+// AI 生成功能
+const generateWithAI = async () => {
+  if (!formData.value.front.trim()) {
+    aiMessage.value = '請先輸入單字！'
+    setTimeout(() => {
+      aiMessage.value = ''
+    }, 3000)
+    return
+  }
+
+  aiLoading.value = true
+  aiMessage.value = '正在使用 AI 生成內容...'
+
+  try {
+    const content = await aiApi.generateContent(formData.value.front)
+    formData.value.back.content = content
+    aiMessage.value = 'AI 生成成功！'
+
+    // 自動調整 textarea 高度
+    await nextTick()
+    autoResize()
+
+    setTimeout(() => {
+      aiMessage.value = ''
+    }, 3000)
+  } catch (error) {
+    console.error('AI 生成失敗:', error)
+    aiMessage.value = error instanceof Error ? error.message : 'AI 生成失敗，請稍後再試'
+    setTimeout(() => {
+      aiMessage.value = ''
+    }, 5000)
+  } finally {
+    aiLoading.value = false
+  }
 }
 
 // 標籤管理
