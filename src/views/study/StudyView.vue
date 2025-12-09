@@ -52,9 +52,20 @@
               <div class="text-sm text-gray-500 dark:text-gray-500 uppercase tracking-wide mb-2">
                 答案
               </div>
-              <div class="text-2xl font-semibold text-primary-600 dark:text-primary-400">
-                {{ currentCard.back }}
-              </div>
+
+              <!-- 圖片顯示（如果有） -->
+              <img
+                v-if="currentCard.back.image?.url"
+                :src="currentCard.back.image.url"
+                :alt="currentCard.back.image.alt || '卡片圖片'"
+                class="max-w-full h-auto rounded-lg shadow-md mb-4 mx-auto"
+              />
+
+              <!-- Markdown 內容渲染 -->
+              <div
+                class="prose prose-lg dark:prose-invert max-w-none text-left"
+                v-html="renderedContent"
+              ></div>
             </div>
           </div>
         </div>
@@ -117,10 +128,19 @@ import { ref, computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore, type Card } from '@/stores/card'
+import MarkdownIt from 'markdown-it'
 
 const route = useRoute()
 const deckStore = useDeckStore()
 const cardStore = useCardStore()
+
+// 初始化 markdown-it
+const md = new MarkdownIt({
+  html: false, // 禁用 HTML 標籤（安全考量）
+  breaks: true, // 轉換換行符為 <br>
+  linkify: true, // 自動轉換 URL 為連結
+  typographer: true, // 啟用智能引號和其他排版優化
+})
 
 const deckId = route.params.deckId as string
 const deck = computed(() => deckStore.getDeckById(deckId))
@@ -135,6 +155,12 @@ const totalDueCards = computed(() => dueCards.value.length)
 const progressPercentage = computed(() => {
   if (totalDueCards.value === 0) return 100
   return Math.round((studiedCount.value / totalDueCards.value) * 100)
+})
+
+// 渲染 Markdown 的計算屬性
+const renderedContent = computed(() => {
+  if (!currentCard.value?.back?.content) return ''
+  return md.render(currentCard.value.back.content)
 })
 
 const loadDueCards = () => {
