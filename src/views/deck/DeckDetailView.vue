@@ -90,7 +90,6 @@
           >
             <div class="flex-1">
               <div class="font-semibold text-primary-color">{{ card.front }}</div>
-              <div class="text-sm text-secondary-color line-clamp-1">{{ card.back.content }}</div>
             </div>
             <div class="flex items-center space-x-4">
               <span :class="getStatusBadgeClass(card.status)" class="badge">
