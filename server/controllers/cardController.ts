@@ -27,8 +27,8 @@ export const createCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ValidationError('正面內容為必填項目')
   }
 
-  if (!back?.word || back.word.trim() === '') {
-    throw new ValidationError('背面單字為必填項目')
+  if (!back?.content || back.content.trim() === '') {
+    throw new ValidationError('背面內容為必填項目')
   }
 
   // 檢查 Deck 是否存在且用戶有權限
@@ -50,9 +50,8 @@ export const createCard = asyncHandler(async (req: Request, res: Response) => {
     deck: deckId,
     front: front.trim(),
     back: {
-      word: back.word.trim(),
       image: back.image || {},
-      content: back.content?.trim() || '',
+      content: back.content.trim(),
     },
     audio: audio || {},
     tags: tags || [],
@@ -241,16 +240,15 @@ export const updateCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ValidationError('正面內容為必填項目')
   }
 
-  if (!back?.word || back.word.trim() === '') {
-    throw new ValidationError('背面單字為必填項目')
+  if (!back?.content || back.content.trim() === '') {
+    throw new ValidationError('背面內容為必填項目')
   }
 
   // 完整替換所有欄位
   card.front = front.trim()
   card.back = {
-    word: back.word.trim(),
     image: back.image || {},
-    content: back.content?.trim() || '',
+    content: back.content.trim(),
   }
   card.audio = audio || {}
   card.tags = tags || []

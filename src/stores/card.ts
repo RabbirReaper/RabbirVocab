@@ -19,9 +19,8 @@ export interface Card {
   deck: string
   front: string
   back: {
-    word: string
     image?: CardImage
-    content?: string
+    content: string
   }
   audio?: CardAudio
   tags: string[] // TODO: 未來改為 Tag ObjectId 陣列

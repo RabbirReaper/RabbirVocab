@@ -116,19 +116,7 @@
       <div class="card">
         <h2 class="text-xl font-bold text-primary-color mb-4">背面</h2>
         <div class="space-y-4">
-          <!-- 3.1 單字 -->
-          <div>
-            <label class="block text-sm font-medium text-secondary-color mb-2">單字 *</label>
-            <input
-              v-model="formData.back.word"
-              type="text"
-              required
-              class="w-full px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder="例如：蘋果"
-            />
-          </div>
-
-          <!-- 3.2 內容說明 -->
+          <!-- 3.1 內容說明 -->
           <div>
             <div class="flex justify-between items-center mb-2">
               <label class="block text-sm font-medium text-secondary-color">
@@ -346,7 +334,6 @@ const formData = ref<CreateCardRequest>({
   deck: (route.query.deck as string) || '',
   front: '',
   back: {
-    word: '',
     content: '',
   },
   tags: [],

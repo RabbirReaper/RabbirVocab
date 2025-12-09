@@ -56,7 +56,7 @@
                 {{ getStatusText(card.status) }}
               </span>
             </div>
-            <div class="text-sm text-secondary-color">{{ card.back.word }}</div>
+            <div class="text-sm text-secondary-color line-clamp-1">{{ card.back.content }}</div>
             <div class="flex items-center space-x-4 mt-2">
               <span class="text-xs text-tertiary-color"> 卡組: {{ getDeckName(card.deck) }} </span>
               <span class="text-xs text-tertiary-color"> 間隔: {{ card.interval }}天 </span>

@@ -144,7 +144,6 @@ export interface ICard extends Document {
   // 卡片內容（使用 markdown）
   front: string;              // 正面：單字
   back: {
-    word: string;             // 單字
     image?: ICardImage;       // 圖片
     content: string;          // 內容說明（markdown）
   };

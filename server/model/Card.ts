@@ -19,11 +19,6 @@ const cardSchema = new Schema<ICard>(
 
     // 背面內容
     back: {
-      word: {
-        type: String,
-        required: true,
-        trim: true,
-      },
       image: {
         url: { type: String },
         key: { type: String },

@@ -121,9 +121,8 @@ export interface CardAudio {
 }
 
 export interface CardBack {
-  word: string
   image?: CardImage
-  content?: string
+  content: string
 }
 
 export interface CardSRS {
