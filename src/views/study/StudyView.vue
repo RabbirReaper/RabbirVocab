@@ -206,3 +206,36 @@ onMounted(() => {
   loadDueCards()
 })
 </script>
+
+<style scoped>
+.prose :deep(h3 + ul),
+.prose :deep(h3 + ol) {
+  margin-top: 1rem;
+}
+
+.prose :deep(ul + h3),
+.prose :deep(ol + h3) {
+  margin-top: 1.5rem;
+}
+
+.prose :deep(ul li),
+.prose :deep(ol li) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 確保第一個列表項也有上方間距 */
+.prose :deep(ul li:first-child),
+.prose :deep(ol li:first-child) {
+  margin-top: 0.5rem;
+}
+
+/* 巢狀列表的間距調整 */
+.prose :deep(ul ul),
+.prose :deep(ul ol),
+.prose :deep(ol ul),
+.prose :deep(ol ol) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+</style>
