@@ -169,15 +169,41 @@
           <!-- 3.3 圖片 -->
           <div>
             <label class="block text-sm font-medium text-secondary-color mb-2">圖片</label>
+
+            <!-- 上傳區域 -->
             <div
+              v-if="!imagePreview"
               class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center"
             >
-              <div class="text-4xl mb-2">🖼️</div>
-              <p class="text-secondary-color">圖片上傳功能開發中</p>
+              <input
+                type="file"
+                ref="imageInput"
+                @change="handleImageSelect"
+                accept="image/jpeg,image/png,image/webp"
+                class="hidden"
+              />
+              <button
+                type="button"
+                @click="imageInput?.click()"
+                class="btn btn-secondary"
+              >
+                📁 選擇圖片
+              </button>
               <p class="text-xs text-tertiary-color mt-2">
-                <!-- TODO: 未來支援圖片上傳（Cloudflare R2） -->
-                未來將支援圖片上傳至 Cloudflare R2
+                支援 JPG、PNG、WebP 格式，最大 1MB
               </p>
+            </div>
+
+            <!-- 預覽區域 -->
+            <div v-else class="relative">
+              <img :src="imagePreview" alt="預覽" class="w-full rounded-lg" />
+              <button
+                type="button"
+                @click="clearImage"
+                class="absolute top-2 right-2 btn btn-secondary"
+              >
+                ✖ 刪除
+              </button>
             </div>
           </div>
         </div>
@@ -186,15 +212,42 @@
       <!-- 4. 音檔 -->
       <div class="card">
         <h2 class="text-xl font-bold text-primary-color mb-4">音檔</h2>
+
+        <!-- 上傳區域 -->
         <div
+          v-if="!audioPreview"
           class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center"
         >
-          <div class="text-4xl mb-2">🎵</div>
-          <p class="text-secondary-color">音檔上傳功能開發中</p>
-          <p class="text-xs text-tertiary-color mt-2">
-            <!-- TODO: 未來支援音檔上傳（Cloudflare R2） -->
-            未來將支援音檔上傳至 Cloudflare R2
-          </p>
+          <input
+            type="file"
+            ref="audioInput"
+            @change="handleAudioSelect"
+            accept="audio/mpeg,audio/wav,audio/ogg"
+            class="hidden"
+          />
+          <div class="flex gap-2 justify-center">
+            <button type="button" @click="audioInput?.click()" class="btn btn-secondary">
+              📁 選擇音檔
+            </button>
+            <button
+              type="button"
+              @click="useTTSAudio"
+              :disabled="!audioUrl"
+              class="btn btn-primary"
+              :class="{ 'opacity-50 cursor-not-allowed': !audioUrl }"
+            >
+              🔊 使用語音測試音檔
+            </button>
+          </div>
+          <p class="text-xs text-tertiary-color mt-2">支援 MP3、WAV、OGG 格式，最大 1MB</p>
+        </div>
+
+        <!-- 播放器 -->
+        <div v-else>
+          <audio :src="audioPreview" controls class="w-full" />
+          <button type="button" @click="clearUploadedAudio" class="btn btn-secondary mt-2">
+            ✖ 刪除
+          </button>
         </div>
       </div>
 
@@ -316,13 +369,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore } from '@/stores/card'
 import { EdgeTTS } from 'edge-tts-universal/browser'
 import type { CreateCardRequest } from '@/api/types'
-import { aiApi } from '@/api/modules'
+import { aiApi, cardApi } from '@/api/modules'
 
 const router = useRouter()
 const route = useRoute()
@@ -349,6 +402,15 @@ const newTagName = ref('')
 // 標籤相關（使用假資料）
 const availableTags = ref(['基礎', '進階', '商務', '旅遊'])
 const selectedTags = ref<string[]>([])
+
+// 文件上傳相關狀態
+const imageInput = ref<HTMLInputElement | null>(null)
+const imageFile = ref<File | null>(null)
+const imagePreview = ref<string>('')
+
+const audioInput = ref<HTMLInputElement | null>(null)
+const audioFile = ref<File | null>(null)
+const audioPreview = ref<string>('')
 
 // ===== TTS 測試功能 =====
 const ttsVoice = ref('en-US-EmmaMultilingualNeural') // 語音選擇
@@ -519,21 +581,133 @@ const handleAddTag = () => {
   // await api.tag.createTag({ name: trimmedName })
 }
 
+// ===== 文件處理功能 =====
+// 圖片處理
+const handleImageSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (!file) return
+
+  // 驗證文件大小（1MB）
+  if (file.size > 1 * 1024 * 1024) {
+    error.value = '圖片大小不能超過 1MB'
+    return
+  }
+
+  imageFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
+}
+
+const clearImage = () => {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+  imageFile.value = null
+  imagePreview.value = ''
+  if (imageInput.value) {
+    imageInput.value.value = ''
+  }
+}
+
+// 音頻處理
+const handleAudioSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (!file) return
+
+  // 驗證文件大小（1MB）
+  if (file.size > 1 * 1024 * 1024) {
+    error.value = '音檔大小不能超過 1MB'
+    return
+  }
+
+  audioFile.value = file
+  audioPreview.value = URL.createObjectURL(file)
+}
+
+const clearUploadedAudio = () => {
+  if (audioPreview.value) {
+    URL.revokeObjectURL(audioPreview.value)
+  }
+  audioFile.value = null
+  audioPreview.value = ''
+  if (audioInput.value) {
+    audioInput.value.value = ''
+  }
+}
+
+// 使用 TTS 生成的音檔
+const useTTSAudio = async () => {
+  if (!audioUrl.value) {
+    return
+  }
+
+  try {
+    // 從 Blob URL 獲取音訊數據
+    const response = await fetch(audioUrl.value)
+    const blob = await response.blob()
+
+    // 生成文件名（使用單字名稱）
+    const fileName = `${formData.value.front || 'tts-audio'}.mp3`
+
+    // 轉換成 File 對象
+    const file = new File([blob], fileName, { type: 'audio/mpeg' })
+
+    // 設置音檔和預覽
+    audioFile.value = file
+    audioPreview.value = URL.createObjectURL(file)
+  } catch (err: unknown) {
+    console.error('使用 TTS 音檔失敗:', err)
+    error.value = '使用 TTS 音檔失敗，請重新嘗試'
+  }
+}
+
 // 表單提交
 const handleSubmit = async () => {
   loading.value = true
   error.value = null
 
   try {
-    // TODO: 標籤目前為字串陣列，未來需要轉換為 Tag ObjectId
-    const cardData: CreateCardRequest = {
-      deck: formData.value.deck,
-      front: formData.value.front,
-      back: formData.value.back,
-      tags: selectedTags.value, // 字串陣列符合 CreateCardRequest 類型
-    }
+    // 判斷是否有文件需要上傳
+    const hasFiles = imageFile.value || audioFile.value
 
-    await cardStore.createCard(cardData)
+    if (hasFiles) {
+      // 使用 FormData
+      const formDataToSend = new FormData()
+
+      // 添加文本字段
+      formDataToSend.append('deck', formData.value.deck)
+      formDataToSend.append('front', formData.value.front)
+      formDataToSend.append('back', JSON.stringify({ content: formData.value.back.content }))
+
+      if (selectedTags.value.length > 0) {
+        formDataToSend.append('tags', JSON.stringify(selectedTags.value))
+      }
+
+      // 添加文件
+      if (imageFile.value) {
+        formDataToSend.append('image', imageFile.value)
+      }
+
+      if (audioFile.value) {
+        formDataToSend.append('audio', audioFile.value)
+      }
+
+      // 一次性提交
+      await cardApi.createCard(formDataToSend)
+    } else {
+      // 沒有文件，使用 JSON
+      const cardData: CreateCardRequest = {
+        deck: formData.value.deck,
+        front: formData.value.front,
+        back: formData.value.back,
+        tags: selectedTags.value,
+      }
+
+      await cardStore.createCard(cardData)
+    }
 
     // 跳轉到卡組詳情頁
     router.push(`/app/decks/${formData.value.deck}`)
@@ -548,4 +722,10 @@ const handleSubmit = async () => {
 const handleCancel = () => {
   router.back()
 }
+
+// 組件銷毀時清理 URL
+onUnmounted(() => {
+  clearImage()
+  clearUploadedAudio()
+})
 </script>
