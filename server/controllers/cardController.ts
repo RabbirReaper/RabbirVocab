@@ -1,11 +1,34 @@
 import { Request, Response } from 'express'
+import mongoose from 'mongoose'
+import mime from 'mime-types'
 import Card from '../model/Card.js'
 import Deck from '../model/Deck.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
-import { ValidationError, NotFoundError, ForbiddenError } from '../utils/errors.js'
+import { ValidationError, NotFoundError, ForbiddenError, InternalServerError } from '../utils/errors.js'
+import * as r2Service from '../services/r2.service.js'
+
+// 定義 Card 創建時的數據類型
+interface CardDataInput {
+  deck: string
+  front: string
+  back: {
+    content: string
+    image?: {
+      url: string
+      key: string
+      alt: string
+    }
+  }
+  audio?: {
+    url: string
+    key: string
+  }
+  tags: string[]
+  user: string
+}
 
 /**
- * @desc    創建新的 Card
+ * @desc    創建新的 Card（支持文件上傳）
  * @route   POST /api/cards
  * @access  Private
  */
@@ -16,7 +39,15 @@ export const createCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ForbiddenError('未登入')
   }
 
-  const { deck: deckId, front, back, audio, tags } = req.body
+  // 獲取上傳的文件
+  const files = req.files as {
+    image?: Express.Multer.File[]
+    audio?: Express.Multer.File[]
+  }
+
+  // 解析文本字段（注意：back 可能是 JSON 字符串）
+  const { deck: deckId, front, back, tags } = req.body
+  const backContent = typeof back === 'string' ? JSON.parse(back) : back
 
   // 驗證必填欄位
   if (!deckId) {
@@ -27,7 +58,7 @@ export const createCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ValidationError('正面內容為必填項目')
   }
 
-  if (!back?.content || back.content.trim() === '') {
+  if (!backContent?.content || backContent.content.trim() === '') {
     throw new ValidationError('背面內容為必填項目')
   }
 
@@ -45,18 +76,63 @@ export const createCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ForbiddenError('您沒有權限在此卡組中創建字卡')
   }
 
-  // 創建新的 Card
-  const card = await Card.create({
+  // 準備卡片數據
+  const cardData: CardDataInput = {
     deck: deckId,
     front: front.trim(),
     back: {
-      image: back.image || {},
-      content: back.content.trim(),
+      content: backContent.content.trim(),
     },
-    audio: audio || {},
     tags: tags || [],
     user: userId,
-  })
+  }
+
+  // 生成唯一 ID 用於文件命名
+  const uniqueId = new mongoose.Types.ObjectId().toString()
+
+  // 處理圖片上傳
+  if (files?.image?.[0]) {
+    const imageFile = files.image[0]
+    const ext = mime.extension(imageFile.mimetype) || 'jpg'
+    const key = `cards/${userId}/${uniqueId}/image.${ext}`
+
+    try {
+      const url = await r2Service.uploadImage(imageFile.buffer, key, imageFile.mimetype)
+      cardData.back.image = {
+        url,
+        key,
+        alt: imageFile.originalname,
+      }
+    } catch (error) {
+      console.error('圖片上傳失敗:', error)
+      throw new InternalServerError('圖片上傳失敗')
+    }
+  }
+
+  // 處理音頻上傳
+  if (files?.audio?.[0]) {
+    const audioFile = files.audio[0]
+    const ext = mime.extension(audioFile.mimetype) || 'mp3'
+    const key = `cards/${userId}/${uniqueId}/audio.${ext}`
+
+    try {
+      const url = await r2Service.uploadAudio(audioFile.buffer, key, audioFile.mimetype)
+      cardData.audio = {
+        url,
+        key,
+      }
+    } catch (error) {
+      console.error('音頻上傳失敗:', error)
+      // 如果已上傳圖片，需要清理
+      if (cardData.back.image?.key) {
+        await r2Service.deleteImage(cardData.back.image.key).catch(console.error)
+      }
+      throw new InternalServerError('音頻上傳失敗')
+    }
+  }
+
+  // 創建卡片
+  const card = await Card.create(cardData)
 
   res.status(201).json({
     message: 'success',
@@ -207,7 +283,7 @@ export const getCard = asyncHandler(async (req: Request, res: Response) => {
 })
 
 /**
- * @desc    更新 Card（完整替換）
+ * @desc    更新 Card（完整替換，支持文件更新）
  * @route   PUT /api/cards/:cardId
  * @access  Private
  */
@@ -219,7 +295,16 @@ export const updateCard = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { cardId } = req.params
-  const { front, back, audio, tags } = req.body
+
+  // 獲取上傳的文件
+  const files = req.files as {
+    image?: Express.Multer.File[]
+    audio?: Express.Multer.File[]
+  }
+
+  // 解析文本字段
+  const { front, back, tags } = req.body
+  const backContent = typeof back === 'string' ? JSON.parse(back) : back
 
   const card = await Card.findOne({
     _id: cardId,
@@ -240,18 +325,63 @@ export const updateCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ValidationError('正面內容為必填項目')
   }
 
-  if (!back?.content || back.content.trim() === '') {
+  if (!backContent?.content || backContent.content.trim() === '') {
     throw new ValidationError('背面內容為必填項目')
   }
 
-  // 完整替換所有欄位
+  // 更新文本字段
   card.front = front.trim()
-  card.back = {
-    image: back.image || {},
-    content: back.content.trim(),
-  }
-  card.audio = audio || {}
+  card.back.content = backContent.content.trim()
   card.tags = tags || []
+
+  // 處理圖片更新
+  if (files?.image?.[0]) {
+    // 刪除舊圖片
+    if (card.back.image?.key) {
+      await r2Service.deleteImage(card.back.image.key).catch(console.error)
+    }
+
+    // 上傳新圖片
+    const imageFile = files.image[0]
+    const ext = mime.extension(imageFile.mimetype) || 'jpg'
+    const key = `cards/${userId}/${cardId}/image.${ext}`
+
+    try {
+      const url = await r2Service.uploadImage(imageFile.buffer, key, imageFile.mimetype)
+      card.back.image = {
+        url,
+        key,
+        alt: imageFile.originalname,
+      }
+    } catch (error) {
+      console.error('圖片上傳失敗:', error)
+      throw new InternalServerError('圖片上傳失敗')
+    }
+  }
+
+  // 處理音頻更新
+  if (files?.audio?.[0]) {
+    // 刪除舊音頻
+    if (card.audio?.key) {
+      await r2Service.deleteAudio(card.audio.key).catch(console.error)
+    }
+
+    // 上傳新音頻
+    const audioFile = files.audio[0]
+    const ext = mime.extension(audioFile.mimetype) || 'mp3'
+    const key = `cards/${userId}/${cardId}/audio.${ext}`
+
+    try {
+      const url = await r2Service.uploadAudio(audioFile.buffer, key, audioFile.mimetype)
+      card.audio = {
+        url,
+        key,
+      }
+    } catch (error) {
+      console.error('音頻上傳失敗:', error)
+      throw new InternalServerError('音頻上傳失敗')
+    }
+  }
 
   await card.save()
 
@@ -264,7 +394,7 @@ export const updateCard = asyncHandler(async (req: Request, res: Response) => {
 })
 
 /**
- * @desc    刪除 Card（軟刪除）
+ * @desc    刪除 Card（軟刪除，同時刪除 R2 文件）
  * @route   DELETE /api/cards/:cardId
  * @access  Private
  */
@@ -291,7 +421,21 @@ export const deleteCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ForbiddenError('您沒有權限刪除此字卡')
   }
 
-  // 軟刪除
+  // 並行刪除 R2 文件
+  const deletePromises: Promise<void>[] = []
+
+  if (card.back.image?.key) {
+    deletePromises.push(r2Service.deleteImage(card.back.image.key))
+  }
+
+  if (card.audio?.key) {
+    deletePromises.push(r2Service.deleteAudio(card.audio.key))
+  }
+
+  // 使用 Promise.allSettled 忽略 R2 刪除失敗
+  await Promise.allSettled(deletePromises)
+
+  // 繼續軟刪除
   card.isDeleted = true
   await card.save()
 

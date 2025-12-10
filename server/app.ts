@@ -17,6 +17,7 @@ import './model/Review.js'
 import './model/StudySession.js'
 
 import apiRoutes from './routes/index.js' // 未來可以整合所有 API 路由
+import { validateR2Config } from './services/r2.service.js'
 
 // ES Module 環境下獲取 __dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -103,6 +104,9 @@ export const startServer = async (): Promise<void> => {
   const PORT = process.env.PORT || 8080
 
   try {
+    // 驗證 R2 配置
+    validateR2Config()
+
     // 連接資料庫
     await connectDatabase()
 
@@ -111,9 +115,10 @@ export const startServer = async (): Promise<void> => {
 
     // 啟動伺服器
     app.listen(PORT, () => {
-      console.log(`Server is running at http://localhost:${PORT}`)
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
-      console.log(`Database: Connected`)
+      console.log(`🚀 Server is running at http://localhost:${PORT}`)
+      console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`)
+      console.log(`💾 Database: Connected`)
+      console.log(`☁️  R2 Storage: Ready`)
     })
   } catch (error) {
     console.error('❌ Failed to start server:', error)
