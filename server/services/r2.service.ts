@@ -181,8 +181,8 @@ export async function audioExists(key: string): Promise<boolean> {
 
     await r2.send(command)
     return true
-  } catch (error: any) {
-    if (error.name === 'NoSuchKey') {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'name' in error && error.name === 'NoSuchKey') {
       return false
     }
     throw error

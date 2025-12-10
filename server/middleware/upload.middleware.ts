@@ -38,7 +38,7 @@ export const uploadCardFiles = multer({
  * 處理文件上傳相關的錯誤
  */
 export const handleMulterError = (
-  err: any,
+  err: unknown,
   _req: Request,
   res: Response,
   next: NextFunction,
