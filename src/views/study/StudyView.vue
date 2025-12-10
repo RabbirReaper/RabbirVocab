@@ -37,6 +37,16 @@
             <div class="text-4xl font-bold text-primary-color">
               {{ currentCard.front }}
             </div>
+            <!-- 播放按鈕 -->
+            <div v-if="currentCard.audio?.url" class="flex justify-center mt-4">
+              <button
+                @click="playAudio"
+                class="btn btn-secondary btn-sm p-3 hover:scale-110 transition-transform"
+                title="播放音檔"
+              >
+                🔊
+              </button>
+            </div>
           </div>
 
           <div v-else class="space-y-6">
@@ -46,6 +56,16 @@
               </div>
               <div class="text-3xl font-bold text-primary-color">
                 {{ currentCard.front }}
+              </div>
+              <!-- 播放按鈕 -->
+              <div v-if="currentCard.audio?.url" class="flex justify-center mt-4">
+                <button
+                  @click="playAudio"
+                  class="btn btn-secondary btn-sm p-3 hover:scale-110 transition-transform"
+                  title="播放音檔"
+                >
+                  🔊
+                </button>
               </div>
             </div>
             <div class="border-t border-primary-color pt-6">
@@ -124,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore, type Card } from '@/stores/card'
@@ -201,6 +221,26 @@ const getEasyInterval = () => {
       : Math.floor(currentCard.value.interval * currentCard.value.easeFactor * 1.3)
   return `${interval}d`
 }
+
+// 播放音檔
+const playAudio = () => {
+  if (!currentCard.value?.audio?.url) return
+
+  const audio = new Audio(currentCard.value.audio.url)
+  audio.play().catch((err) => {
+    console.error('播放音檔失敗:', err)
+  })
+}
+
+// 監聽當前卡片變化，自動播放音檔
+watch(currentCard, (newCard) => {
+  if (newCard?.audio?.url && !showAnswer.value) {
+    // 延遲一小段時間以確保 UI 已渲染
+    setTimeout(() => {
+      playAudio()
+    }, 300)
+  }
+})
 
 onMounted(() => {
   loadDueCards()
