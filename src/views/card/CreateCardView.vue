@@ -2,7 +2,9 @@
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- 頁面標題 -->
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold text-primary-color">新增卡片</h1>
+      <h1 class="text-3xl font-bold text-primary-color">
+        {{ isEditMode ? '編輯卡片' : '新增卡片' }}
+      </h1>
       <button @click="handleCancel" class="text-secondary-color hover:underline">← 返回</button>
     </div>
 
@@ -13,13 +15,18 @@
         <select
           v-model="formData.deck"
           required
+          :disabled="isEditMode"
           class="w-full px-4 py-2 border border-primary-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          :class="{ 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed': isEditMode }"
         >
           <option value="">請選擇卡組</option>
           <option v-for="deck in deckStore.decks" :key="deck.id" :value="deck.id">
             {{ deck.name }}
           </option>
         </select>
+        <p v-if="isEditMode" class="text-xs text-tertiary-color mt-1">
+          編輯模式下無法變更卡組
+        </p>
       </div>
 
       <!-- 2. 正面 -->
@@ -313,7 +320,31 @@
       </div>
 
       <!-- 6. 提交按鈕 -->
-      <div class="flex space-x-4">
+      <!-- 編輯模式按鈕 -->
+      <div v-if="isEditMode" class="flex space-x-3">
+        <button
+          type="button"
+          @click="handleReset"
+          class="btn btn-outline"
+          :disabled="loading"
+        >
+          重製
+        </button>
+        <button
+          type="button"
+          @click="handleCancel"
+          class="btn btn-secondary flex-1"
+          :disabled="loading"
+        >
+          取消
+        </button>
+        <button type="submit" :disabled="loading" class="btn btn-primary flex-1">
+          {{ loading ? '更新中...' : '修改完成' }}
+        </button>
+      </div>
+
+      <!-- 新建模式按鈕 -->
+      <div v-else class="flex space-x-4">
         <button
           type="button"
           @click="handleCancel"
@@ -369,18 +400,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore } from '@/stores/card'
 import { EdgeTTS } from 'edge-tts-universal/browser'
-import type { CreateCardRequest } from '@/api/types'
+import type { CreateCardRequest, CardDto } from '@/api/types'
 import { aiApi, cardApi } from '@/api/modules'
 
 const router = useRouter()
 const route = useRoute()
 const deckStore = useDeckStore()
 const cardStore = useCardStore()
+
+// 編輯模式狀態
+const isEditMode = computed(() => !!route.query.edit)
+const editCardId = computed(() => route.query.edit as string)
+const originalCardData = ref<CardDto | null>(null)
+const fetchingCard = ref(false)
+const fetchError = ref<string | null>(null)
 
 // 表單資料
 const formData = ref<CreateCardRequest>({
@@ -497,11 +535,59 @@ const clearAudio = () => {
   ttsMessage.value = ''
 }
 
+// 獲取卡片資料（編輯模式）
+const fetchCardForEdit = async () => {
+  if (!editCardId.value) return
+
+  fetchingCard.value = true
+  fetchError.value = null
+
+  try {
+    const response = await cardApi.getCard(editCardId.value)
+    const card = response.card
+    originalCardData.value = card
+
+    // 預填表單
+    formData.value = {
+      deck: card.deck,
+      front: card.front,
+      back: { content: card.back.content },
+      tags: card.tags,
+    }
+
+    selectedTags.value = card.tags || []
+
+    // 處理既有圖片
+    if (card.back.image?.url) {
+      imagePreview.value = card.back.image.url
+    }
+
+    // 處理既有音檔
+    if (card.audio?.url) {
+      audioPreview.value = card.audio.url
+    }
+
+    await nextTick()
+    autoResize()
+  } catch (err: unknown) {
+    console.error('Failed to fetch card:', err)
+    fetchError.value = err instanceof Error ? err.message : '無法載入卡片資料'
+  } finally {
+    fetchingCard.value = false
+  }
+}
+
 // 載入卡組列表
 onMounted(async () => {
   if (deckStore.decks.length === 0) {
     await deckStore.fetchDecks()
   }
+
+  // 編輯模式：獲取卡片資料
+  if (isEditMode.value) {
+    await fetchCardForEdit()
+  }
+
   // 初始化 textarea 高度
   await nextTick()
   autoResize()
@@ -673,54 +759,125 @@ const handleSubmit = async () => {
     // 判斷是否有文件需要上傳
     const hasFiles = imageFile.value || audioFile.value
 
-    if (hasFiles) {
-      // 使用 FormData
-      const formDataToSend = new FormData()
+    if (isEditMode.value) {
+      // === 編輯模式 ===
+      const cardId = editCardId.value
 
-      // 添加文本字段
-      formDataToSend.append('deck', formData.value.deck)
-      formDataToSend.append('front', formData.value.front)
-      formDataToSend.append('back', JSON.stringify({ content: formData.value.back.content }))
+      if (hasFiles) {
+        // 使用 FormData
+        const formDataToSend = new FormData()
+        formDataToSend.append('front', formData.value.front)
+        formDataToSend.append('back', JSON.stringify({ content: formData.value.back.content }))
 
-      if (selectedTags.value.length > 0) {
-        formDataToSend.append('tags', JSON.stringify(selectedTags.value))
+        if (selectedTags.value.length > 0) {
+          formDataToSend.append('tags', JSON.stringify(selectedTags.value))
+        }
+
+        if (imageFile.value) formDataToSend.append('image', imageFile.value)
+        if (audioFile.value) formDataToSend.append('audio', audioFile.value)
+
+        await cardApi.updateCard(cardId, formDataToSend)
+      } else {
+        // 使用 JSON
+        const updateData = {
+          front: formData.value.front,
+          back: formData.value.back,
+          tags: selectedTags.value,
+          ...(originalCardData.value?.audio && !audioFile.value
+            ? { audio: originalCardData.value.audio }
+            : {}),
+        }
+
+        await cardApi.updateCard(cardId, updateData)
       }
 
-      // 添加文件
-      if (imageFile.value) {
-        formDataToSend.append('image', imageFile.value)
-      }
-
-      if (audioFile.value) {
-        formDataToSend.append('audio', audioFile.value)
-      }
-
-      // 一次性提交
-      await cardApi.createCard(formDataToSend)
+      router.push(`/app/decks/${formData.value.deck}`)
     } else {
-      // 沒有文件，使用 JSON
-      const cardData: CreateCardRequest = {
-        deck: formData.value.deck,
-        front: formData.value.front,
-        back: formData.value.back,
-        tags: selectedTags.value,
+      // === 新建模式 ===
+      if (hasFiles) {
+        // 使用 FormData
+        const formDataToSend = new FormData()
+
+        // 添加文本字段
+        formDataToSend.append('deck', formData.value.deck)
+        formDataToSend.append('front', formData.value.front)
+        formDataToSend.append('back', JSON.stringify({ content: formData.value.back.content }))
+
+        if (selectedTags.value.length > 0) {
+          formDataToSend.append('tags', JSON.stringify(selectedTags.value))
+        }
+
+        // 添加文件
+        if (imageFile.value) {
+          formDataToSend.append('image', imageFile.value)
+        }
+
+        if (audioFile.value) {
+          formDataToSend.append('audio', audioFile.value)
+        }
+
+        // 一次性提交
+        await cardApi.createCard(formDataToSend)
+      } else {
+        // 沒有文件，使用 JSON
+        const cardData: CreateCardRequest = {
+          deck: formData.value.deck,
+          front: formData.value.front,
+          back: formData.value.back,
+          tags: selectedTags.value,
+        }
+
+        await cardStore.createCard(cardData)
       }
 
-      await cardStore.createCard(cardData)
+      // 跳轉到卡組詳情頁
+      router.push(`/app/decks/${formData.value.deck}`)
     }
-
-    // 跳轉到卡組詳情頁
-    router.push(`/app/decks/${formData.value.deck}`)
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : '建立卡片失敗'
-    console.error('建立卡片失敗:', err)
+    error.value = err instanceof Error ? err.message : (isEditMode.value ? '更新卡片失敗' : '建立卡片失敗')
+    console.error('Submit failed:', err)
   } finally {
     loading.value = false
   }
 }
 
+// 重製表單（編輯模式）
+const handleReset = () => {
+  if (!originalCardData.value) return
+
+  const card = originalCardData.value
+
+  formData.value = {
+    deck: card.deck,
+    front: card.front,
+    back: { content: card.back.content },
+    tags: card.tags,
+  }
+
+  selectedTags.value = card.tags || []
+
+  // 重置圖片
+  clearImage()
+  if (card.back.image?.url) {
+    imagePreview.value = card.back.image.url
+  }
+
+  // 重置音檔
+  clearUploadedAudio()
+  if (card.audio?.url) {
+    audioPreview.value = card.audio.url
+  }
+
+  clearAudio()
+  nextTick(() => autoResize())
+}
+
 const handleCancel = () => {
-  router.back()
+  if (isEditMode.value && formData.value.deck) {
+    router.push(`/app/decks/${formData.value.deck}`)
+  } else {
+    router.back()
+  }
 }
 
 // 組件銷毀時清理 URL

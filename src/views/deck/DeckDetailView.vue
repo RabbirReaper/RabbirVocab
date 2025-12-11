@@ -96,6 +96,18 @@
                 {{ getStatusText(card.status) }}
               </span>
               <span class="text-sm text-tertiary-color"> 間隔: {{ card.interval }}天 </span>
+              <!-- 操作按鈕 -->
+              <div class="flex items-center space-x-2">
+                <button @click="handleEditCard(card.id)" class="btn btn-sm btn-secondary">
+                  編輯
+                </button>
+                <button
+                  @click="openDeleteModal(card)"
+                  class="btn btn-sm bg-red-500 hover:bg-red-600 text-white border-0"
+                >
+                  刪除
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -133,22 +145,69 @@
         </div>
       </div>
     </div>
+
+    <!-- 刪除確認 Modal -->
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click="closeDeleteModal"
+    >
+      <div class="card max-w-md w-full mx-4 animate-slide-up" @click.stop>
+        <h2 class="text-2xl font-bold text-primary-color mb-4">確認刪除卡片</h2>
+
+        <div class="mb-6">
+          <p class="text-secondary-color mb-2">確定要刪除以下卡片嗎？</p>
+          <div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <p class="font-semibold text-primary-color">{{ cardToDelete?.front }}</p>
+          </div>
+          <p class="text-sm text-tertiary-color mt-2">此操作無法復原</p>
+        </div>
+
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            @click="closeDeleteModal"
+            class="btn btn-outline flex-1"
+            :disabled="cardStore.loading"
+          >
+            取消
+          </button>
+          <button
+            @click="confirmDelete"
+            class="btn flex-1 bg-red-500 hover:bg-red-600 text-white border-0"
+            :disabled="cardStore.loading"
+          >
+            {{ cardStore.loading ? '刪除中...' : '確認刪除' }}
+          </button>
+        </div>
+
+        <div v-if="cardStore.error" class="mt-4 text-sm text-red-600 dark:text-red-400">
+          {{ cardStore.error }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import type { Card } from '@/stores/card'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore } from '@/stores/card'
 
 const route = useRoute()
+const router = useRouter()
 const deckStore = useDeckStore()
 const cardStore = useCardStore()
 
 const deckId = route.params.deckId as string
 const deck = computed(() => deckStore.getDeckById(deckId))
 const cards = computed(() => cardStore.getCardsByDeck(deckId))
+
+// 刪除 modal 狀態
+const showDeleteModal = ref(false)
+const cardToDelete = ref<Card | null>(null)
 
 // 載入數據
 const loadData = async () => {
@@ -158,6 +217,35 @@ const loadData = async () => {
 onMounted(() => {
   loadData()
 })
+
+// 處理編輯
+const handleEditCard = (cardId: string) => {
+  router.push(`/app/cards/create?edit=${cardId}`)
+}
+
+// 打開刪除 modal
+const openDeleteModal = (card: Card) => {
+  cardToDelete.value = card
+  showDeleteModal.value = true
+}
+
+// 關閉刪除 modal
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  cardToDelete.value = null
+}
+
+// 確認刪除
+const confirmDelete = async () => {
+  if (!cardToDelete.value) return
+
+  try {
+    await cardStore.deleteCard(cardToDelete.value.id)
+    closeDeleteModal()
+  } catch (error) {
+    console.error('Failed to delete card:', error)
+  }
+}
 
 const getStatusText = (status: string) => {
   const statusMap: Record<string, string> = {
