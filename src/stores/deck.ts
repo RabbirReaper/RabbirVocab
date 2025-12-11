@@ -1,14 +1,21 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { api } from '@/api/modules'
-import type { DeckDto, UpdateDeckRequest, ApiError } from '@/api/types'
+import type { DeckDto, UpdateDeckRequest, ApiError, DeckSettings } from '@/api/types'
 
 export interface SRSConfig {
   newCardsPerDay: number
   reviewsPerDay: number
-  easyMultiplier: number
-  hardMultiplier: number
-  lapseSteps: number[]
+  learningSteps: number[]
+  graduatingInterval: number
+  easyInterval: number
+  relearningSteps: number[]
+  minimumInterval: number
+  leechThreshold: number
+  easyBonus: number
+  hardInterval: number
+  minEaseFactor: number
+  maxEaseFactor: number
 }
 
 export interface DeckStats {
@@ -28,6 +35,7 @@ export interface Deck {
   reviewCount: number
   masteredCount: number
   srsConfig: SRSConfig
+  isPublic: boolean
   createdAt: string
   updatedAt: string
 }
@@ -58,10 +66,18 @@ export const useDeckStore = defineStore('deck', () => {
       srsConfig: {
         newCardsPerDay: dto.settings.newCardsPerDay,
         reviewsPerDay: dto.settings.reviewCardsPerDay,
-        easyMultiplier: dto.settings.srsConfig.easyBonus,
-        hardMultiplier: dto.settings.srsConfig.hardInterval,
-        lapseSteps: dto.settings.srsConfig.relearningSteps,
+        learningSteps: dto.settings.srsConfig.learningSteps,
+        graduatingInterval: dto.settings.srsConfig.graduatingInterval,
+        easyInterval: dto.settings.srsConfig.easyInterval,
+        relearningSteps: dto.settings.srsConfig.relearningSteps,
+        minimumInterval: dto.settings.srsConfig.minimumInterval,
+        leechThreshold: dto.settings.srsConfig.leechThreshold,
+        easyBonus: dto.settings.srsConfig.easyBonus,
+        hardInterval: dto.settings.srsConfig.hardInterval,
+        minEaseFactor: dto.settings.srsConfig.minEaseFactor,
+        maxEaseFactor: dto.settings.srsConfig.maxEaseFactor,
       },
+      isPublic: dto.settings.isPublic,
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,
     }
@@ -123,7 +139,14 @@ export const useDeckStore = defineStore('deck', () => {
     }
   }
 
-  async function updateDeck(id: string, updates: { name?: string; description?: string }) {
+  async function updateDeck(
+    id: string,
+    updates: {
+      name?: string
+      description?: string
+      settings?: Partial<DeckSettings>
+    }
+  ) {
     loading.value = true
     error.value = null
     try {
