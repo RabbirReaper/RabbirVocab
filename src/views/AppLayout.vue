@@ -26,13 +26,6 @@
               卡組
             </RouterLink>
             <RouterLink
-              to="/app/cards"
-              class="nav-link"
-              active-class="text-primary-600 dark:text-primary-400 font-semibold"
-            >
-              卡片
-            </RouterLink>
-            <RouterLink
               to="/app/statistics"
               class="nav-link"
               active-class="text-primary-600 dark:text-primary-400 font-semibold"
