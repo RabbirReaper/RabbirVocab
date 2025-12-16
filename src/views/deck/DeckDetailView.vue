@@ -911,50 +911,24 @@ const parseSteps = (input: string): number[] => {
 const formatCardInterval = (card: Card): string => {
   const now = new Date()
   const dueDate = new Date(card.srs.dueDate)
+  const diffMs = dueDate.getTime() - now.getTime()
 
-  // 如果是學習階段（interval = 0），計算距離下次複習的時間
-  if (card.srs.interval === 0) {
-    const diffMs = dueDate.getTime() - now.getTime()
-
-    // 已過期
-    if (diffMs <= 0) {
-      return '已到期'
-    }
-
-    const diffMinutes = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-    // 小於 1 小時，顯示分鐘
-    if (diffMinutes < 60) {
-      return `${diffMinutes}分鐘`
-    }
-    // 小於 1 天，顯示小時
-    else if (diffHours < 24) {
-      return `${diffHours}小時`
-    }
-    // 顯示天數
-    else {
-      return `${diffDays}天`
-    }
+  // 已過期
+  if (diffMs <= 0) {
+    return '已到期'
   }
 
-  // 複習階段，直接使用 interval（天數）
-  const days = card.srs.interval
+  const diffMinutes = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  // 小於 1 天，檢查是否有分鐘級別的間隔
-  if (days < 1) {
-    const diffMs = dueDate.getTime() - now.getTime()
-    const diffMinutes = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes}分鐘`
-    } else if (diffHours < 24) {
-      return `${diffHours}小時`
-    }
+  // 根據時間差顯示最大的時間單位
+  if (diffMinutes < 60) {
+    return `${diffMinutes}分鐘`
+  } else if (diffHours < 24) {
+    return `${diffHours}小時`
+  } else {
+    return `${diffDays}天`
   }
-
-  return `${days}天`
 }
 </script>
