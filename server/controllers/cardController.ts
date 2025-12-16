@@ -446,3 +446,69 @@ export const deleteCard = asyncHandler(async (req: Request, res: Response) => {
     },
   })
 })
+
+/**
+ * @desc    複習 Card（根據 Deck 的 SRS 設定計算下次複習時間）
+ * @route   POST /api/cards/:cardId/review
+ * @access  Private
+ */
+export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.session.userId
+
+  if (!userId) {
+    throw new ForbiddenError('未登入')
+  }
+
+  const { cardId } = req.params
+  const { quality, duration = 0 } = req.body
+
+  // 驗證 quality 參數
+  if (quality === undefined || quality === null) {
+    throw new ValidationError('必須提供複習品質評等 (quality)')
+  }
+
+  if (typeof quality !== 'number' || quality < 0 || quality > 3) {
+    throw new ValidationError('複習品質評等必須是 0-3 之間的數字')
+  }
+
+  // 獲取卡片
+  const card = await Card.findOne({
+    _id: cardId,
+    isDeleted: false,
+  })
+
+  if (!card) {
+    throw new NotFoundError('找不到此字卡')
+  }
+
+  // 檢查權限：只有擁有者可以複習
+  if (card.user.toString() !== userId) {
+    throw new ForbiddenError('您沒有權限複習此字卡')
+  }
+
+  // 獲取所屬 Deck 的 SRS 配置
+  const deck = await Deck.findOne({
+    _id: card.deck,
+    isDeleted: false,
+  })
+
+  if (!deck) {
+    throw new NotFoundError('找不到此字卡所屬的卡組')
+  }
+
+  // 使用 Deck 的 SRS 配置計算下次複習時間
+  const srsConfig = deck.settings.srsConfig as Required<typeof deck.settings.srsConfig>
+
+  // 調用 Card model 的 calculateNextReview 方法
+  card.calculateNextReview(quality, srsConfig, duration)
+
+  // 保存更新後的卡片
+  await card.save()
+
+  res.status(200).json({
+    message: 'success',
+    data: {
+      card,
+    },
+  })
+})

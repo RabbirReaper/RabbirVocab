@@ -6,6 +6,7 @@ import {
   getCard,
   updateCard,
   deleteCard,
+  reviewCard,
 } from '../controllers/cardController.js'
 import { requireAuth } from '../middleware/authMiddleware.js'
 import { uploadCardFiles, handleMulterError } from '../middleware/upload.middleware.js'
@@ -22,5 +23,8 @@ router.get('/deck/:deckId', getAllCardsInDeck) // 獲取指定 Deck 的所有 Ca
 router.get('/:cardId', getCard) // 獲取單個 Card
 router.put('/:cardId', uploadCardFiles, handleMulterError, updateCard) // 更新 Card（支持文件更新）
 router.delete('/:cardId', deleteCard) // 刪除 Card（同時刪除 R2 文件）
+
+// SRS 複習路由
+router.post('/:cardId/review', reviewCard) // 複習 Card（根據 Deck 的 SRS 設定計算下次複習時間）
 
 export default router

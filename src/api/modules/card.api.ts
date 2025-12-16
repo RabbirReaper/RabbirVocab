@@ -5,6 +5,8 @@ import type {
   UpdateCardRequest,
   GetCardsResponse,
   GetCardResponse,
+  ReviewCardRequest,
+  ReviewCardResponse,
 } from '../types'
 
 export const cardApi = {
@@ -85,6 +87,17 @@ export const cardApi = {
    */
   deleteCard: async (cardId: string): Promise<GetCardResponse> => {
     const response = (await apiClient.delete(`/cards/${cardId}`)) as ApiResponse<GetCardResponse>
+    return response.data
+  },
+
+  /**
+   * 複習 Card（根據 Deck 的 SRS 設定計算下次複習時間）
+   */
+  reviewCard: async (cardId: string, data: ReviewCardRequest): Promise<ReviewCardResponse> => {
+    const response = (await apiClient.post(
+      `/cards/${cardId}/review`,
+      data,
+    )) as ApiResponse<ReviewCardResponse>
     return response.data
   },
 }

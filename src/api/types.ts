@@ -184,6 +184,15 @@ export interface GetCardResponse {
   card: CardDto
 }
 
+export interface ReviewCardRequest {
+  quality: number // 0-3: 0=完全忘記, 1=正確但困難, 2=正確且容易, 3=完美記得
+  duration?: number // 複習耗時（秒）
+}
+
+export interface ReviewCardResponse {
+  card: CardDto
+}
+
 // ==================== AI 相關類型 ====================
 
 export interface GenerateContentRequest {

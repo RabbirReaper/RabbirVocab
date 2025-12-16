@@ -169,6 +169,7 @@ const dueCards = ref<Card[]>([])
 const currentCardIndex = ref(0)
 const showAnswer = ref(false)
 const studiedCount = ref(0)
+const reviewStartTime = ref<number>(0) // 記錄開始複習時間
 
 const currentCard = computed(() => dueCards.value[currentCardIndex.value])
 const totalDueCards = computed(() => dueCards.value.length)
@@ -187,39 +188,102 @@ const loadDueCards = () => {
   dueCards.value = cardStore.getDueCards(deckId)
 }
 
-const handleReview = (rating: 'again' | 'hard' | 'good' | 'easy') => {
+const handleReview = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
   if (!currentCard.value) return
 
-  cardStore.reviewCard(currentCard.value.id, rating)
-  studiedCount.value++
-  showAnswer.value = false
+  // 計算複習耗時（秒）
+  const duration = reviewStartTime.value ? Math.floor((Date.now() - reviewStartTime.value) / 1000) : 0
 
-  // 移到下一張卡片
-  currentCardIndex.value++
+  try {
+    await cardStore.reviewCard(currentCard.value.id, rating, duration)
+    studiedCount.value++
+    showAnswer.value = false
+
+    // 移到下一張卡片
+    currentCardIndex.value++
+  } catch (error) {
+    console.error('複習失敗:', error)
+    // 可以在這裡顯示錯誤提示
+  }
 }
 
+// 格式化時間間隔（分鐘 -> 可讀格式）
+const formatInterval = (minutes: number): string => {
+  if (minutes < 60) {
+    return `${minutes}分`
+  }
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) {
+    return `${hours}小時`
+  }
+  const days = Math.floor(hours / 24)
+  return `${days}天`
+}
+
+// 根據 deck 的 SRS 配置和 card 狀態計算間隔
 const getHardInterval = () => {
-  if (!currentCard.value) return '1d'
-  const interval = Math.max(1, Math.floor(currentCard.value.interval * 1.2))
-  return interval < 1 ? '<1d' : `${interval}d`
+  if (!currentCard.value || !deck.value) return '1天'
+
+  const card = currentCard.value
+  const config = deck.value.srsConfig
+  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
+
+  if (isNewOrLearning) {
+    // 學習階段：進入下一步或維持當前步驟
+    const currentStep = card.srs.learningStep
+    const steps = config.learningSteps || []
+    if (currentStep < steps.length - 1) {
+      const nextStep = steps[currentStep + 1]
+      return formatInterval(nextStep ?? 0)
+    } else {
+      return `${config.graduatingInterval ?? 15}天`
+    }
+  } else {
+    // 複習階段：間隔 * hardInterval (1.2)
+    const interval = Math.round(card.srs.interval * (config.hardInterval ?? 1.2))
+    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+  }
 }
 
 const getGoodInterval = () => {
-  if (!currentCard.value) return '3d'
-  const interval =
-    currentCard.value.interval === 0
-      ? 1
-      : Math.floor(currentCard.value.interval * currentCard.value.easeFactor)
-  return `${interval}d`
+  if (!currentCard.value || !deck.value) return '3天'
+
+  const card = currentCard.value
+  const config = deck.value.srsConfig
+  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
+
+  if (isNewOrLearning) {
+    // 學習階段：完成所有步驟後畢業
+    const currentStep = card.srs.learningStep
+    const steps = config.learningSteps || []
+    if (currentStep < steps.length - 1) {
+      const nextStep = steps[currentStep + 1]
+      return formatInterval(nextStep ?? 0)
+    } else {
+      return `${config.graduatingInterval ?? 15}天`
+    }
+  } else {
+    // 複習階段：間隔 * easeFactor
+    const interval = Math.round(card.srs.interval * card.srs.easeFactor)
+    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+  }
 }
 
 const getEasyInterval = () => {
-  if (!currentCard.value) return '7d'
-  const interval =
-    currentCard.value.interval === 0
-      ? 4
-      : Math.floor(currentCard.value.interval * currentCard.value.easeFactor * 1.3)
-  return `${interval}d`
+  if (!currentCard.value || !deck.value) return '7天'
+
+  const card = currentCard.value
+  const config = deck.value.srsConfig
+  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
+
+  if (isNewOrLearning) {
+    // 學習階段：直接畢業，使用 easyInterval
+    return `${config.easyInterval ?? 60}天`
+  } else {
+    // 複習階段：間隔 * easeFactor * easyBonus
+    const interval = Math.round(card.srs.interval * card.srs.easeFactor * (config.easyBonus ?? 1.3))
+    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+  }
 }
 
 // 播放音檔
@@ -232,13 +296,18 @@ const playAudio = () => {
   })
 }
 
-// 監聽當前卡片變化，自動播放音檔
+// 監聽當前卡片變化，自動播放音檔並記錄開始時間
 watch(currentCard, (newCard) => {
-  if (newCard?.audio?.url && !showAnswer.value) {
-    // 延遲一小段時間以確保 UI 已渲染
-    setTimeout(() => {
-      playAudio()
-    }, 300)
+  if (newCard) {
+    // 記錄開始複習的時間
+    reviewStartTime.value = Date.now()
+
+    if (newCard.audio?.url && !showAnswer.value) {
+      // 延遲一小段時間以確保 UI 已渲染
+      setTimeout(() => {
+        playAudio()
+      }, 300)
+    }
   }
 })
 

@@ -190,60 +190,50 @@ export const useCardStore = defineStore('card', () => {
     return cards.value.find((card) => card.id === id)
   }
 
-  function reviewCard(id: string, rating: 'again' | 'hard' | 'good' | 'easy') {
-    const card = getCardById(id)
-    if (!card) return
-
-    let newInterval = card.interval
-    let newEaseFactor = card.easeFactor
-    let newStatus = card.status
-
-    // 簡化的 SRS 演算法（前端向後兼容）
-    switch (rating) {
-      case 'again':
-        newInterval = 0
-        newEaseFactor = Math.max(1.3, card.easeFactor - 0.2)
-        newStatus = 'learning'
-        break
-      case 'hard':
-        newInterval = Math.max(1, Math.floor(card.interval * 1.2))
-        newEaseFactor = Math.max(1.3, card.easeFactor - 0.15)
-        newStatus = 'review'
-        break
-      case 'good':
-        newInterval = card.interval === 0 ? 1 : Math.floor(card.interval * card.easeFactor)
-        newStatus = newInterval >= 21 ? 'review' : 'review'
-        break
-      case 'easy':
-        newInterval = card.interval === 0 ? 4 : Math.floor(card.interval * card.easeFactor * 1.3)
-        newEaseFactor = card.easeFactor + 0.15
-        newStatus = 'review'
-        break
-    }
-
-    const dueDate = new Date()
-    dueDate.setDate(dueDate.getDate() + newInterval)
-
-    // 本地更新（簡化版，實際應調用後端 API）
-    const index = cards.value.findIndex((c) => c.id === id)
-    if (index !== -1) {
-      const currentCard = cards.value[index]
-      if (currentCard) {
-        cards.value[index] = {
-          ...currentCard,
-          interval: newInterval,
-          easeFactor: newEaseFactor,
-          status: newStatus,
-          dueDate: dueDate.toISOString(),
-          srs: {
-            ...currentCard.srs,
-            interval: newInterval,
-            easeFactor: newEaseFactor,
-            dueDate: dueDate.toISOString(),
-          },
-          updatedAt: new Date().toISOString(),
-        }
+  async function reviewCard(
+    id: string,
+    rating: 'again' | 'hard' | 'good' | 'easy',
+    duration?: number,
+  ) {
+    loading.value = true
+    error.value = null
+    try {
+      const card = getCardById(id)
+      if (!card) {
+        throw new Error('找不到此字卡')
       }
+
+      // 將 rating 轉換為 quality (0-3)
+      const qualityMap = {
+        again: 0,
+        hard: 1,
+        good: 2,
+        easy: 3,
+      }
+      const quality = qualityMap[rating]
+
+      // 調用 API 進行複習
+      const response = await api.card.reviewCard(id, { quality, duration })
+      const updatedCard = transformCardDto(response.card)
+
+      // 更新本地狀態
+      const index = cards.value.findIndex((c) => c.id === id)
+      if (index !== -1) {
+        cards.value[index] = updatedCard
+      }
+
+      // 更新卡組統計
+      const stats = calculateDeckStats(card.deck)
+      const deckStore = useDeckStore()
+      deckStore.updateDeckStats(card.deck, stats)
+
+      return updatedCard
+    } catch (err) {
+      const apiError = err as ApiError
+      error.value = apiError.message || '複習卡片失敗'
+      throw err
+    } finally {
+      loading.value = false
     }
   }
 
