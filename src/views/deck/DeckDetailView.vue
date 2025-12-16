@@ -95,7 +95,7 @@
               <span :class="getStatusBadgeClass(card.status)" class="badge">
                 {{ getStatusText(card.status) }}
               </span>
-              <span class="text-sm text-tertiary-color"> 間隔: {{ card.interval }}天 </span>
+              <span class="text-sm text-tertiary-color"> 間隔: {{ formatCardInterval(card) }} </span>
               <!-- 操作按鈕 -->
               <div class="flex items-center space-x-2">
                 <button @click="handleEditCard(card.id)" class="btn btn-sm btn-secondary">
@@ -905,5 +905,56 @@ const parseSteps = (input: string): number[] => {
     .filter(s => s.length > 0)
     .map(s => parseInt(s, 10))
     .filter(n => !isNaN(n))
+}
+
+// 格式化卡片間隔顯示
+const formatCardInterval = (card: Card): string => {
+  const now = new Date()
+  const dueDate = new Date(card.srs.dueDate)
+
+  // 如果是學習階段（interval = 0），計算距離下次複習的時間
+  if (card.srs.interval === 0) {
+    const diffMs = dueDate.getTime() - now.getTime()
+
+    // 已過期
+    if (diffMs <= 0) {
+      return '已到期'
+    }
+
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    // 小於 1 小時，顯示分鐘
+    if (diffMinutes < 60) {
+      return `${diffMinutes}分鐘`
+    }
+    // 小於 1 天，顯示小時
+    else if (diffHours < 24) {
+      return `${diffHours}小時`
+    }
+    // 顯示天數
+    else {
+      return `${diffDays}天`
+    }
+  }
+
+  // 複習階段，直接使用 interval（天數）
+  const days = card.srs.interval
+
+  // 小於 1 天，檢查是否有分鐘級別的間隔
+  if (days < 1) {
+    const diffMs = dueDate.getTime() - now.getTime()
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}分鐘`
+    } else if (diffHours < 24) {
+      return `${diffHours}小時`
+    }
+  }
+
+  return `${days}天`
 }
 </script>
