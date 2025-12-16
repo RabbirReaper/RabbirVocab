@@ -8,13 +8,6 @@ import {
   NotFoundError,
 } from '../utils/errors.js'
 
-// 擴展 Express Session 類型
-declare module 'express-session' {
-  interface SessionData {
-    userId: string
-    role: string
-  }
-}
 
 /**
  * @desc    註冊新用戶

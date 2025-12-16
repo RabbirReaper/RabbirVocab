@@ -6,6 +6,7 @@ import Deck from '../model/Deck.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { ValidationError, NotFoundError, ForbiddenError, InternalServerError } from '../utils/errors.js'
 import * as r2Service from '../services/r2.service.js'
+import type { ISRSConfig } from '../model/types.js'
 
 // 定義 Card 創建時的數據類型
 interface CardDataInput {
@@ -497,7 +498,7 @@ export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // 使用 Deck 的 SRS 配置計算下次複習時間
-  const srsConfig = deck.settings.srsConfig as Required<typeof deck.settings.srsConfig>
+  const srsConfig = deck.settings.srsConfig as Required<ISRSConfig>
 
   // 調用 Card model 的 calculateNextReview 方法
   card.calculateNextReview(quality, srsConfig, duration)
