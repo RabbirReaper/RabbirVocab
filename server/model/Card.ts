@@ -221,6 +221,7 @@ cardSchema.methods.calculateNextReview = function (
       this.srs.learningStep += 1
       const nextStepMinutes = steps[this.srs.learningStep]
       this.srs.dueDate = new Date(now.getTime() + nextStepMinutes * 60 * 1000)
+      this.status = 'learning'
     } else {
       // 完成所有學習步驟，畢業
       this.srs.interval = cfg.graduatingInterval
