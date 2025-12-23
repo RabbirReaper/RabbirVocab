@@ -18,7 +18,6 @@ import './model/Deck.js'
 import './model/Card.js'
 import './model/Tag.js'
 import './model/Review.js'
-import './model/StudySession.js'
 
 import apiRoutes from './routes/index.js' // 未來可以整合所有 API 路由
 import { validateR2Config } from './services/r2.service.js'

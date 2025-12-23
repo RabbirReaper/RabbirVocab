@@ -280,52 +280,6 @@ export interface IReviewModel {
 }
 
 // ============================================
-// StudySession 相關類型
-// ============================================
-export type SessionType = 'regular' | 'cram' | 'custom';
-
-export interface IStudySessionStats {
-  cardsReviewed: number;
-  newCardsLearned: number;
-  correctAnswers: number;
-  wrongAnswers: number;
-  totalTime: number;
-  averageTimePerCard: number;
-}
-
-export interface IStudySession extends Document {
-  _id: Types.ObjectId;
-  user: Types.ObjectId;
-  deck: Types.ObjectId;
-  startTime: Date;
-  endTime?: Date;
-  stats: IStudySessionStats;
-  reviewedCards: Types.ObjectId[];
-  sessionType: SessionType;
-  isCompleted: boolean;
-  device: string;
-  createdAt: Date;
-  updatedAt: Date;
-  accuracy: number; // virtual
-  
-  // 方法
-  completeSession(): Promise<IStudySession>;
-  addReview(cardId: Types.ObjectId, isCorrect: boolean, timeSpent: number, isNewCard?: boolean): void;
-}
-
-export interface IStudySessionModel {
-  getStudyTimeStats(
-    userId: Types.ObjectId,
-    days?: number
-  ): Promise<Array<{
-    _id: string;
-    totalTime: number;
-    cardsReviewed: number;
-    sessions: number;
-  }>>;
-}
-
-// ============================================
 // Tag 相關類型
 // ============================================
 export interface ITag extends Document {

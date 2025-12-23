@@ -22,16 +22,13 @@ erDiagram
     User ||--o{ Deck : owns
     User ||--o{ Card : owns
     User ||--o{ Review : creates
-    User ||--o{ StudySession : has
     User ||--o{ Tag : creates
-    
+
     Deck ||--o{ Card : contains
     Deck ||--o{ Review : tracks
-    Deck ||--o{ StudySession : for
-    
+
     Card }o--o{ Tag : has
     Card ||--o{ Review : generates
-    Card }o--o{ StudySession : reviewed_in
     
     User {
         ObjectId _id PK
@@ -102,21 +99,6 @@ erDiagram
         date createdAt
         date updatedAt
     }
-    
-    StudySession {
-        ObjectId _id PK
-        ObjectId user FK
-        ObjectId deck FK
-        date startTime
-        date endTime
-        object stats
-        array reviewedCards
-        string sessionType
-        boolean isCompleted
-        string device
-        date createdAt
-        date updatedAt
-    }
 ```
 
 ### 資料模型說明
@@ -146,11 +128,6 @@ erDiagram
 - 記錄每次複習的詳細資訊
 - 包含複習前後的 FSRS-6 狀態快照
 - 用於學習分析和統計
-
-#### StudySession (學習會話)
-- 追蹤單次學習過程
-- 記錄學習時間、準確率等統計資料
-- 支援不同會話類型：`regular`（一般）、`cram`（衝刺）、`custom`（自訂）
 
 ## 🛠️ 技術棧
 
