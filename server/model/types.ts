@@ -176,20 +176,6 @@ export interface ICardSRS {
   lapseCount: number;
 }
 
-// 複習歷史類型
-export type ReviewHistoryType = 'learning' | 'review' | 'relearning';
-
-// 複習歷史記錄
-export interface IReviewHistoryEntry {
-  date: Date;                    // 複習日期時間
-  type: ReviewHistoryType;       // 複習類型：學習/複習/重新學習
-  rating: number;                // 評等 (0-3)
-  interval: number;              // 與上次複習的時間間隔（秒）
-  stability?: number;            // 複習後的穩定度（FSRS-6）
-  difficulty?: number;           // 複習後的難度（FSRS-6）
-  duration: number;              // 耗時（秒）
-}
-
 export interface ICard extends Document {
   _id: Types.ObjectId;
   deck: Types.ObjectId;
@@ -207,7 +193,6 @@ export interface ICard extends Document {
   tags: Types.ObjectId[];
   status: CardStatus;
   srs: ICardSRS;
-  reviewHistory: IReviewHistoryEntry[];  // 複習歷史記錄
   user: Types.ObjectId;
   isDeleted: boolean;
   createdAt: Date;
@@ -243,6 +228,8 @@ export interface IReview extends Document {
   deck: Types.ObjectId;
   quality: number;
   timeSpent: number;
+  interval: number;              // 此次複習後的間隔（秒）
+  retrievability?: number;       // FSRS 可提取性（0-1）
   beforeReview: IReviewState;
   afterReview: IReviewState;
   reviewType: ReviewType;
@@ -264,7 +251,7 @@ export interface IReviewModel {
     totalTime: number;
     avgQuality: number;
   }>>;
-  
+
   getDeckStats(
     deckId: Types.ObjectId,
     startDate: Date,

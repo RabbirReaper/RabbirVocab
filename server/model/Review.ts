@@ -35,6 +35,20 @@ const reviewSchema = new Schema<IReview>(
       min: 0,
     },
 
+    // 此次複習後的間隔（秒）
+    interval: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    // FSRS 可提取性（0-1）
+    retrievability: {
+      type: Number,
+      min: 0,
+      max: 1,
+    },
+
     // 複習前的狀態（FSRS-6）
     beforeReview: {
       status: String,
@@ -74,7 +88,9 @@ const reviewSchema = new Schema<IReview>(
 );
 
 // 索引
-reviewSchema.index({ user: 1 });
+reviewSchema.index({ user: 1, reviewedAt: -1 });
+reviewSchema.index({ card: 1, reviewedAt: -1 });
+reviewSchema.index({ deck: 1, reviewedAt: -1 });
 
 // 靜態方法：獲取用戶學習統計
 reviewSchema.statics.getUserStats = async function (

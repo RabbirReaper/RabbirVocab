@@ -95,45 +95,6 @@ const cardSchema = new Schema<ICard>(
       },
     },
 
-    // 複習歷史記錄
-    reviewHistory: [
-      {
-        date: {
-          type: Date,
-          required: true,
-        },
-        type: {
-          type: String,
-          enum: ['learning', 'review', 'relearning'],
-          required: true,
-        },
-        rating: {
-          type: Number,
-          required: true,
-          min: 0,
-          max: 3,
-        },
-        interval: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
-        stability: {
-          type: Number,
-          required: false,
-        },
-        difficulty: {
-          type: Number,
-          required: false,
-        },
-        duration: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-      },
-    ],
-
     // 擁有者
     user: {
       type: Schema.Types.ObjectId,
@@ -155,6 +116,7 @@ const cardSchema = new Schema<ICard>(
 // 索引
 cardSchema.index({ user: 1 })
 cardSchema.index({ deck: 1, status: 1 })
+cardSchema.index({ deck: 1, status: 1, 'srs.dueDate': 1 })
 cardSchema.index({ 'srs.dueDate': 1 })
 
 /**
@@ -191,19 +153,8 @@ cardSchema.methods.calculateNextReview = function (
   const now = new Date()
   const fsrsConfig = toFSRSConfig(config)
 
-  // 計算與上次複習的時間間隔（秒）
-  const intervalSinceLastReview = this.srs.lastReviewed
-    ? Math.floor((now.getTime() - this.srs.lastReviewed.getTime()) / 1000)
-    : 0
-
-  // 判斷複習類型
-  let reviewType: 'learning' | 'review' | 'relearning'
-
   // 處理新卡片
   if (this.status === 'new') {
-    // 新卡片第一次複習
-    reviewType = 'learning'
-
     // 創建初始狀態
     const initialState = createInitialState(quality, fsrsConfig)
 
@@ -245,7 +196,6 @@ cardSchema.methods.calculateNextReview = function (
 
     // 判斷複習類型和卡片狀態
     if (quality === 0) {
-      reviewType = 'relearning'
       this.status = 'learning'
 
       // 檢查是否達到低效卡臨界值
@@ -254,24 +204,11 @@ cardSchema.methods.calculateNextReview = function (
         // 需要在 Tag model 實作後處理
       }
     } else if (result.state.learningStep >= 0) {
-      reviewType = 'learning'
       this.status = 'learning'
     } else {
-      reviewType = 'review'
       this.status = 'review'
     }
   }
-
-  // 記錄到複習歷史
-  this.reviewHistory.push({
-    date: now,
-    type: reviewType,
-    rating: quality,
-    interval: intervalSinceLastReview,
-    stability: this.srs.stability,
-    difficulty: this.srs.difficulty,
-    duration: duration,
-  })
 }
 
 /**
