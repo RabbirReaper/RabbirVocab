@@ -82,9 +82,6 @@ const deckSchema = new Schema<IDeck>(
       type: Boolean,
       default: false,
     },
-  },
-  {
-    timestamps: true,
   }
 );
 

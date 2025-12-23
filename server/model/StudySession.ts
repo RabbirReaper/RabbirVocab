@@ -93,9 +93,6 @@ const studySessionSchema = new Schema<IStudySession>(
       type: String,
       default: 'web',
     },
-  },
-  {
-    timestamps: true,
   }
 );
 

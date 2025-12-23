@@ -42,9 +42,6 @@ const tagSchema = new Schema<ITag>(
       type: Boolean,
       default: false,
     },
-  },
-  {
-    timestamps: true,
   }
 );
 

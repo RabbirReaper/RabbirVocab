@@ -70,9 +70,6 @@ const reviewSchema = new Schema<IReview>(
       type: Date,
       default: Date.now,
     },
-  },
-  {
-    timestamps: true,
   }
 );
 
