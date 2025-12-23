@@ -199,12 +199,14 @@ function calculateNextDifficulty(
 
 /**
  * 計算複習後的穩定度（成功）
- * 當評分 >= 3 (Good) 時使用
+ * 當評分 >= 2 (Hard/Good/Easy) 時使用
+ *
+ * 修正：確保 rating=2 時 hardPenalty 能正確應用
  *
  * @param currentStability 當前穩定度
  * @param currentDifficulty 當前難度
  * @param retrievability 當前可提取性
- * @param rating 評分 (3-4)
+ * @param rating 評分 (2-4)
  * @param w 權重參數
  * @returns 新穩定度
  */
@@ -215,7 +217,7 @@ function calculateStabilityAfterSuccess(
   rating: number,
   w: number[]
 ): number {
-  // S' = S * (e^(w[8]) * (11 - D) * S^(-w[9]) * (e^(w[10] * (1 - R)) - 1) * hardPenalty + 1)
+  // S' = S * (e^(w[8]) * (11 - D) * S^(-w[9]) * (e^(w[10] * (1 - R)) - 1) * hardPenalty + 1) * easyBonus
 
   // Hard penalty: 當評分為 Hard (2) 時應用懲罰
   let hardPenalty = 1.0;
