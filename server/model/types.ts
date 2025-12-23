@@ -199,7 +199,7 @@ export interface ICard extends Document {
   updatedAt: Date;
 
   // 方法（使用 Deck 的 SRS 配置）
-  calculateNextReview(quality: number, config: Required<ISRSConfig>, duration?: number): void;
+  calculateNextReview(quality: number, config: Required<ISRSConfig>): void;
   isDue(): boolean;
   isLeech(threshold?: number): boolean;
 }

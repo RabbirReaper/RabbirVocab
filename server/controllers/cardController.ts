@@ -461,7 +461,7 @@ export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { cardId } = req.params
-  const { quality, duration = 0 } = req.body
+  const { quality } = req.body
 
   // 驗證 quality 參數
   if (quality === undefined || quality === null) {
@@ -501,7 +501,7 @@ export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
   const srsConfig = deck.settings.srsConfig as Required<ISRSConfig>
 
   // 調用 Card model 的 calculateNextReview 方法
-  card.calculateNextReview(quality, srsConfig, duration)
+  card.calculateNextReview(quality, srsConfig)
 
   // 保存更新後的卡片
   await card.save()

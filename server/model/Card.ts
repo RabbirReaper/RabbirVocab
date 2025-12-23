@@ -143,12 +143,10 @@ function toFSRSConfig(config: Required<ISRSConfig>): IFSRSConfig {
  *   3: 正確且容易 (Good)
  *   4: 完美記得 (Easy)
  * @param config FSRS 配置
- * @param duration 複習耗時（秒）
  */
 cardSchema.methods.calculateNextReview = function (
   quality: number,
   config: Required<ISRSConfig>,
-  duration: number = 0,
 ): void {
   const now = new Date()
   const fsrsConfig = toFSRSConfig(config)
