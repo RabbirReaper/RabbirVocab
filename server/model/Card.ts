@@ -137,11 +137,11 @@ function toFSRSConfig(config: Required<ISRSConfig>): IFSRSConfig {
 /**
  * FSRS-6 算法計算下次複習時間
  *
- * @param quality 評分 (0-3)
- *   0: 完全忘記 (Again)
- *   1: 正確但困難 (Hard)
- *   2: 正確且容易 (Good)
- *   3: 完美記得 (Easy)
+ * @param quality 評分 (1-4)
+ *   1: 完全忘記 (Again)
+ *   2: 正確但困難 (Hard)
+ *   3: 正確且容易 (Good)
+ *   4: 完美記得 (Easy)
  * @param config FSRS 配置
  * @param duration 複習耗時（秒）
  */
@@ -164,7 +164,7 @@ cardSchema.methods.calculateNextReview = function (
     this.srs.dueDate = initialState.dueDate
     this.srs.lastReviewed = now
     this.srs.learningStep = initialState.learningStep
-    this.srs.lapseCount = quality === 0 ? 1 : 0
+    this.srs.lapseCount = quality === 1 ? 1 : 0
 
     // 設定學習狀態
     if (initialState.learningStep === -1) {
@@ -195,7 +195,7 @@ cardSchema.methods.calculateNextReview = function (
     this.srs.lapseCount = result.state.lapseCount
 
     // 判斷複習類型和卡片狀態
-    if (quality === 0) {
+    if (quality === 1) {
       this.status = 'learning'
 
       // 檢查是否達到低效卡臨界值

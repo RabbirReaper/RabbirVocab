@@ -121,15 +121,14 @@ export const DEFAULT_FSRS_CONFIG: IFSRSConfig = {
  * 計算初始難度
  * 根據首次評分計算卡片的初始難度
  *
- * @param rating 評分 (0=Again, 1=Hard, 2=Good, 3=Easy)
+ * @param rating 評分 (1=Again, 2=Hard, 3=Good, 4=Easy)
  * @param w 權重參數
  * @returns 難度值 (1-10)
  */
 function calculateInitialDifficulty(rating: number, w: number[]): number {
   // D_0(G) = w[4] - e^(w[5] * (G-1)) + 1
-  // G 是評分 (1-4)，我們的系統使用 0-3，所以需要 +1
-  const G = rating + 1;
-  const difficulty = w[4] - Math.exp(w[5] * (G - 1)) + 1;
+  // G 是評分 (1-4)
+  const difficulty = w[4] - Math.exp(w[5] * (rating - 1)) + 1;
 
   // 限制在 [1, 10] 範圍內
   return Math.max(1, Math.min(10, difficulty));
@@ -139,14 +138,14 @@ function calculateInitialDifficulty(rating: number, w: number[]): number {
  * 計算初始穩定度
  * 根據首次評分計算卡片的初始穩定度
  *
- * @param rating 評分 (0-3)
+ * @param rating 評分 (1-4)
  * @param w 權重參數
  * @returns 穩定度（天）
  */
 function calculateInitialStability(rating: number, w: number[]): number {
-  // S_0(G) = w[G]
-  // G 是評分，直接使用對應的權重
-  return Math.max(0.1, w[rating]);
+  // S_0(G) = w[G-1]
+  // rating 是 1-4，需要轉換為 array 索引 0-3
+  return Math.max(0.1, w[rating - 1]);
 }
 
 /**
@@ -176,7 +175,7 @@ function calculateRetrievability(
  * 根據當前難度和評分計算新難度
  *
  * @param currentDifficulty 當前難度
- * @param rating 評分 (0-3)
+ * @param rating 評分 (1-4)
  * @param w 權重參數
  * @returns 新難度 (1-10)
  */
@@ -186,13 +185,12 @@ function calculateNextDifficulty(
   w: number[]
 ): number {
   // D' = D - w[6] * (G - 3)
-  // G 是評分 (1-4)，我們的系統使用 0-3，所以需要 +1
-  const G = rating + 1;
-  const nextDifficulty = currentDifficulty - w[6] * (G - 3);
+  // G 是評分 (1-4)
+  const nextDifficulty = currentDifficulty - w[6] * (rating - 3);
 
   // 使用平均回歸
   // D' = w[7] * D_0(3) + (1-w[7]) * D'
-  const initialDifficulty = calculateInitialDifficulty(2, w); // rating=2 (Good)
+  const initialDifficulty = calculateInitialDifficulty(3, w); // rating=3 (Good)
   const meanRevertedDifficulty = w[7] * initialDifficulty + (1 - w[7]) * nextDifficulty;
 
   // 限制在 [1, 10] 範圍內
@@ -201,12 +199,12 @@ function calculateNextDifficulty(
 
 /**
  * 計算複習後的穩定度（成功）
- * 當評分 >= 2 (Good) 時使用
+ * 當評分 >= 3 (Good) 時使用
  *
  * @param currentStability 當前穩定度
  * @param currentDifficulty 當前難度
  * @param retrievability 當前可提取性
- * @param rating 評分 (2-3)
+ * @param rating 評分 (3-4)
  * @param w 權重參數
  * @returns 新穩定度
  */
@@ -219,15 +217,15 @@ function calculateStabilityAfterSuccess(
 ): number {
   // S' = S * (e^(w[8]) * (11 - D) * S^(-w[9]) * (e^(w[10] * (1 - R)) - 1) * hardPenalty + 1)
 
-  // Hard penalty: 當評分為 Hard (1) 時應用懲罰
+  // Hard penalty: 當評分為 Hard (2) 時應用懲罰
   let hardPenalty = 1.0;
-  if (rating === 1) {
+  if (rating === 2) {
     hardPenalty = w[15];
   }
 
-  // Easy bonus: 當評分為 Easy (3) 時應用獎勵
+  // Easy bonus: 當評分為 Easy (4) 時應用獎勵
   let easyBonus = 1.0;
-  if (rating === 3) {
+  if (rating === 4) {
     easyBonus = w[16];
   }
 
@@ -245,7 +243,7 @@ function calculateStabilityAfterSuccess(
 
 /**
  * 計算複習後的穩定度（失敗）
- * 當評分 = 0 (Again) 時使用
+ * 當評分 = 1 (Again) 時使用
  *
  * @param currentDifficulty 當前難度
  * @param currentStability 當前穩定度
@@ -294,7 +292,7 @@ function calculateInterval(
 /**
  * 創建初始 FSRS 狀態（用於新卡片）
  *
- * @param rating 首次評分 (0-3)
+ * @param rating 首次評分 (1-4)
  * @param config FSRS 配置
  * @returns 初始狀態
  */
@@ -325,7 +323,7 @@ export function createInitialState(rating: number, config: IFSRSConfig): IFSRSSt
  * 處理學習階段的複習
  *
  * @param currentState 當前狀態
- * @param rating 評分 (0-3)
+ * @param rating 評分 (1-4)
  * @param config FSRS 配置
  * @returns 新狀態和間隔
  */
@@ -337,8 +335,8 @@ function reviewInLearning(
   const w = config.weights;
   const now = new Date();
 
-  // 如果評分為 Again (0)，重置到第一步
-  if (rating === 0) {
+  // 如果評分為 Again (1)，重置到第一步
+  if (rating === 1) {
     const nextDueDate = new Date(now);
     nextDueDate.setMinutes(nextDueDate.getMinutes() + config.learningSteps[0]);
 
@@ -354,8 +352,8 @@ function reviewInLearning(
     };
   }
 
-  // 如果評分為 Easy (3)，直接畢業
-  if (rating === 3) {
+  // 如果評分為 Easy (4)，直接畢業
+  if (rating === 4) {
     const stability = calculateInitialStability(rating, w);
     const difficulty = calculateInitialDifficulty(rating, w);
     const scheduledDays = calculateInterval(stability, config.desiredRetention, config.maximumInterval);
@@ -376,7 +374,7 @@ function reviewInLearning(
     };
   }
 
-  // Good (2) 或 Hard (1): 前進到下一步
+  // Good (3) 或 Hard (2): 前進到下一步
   const nextStep = currentState.learningStep + 1;
 
   // 檢查是否完成所有學習步驟
@@ -421,7 +419,7 @@ function reviewInLearning(
  * 處理複習階段的複習
  *
  * @param currentState 當前狀態
- * @param rating 評分 (0-3)
+ * @param rating 評分 (1-4)
  * @param config FSRS 配置
  * @returns 新狀態和間隔
  */
@@ -445,8 +443,8 @@ function reviewInReview(
     config.desiredRetention
   );
 
-  // 如果評分為 Again (0)，進入重新學習
-  if (rating === 0) {
+  // 如果評分為 Again (1)，進入重新學習
+  if (rating === 1) {
     const newStability = calculateStabilityAfterFailure(
       currentState.difficulty,
       currentState.stability,
@@ -507,7 +505,7 @@ function reviewInReview(
  * 這是主要的複習函數
  *
  * @param currentState 當前狀態
- * @param rating 評分 (0=Again, 1=Hard, 2=Good, 3=Easy)
+ * @param rating 評分 (1=Again, 2=Hard, 3=Good, 4=Easy)
  * @param config FSRS 配置
  * @returns 新狀態和間隔
  */
@@ -517,8 +515,8 @@ export function review(
   config: IFSRSConfig
 ): IReviewResult {
   // 驗證評分
-  if (rating < 0 || rating > 3) {
-    throw new Error('Rating must be between 0 and 3');
+  if (rating < 1 || rating > 4) {
+    throw new Error('Rating must be between 1 and 4');
   }
 
   // 根據當前階段選擇處理函數
@@ -549,10 +547,10 @@ export function getSchedulingInfo(
   easy: IReviewResult;
 } {
   return {
-    again: review(currentState, 0, config),
-    hard: review(currentState, 1, config),
-    good: review(currentState, 2, config),
-    easy: review(currentState, 3, config),
+    again: review(currentState, 1, config),
+    hard: review(currentState, 2, config),
+    good: review(currentState, 3, config),
+    easy: review(currentState, 4, config),
   };
 }
 
