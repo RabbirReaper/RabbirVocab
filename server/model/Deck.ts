@@ -36,47 +36,43 @@ const deckSchema = new Schema<IDeck>(
         type: Boolean,
         default: false,
       },
-      // SRS 演算法配置（每個牌組可獨立設定）
+      // FSRS-6 演算法配置（每個牌組可獨立設定）
       srsConfig: {
+        // FSRS-6 權重參數（19 個）
+        weights: {
+          type: [Number],
+          default: [
+            0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49,
+            0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61,
+            0.0, 0.0  // FSRS-6 新增的參數
+          ],
+        },
+        // 期望保留率 (0.7-0.97)
+        desiredRetention: {
+          type: Number,
+          default: 0.9,
+          min: 0.7,
+          max: 0.97,
+        },
+        // 學習步驟（分鐘）
         learningSteps: {
           type: [Number],
-          default: [15, 1440, 8640], // 15分鐘, 1天, 6天
+          default: [1, 10], // 1分鐘, 10分鐘
         },
-        graduatingInterval: {
-          type: Number,
-          default: 15,
-        },
-        easyInterval: {
-          type: Number,
-          default: 60,
-        },
+        // 重新學習步驟（分鐘）
         relearningSteps: {
           type: [Number],
-          default: [20], // 20分鐘
+          default: [10], // 10分鐘
         },
-        minimumInterval: {
+        // 最大間隔天數
+        maximumInterval: {
           type: Number,
-          default: 2,
+          default: 36500, // 100年
         },
+        // 低效卡閾值
         leechThreshold: {
           type: Number,
           default: 8,
-        },
-        easyBonus: {
-          type: Number,
-          default: 1.3,
-        },
-        hardInterval: {
-          type: Number,
-          default: 1.2,
-        },
-        minEaseFactor: {
-          type: Number,
-          default: 1.3,
-        },
-        maxEaseFactor: {
-          type: Number,
-          default: 2.5,
         },
       },
     },

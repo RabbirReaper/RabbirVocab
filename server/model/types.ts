@@ -1,26 +1,48 @@
 import { Document, Types } from 'mongoose';
 
 // ============================================
-// SRS 演算法配置（可選，用於自訂算法參數）
+// FSRS-6 演算法配置
 // ============================================
 export interface ISRSConfig {
-  // 學習階段（分鐘）
-  learningSteps?: number[];          // 預設 [15, 1440, 8640] (15m, 1d, 6d)
-  graduatingInterval?: number;       // 畢業間隔（天），預設 15
-  easyInterval?: number;             // 簡單間隔（天），預設 60
+  /**
+   * FSRS-6 權重參數（19 個）
+   * 用於計算穩定度和難度
+   */
+  weights?: number[];
 
-  // 遺忘設定
-  relearningSteps?: number[];        // 重新學習階段（分鐘），預設 [20]
-  minimumInterval?: number;          // 最短間隔（天），預設 2
-  leechThreshold?: number;           // 低效卡臨界值，預設 8
+  /**
+   * 期望的保留率（可提取性目標）
+   * 範圍: 0.7 - 0.97
+   * 預設: 0.9 (90% 記住率)
+   */
+  desiredRetention?: number;
 
-  // 間隔修飾符
-  easyBonus?: number;                // 容易加成，預設 1.3
-  hardInterval?: number;             // 困難間隔倍數，預設 1.2
+  /**
+   * 學習步驟（分鐘）
+   * 用於新卡片的初始學習階段
+   * 預設: [1, 10]
+   */
+  learningSteps?: number[];
 
-  // 難度係數
-  minEaseFactor?: number;            // 最小難度係數，預設 1.3
-  maxEaseFactor?: number;            // 最大難度係數，預設 2.5
+  /**
+   * 重新學習步驟（分鐘）
+   * 用於遺忘後的重新學習
+   * 預設: [10]
+   */
+  relearningSteps?: number[];
+
+  /**
+   * 最大間隔天數
+   * 預設: 36500 (100年)
+   */
+  maximumInterval?: number;
+
+  /**
+   * 低效卡閾值
+   * 遺忘次數達到此值時標記為低效卡
+   * 預設: 8
+   */
+  leechThreshold?: number;
 }
 
 // ============================================
@@ -114,14 +136,44 @@ export interface ICardAudio {
   duration?: number; // 音檔長度（秒）
 }
 
+/**
+ * FSRS-6 卡片狀態
+ */
 export interface ICardSRS {
-  easeFactor: number;
-  interval: number;
-  repetitions: number;
+  /**
+   * 穩定度（天）
+   * 表示記憶的持久性，即可提取性降至期望保留率所需的時間
+   */
+  stability: number;
+
+  /**
+   * 難度 (1-10)
+   * 1 = 最簡單, 10 = 最困難
+   */
+  difficulty: number;
+
+  /**
+   * 下次複習日期
+   */
   dueDate: Date;
-  lastReviewed?: Date;
+
+  /**
+   * 上次複習日期
+   */
+  lastReviewed: Date | null;
+
+  /**
+   * 學習步驟索引
+   * -1 表示已畢業（進入複習階段）
+   * >= 0 表示在學習階段
+   */
   learningStep: number;
-  lapseCount: number;           // 遺忘次數（用於低效卡檢測）
+
+  /**
+   * 遺忘次數
+   * 用於低效卡檢測
+   */
+  lapseCount: number;
 }
 
 // 複習歷史類型
@@ -133,7 +185,8 @@ export interface IReviewHistoryEntry {
   type: ReviewHistoryType;       // 複習類型：學習/複習/重新學習
   rating: number;                // 評等 (0-3)
   interval: number;              // 與上次複習的時間間隔（秒）
-  easeFactor?: number;           // 輕鬆度（學習階段可為空，學習最後一階段會有）
+  stability?: number;            // 複習後的穩定度（FSRS-6）
+  difficulty?: number;           // 複習後的難度（FSRS-6）
   duration: number;              // 耗時（秒）
 }
 
@@ -171,11 +224,15 @@ export interface ICard extends Document {
 // ============================================
 export type ReviewType = 'new' | 'learning' | 'review' | 'relearning';
 
+/**
+ * FSRS-6 複習狀態快照
+ * 用於記錄複習前後的狀態
+ */
 export interface IReviewState {
   status: string;
-  easeFactor: number;
-  interval: number;
-  repetitions: number;
+  stability: number;
+  difficulty: number;
+  learningStep: number;
   nextDueDate?: Date;
 }
 

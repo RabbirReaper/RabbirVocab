@@ -35,20 +35,20 @@ const reviewSchema = new Schema<IReview>(
       min: 0,
     },
 
-    // 複習前的狀態
+    // 複習前的狀態（FSRS-6）
     beforeReview: {
       status: String,
-      easeFactor: Number,
-      interval: Number,
-      repetitions: Number,
+      stability: Number,
+      difficulty: Number,
+      learningStep: Number,
     },
 
-    // 複習後的狀態
+    // 複習後的狀態（FSRS-6）
     afterReview: {
       status: String,
-      easeFactor: Number,
-      interval: Number,
-      repetitions: Number,
+      stability: Number,
+      difficulty: Number,
+      learningStep: Number,
       nextDueDate: Date,
     },
 
