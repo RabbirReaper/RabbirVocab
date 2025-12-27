@@ -593,10 +593,7 @@ const learningStepsInput = ref<string>('')
 const relearningStepsInput = ref<string>('')
 
 // FSRS-6 預設 weights 參數
-const DEFAULT_WEIGHTS = [
-  0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61,
-  0.0, 0.0,
-]
+const DEFAULT_WEIGHTS = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621]
 
 // 分頁狀態
 const currentPage = ref(1)
