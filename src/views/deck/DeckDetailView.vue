@@ -323,7 +323,7 @@
                       >
                         <div class="text-xs text-tertiary-color">w{{ index }}</div>
                         <div class="text-sm text-primary-color font-mono">
-                          {{ weight.toFixed(2) }}
+                          {{ weight }}
                         </div>
                       </div>
                     </div>
