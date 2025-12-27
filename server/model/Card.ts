@@ -153,59 +153,77 @@ cardSchema.methods.calculateNextReview = function (
 
   // 處理新卡片
   if (this.status === 'new') {
-    // 創建初始狀態
-    const initialState = createInitialState(quality, fsrsConfig)
+    if (quality === 4) {
+      // Easy: 直接畢業進入複習階段
+      const initialState = createInitialState(quality, fsrsConfig)
 
-    // 更新卡片狀態
-    this.srs.stability = initialState.stability
-    this.srs.difficulty = initialState.difficulty
-    this.srs.dueDate = initialState.dueDate
-    this.srs.lastReviewed = now
-    this.srs.learningStep = initialState.learningStep
-    this.srs.lapseCount = quality === 1 ? 1 : 0
-
-    // 設定學習狀態
-    if (initialState.learningStep === -1) {
-      // 直接畢業（評分為 Easy 時）
+      this.srs.stability = initialState.stability
+      this.srs.difficulty = initialState.difficulty
+      this.srs.dueDate = initialState.dueDate
+      this.srs.lastReviewed = now
+      this.srs.learningStep = -1
+      this.srs.lapseCount = 0
       this.status = 'review'
     } else {
-      this.status = 'learning'
-    }
-  } else {
-    // 使用 FSRS 複習算法
-    const currentState = {
-      stability: this.srs.stability,
-      difficulty: this.srs.difficulty,
-      learningStep: this.srs.learningStep,
-      lapseCount: this.srs.lapseCount,
-      dueDate: this.srs.dueDate,
-      lastReviewed: this.srs.lastReviewed,
-    }
+      // Again/Hard/Good: 進入學習階段
+      let stepIndex = 0
 
-    const result = review(currentState, quality, fsrsConfig)
-
-    // 更新卡片狀態
-    this.srs.stability = result.state.stability
-    this.srs.difficulty = result.state.difficulty
-    this.srs.dueDate = result.state.dueDate
-    this.srs.lastReviewed = now
-    this.srs.learningStep = result.state.learningStep
-    this.srs.lapseCount = result.state.lapseCount
-
-    // 判斷複習類型和卡片狀態
-    if (quality === 1) {
-      this.status = 'learning'
-
-      // 檢查是否達到低效卡臨界值
-      if (this.srs.lapseCount >= fsrsConfig.leechThreshold) {
-        // TODO: 自動添加 'leech' 標籤
-        // 需要在 Tag model 實作後處理
+      // Good: 如果有第二步，直接進入第二步
+      if (quality === 3 && fsrsConfig.learningSteps.length > 1) {
+        stepIndex = 1
       }
-    } else if (result.state.learningStep >= 0) {
+      // Hard/Again: 從第一步開始
+      else {
+        stepIndex = 0
+      }
+
+      const nextDueDate = new Date(now)
+      nextDueDate.setMinutes(nextDueDate.getMinutes() + fsrsConfig.learningSteps[stepIndex])
+
+      this.srs.dueDate = nextDueDate
+      this.srs.lastReviewed = now
+      this.srs.learningStep = stepIndex
+      this.srs.lapseCount = quality === 1 ? 1 : 0
+      this.srs.stability = 0  // 學習階段暫不設置
+      this.srs.difficulty = 5  // 預設中等難度
       this.status = 'learning'
-    } else {
-      this.status = 'review'
     }
+    return
+  }
+
+  // 使用 FSRS 複習算法
+  const currentState = {
+    stability: this.srs.stability,
+    difficulty: this.srs.difficulty,
+    learningStep: this.srs.learningStep,
+    lapseCount: this.srs.lapseCount,
+    dueDate: this.srs.dueDate,
+    lastReviewed: this.srs.lastReviewed,
+  }
+
+  const result = review(currentState, quality, fsrsConfig)
+
+  // 更新卡片狀態
+  this.srs.stability = result.state.stability
+  this.srs.difficulty = result.state.difficulty
+  this.srs.dueDate = result.state.dueDate
+  this.srs.lastReviewed = now
+  this.srs.learningStep = result.state.learningStep
+  this.srs.lapseCount = result.state.lapseCount
+
+  // 判斷複習類型和卡片狀態
+  if (quality === 1) {
+    this.status = 'learning'
+
+    // 檢查是否達到低效卡臨界值
+    if (this.srs.lapseCount >= fsrsConfig.leechThreshold) {
+      // TODO: 自動添加 'leech' 標籤
+      // 需要在 Tag model 實作後處理
+    }
+  } else if (result.state.learningStep >= 0) {
+    this.status = 'learning'
+  } else {
+    this.status = 'review'
   }
 }
 
