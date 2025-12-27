@@ -468,8 +468,8 @@ export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
     throw new ValidationError('必須提供複習品質評等 (quality)')
   }
 
-  if (typeof quality !== 'number' || quality < 0 || quality > 3) {
-    throw new ValidationError('複習品質評等必須是 0-3 之間的數字')
+  if (typeof quality !== 'number' || quality < 1 || quality > 4) {
+    throw new ValidationError('複習品質評等必須是 1-4 之間的數字 (1=Again, 2=Hard, 3=Good, 4=Easy)')
   }
 
   // 獲取卡片

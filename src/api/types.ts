@@ -53,16 +53,12 @@ export interface AuthResponse {
 // ==================== Deck 相關類型 ====================
 
 export interface SRSConfig {
+  weights: number[] // FSRS-6 權重參數（19個）
+  desiredRetention: number // 期望保留率 (0.7-0.97)
   learningSteps: number[] // 學習步驟（分鐘）
-  graduatingInterval: number // 畢業間隔（天）
-  easyInterval: number // 簡單間隔（天）
   relearningSteps: number[] // 重新學習步驟（分鐘）
-  minimumInterval: number // 最短間隔（天）
+  maximumInterval: number // 最大間隔（天）
   leechThreshold: number // 低效卡臨界值
-  easyBonus: number // 簡單加成
-  hardInterval: number // 困難間隔倍數
-  minEaseFactor: number // 最小難度係數
-  maxEaseFactor: number // 最大難度係數
 }
 
 export interface DeckSettings {
@@ -126,22 +122,12 @@ export interface CardBack {
 }
 
 export interface CardSRS {
-  easeFactor: number
-  interval: number
-  repetitions: number
+  stability: number // 穩定度（天）
+  difficulty: number // 難度 (1-10)
   dueDate: string
   lastReviewed: string | null
-  learningStep: number
-  lapseCount: number
-}
-
-export interface ReviewHistoryItem {
-  date: string
-  type: 'learning' | 'review' | 'relearning'
-  rating: number // 0-3
-  interval: number
-  easeFactor?: number
-  duration: number
+  learningStep: number // -1 表示已畢業
+  lapseCount: number // 遺忘次數
 }
 
 export interface CardDto {
@@ -153,7 +139,6 @@ export interface CardDto {
   tags: string[]
   status: CardStatus
   srs: CardSRS
-  reviewHistory: ReviewHistoryItem[]
   user: string
   isDeleted: boolean
   createdAt: string
@@ -185,8 +170,7 @@ export interface GetCardResponse {
 }
 
 export interface ReviewCardRequest {
-  quality: number // 0-3: 0=完全忘記, 1=正確但困難, 2=正確且容易, 3=完美記得
-  duration?: number // 複習耗時（秒）
+  quality: number // 1-4: 1=Again, 2=Hard, 3=Good, 4=Easy
 }
 
 export interface ReviewCardResponse {

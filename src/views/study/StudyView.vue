@@ -192,10 +192,8 @@ const handleReview = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
   if (!currentCard.value) return
 
   // 計算複習耗時（秒）
-  const duration = reviewStartTime.value ? Math.floor((Date.now() - reviewStartTime.value) / 1000) : 0
-
   try {
-    await cardStore.reviewCard(currentCard.value.id, rating, duration)
+    await cardStore.reviewCard(currentCard.value.id, rating)
     studiedCount.value++
     showAnswer.value = false
 
@@ -220,9 +218,9 @@ const formatInterval = (minutes: number): string => {
   return `${days}天`
 }
 
-// 根據 deck 的 SRS 配置和 card 狀態計算間隔
+// 根據 deck 的 SRS 配置和 card 狀態計算間隔（FSRS-6 簡化版）
 const getHardInterval = () => {
-  if (!currentCard.value || !deck.value) return '1天'
+  if (!currentCard.value || !deck.value) return '較短間隔'
 
   const card = currentCard.value
   const config = deck.value.srsConfig
@@ -236,17 +234,17 @@ const getHardInterval = () => {
       const nextStep = steps[currentStep + 1]
       return formatInterval(nextStep ?? 0)
     } else {
-      return `${config.graduatingInterval ?? 15}天`
+      return '即將畢業'
     }
   } else {
-    // 複習階段：間隔 * hardInterval (1.2)
-    const interval = Math.round(card.srs.interval * (config.hardInterval ?? 1.2))
-    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+    // 複習階段：使用當前穩定度的較短版本
+    const stability = card.srs.stability
+    return stability < 1 ? '<1天' : `約${Math.round(stability * 0.8)}天`
   }
 }
 
 const getGoodInterval = () => {
-  if (!currentCard.value || !deck.value) return '3天'
+  if (!currentCard.value || !deck.value) return '標準間隔'
 
   const card = currentCard.value
   const config = deck.value.srsConfig
@@ -260,29 +258,30 @@ const getGoodInterval = () => {
       const nextStep = steps[currentStep + 1]
       return formatInterval(nextStep ?? 0)
     } else {
-      return `${config.graduatingInterval ?? 15}天`
+      return '畢業'
     }
   } else {
-    // 複習階段：間隔 * easeFactor
-    const interval = Math.round(card.srs.interval * card.srs.easeFactor)
-    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+    // 複習階段：基於當前穩定度
+    const stability = card.srs.stability
+    return `約${Math.round(stability * 2.5)}天`
   }
 }
 
 const getEasyInterval = () => {
-  if (!currentCard.value || !deck.value) return '7天'
+  if (!currentCard.value || !deck.value) return '較長間隔'
 
   const card = currentCard.value
-  const config = deck.value.srsConfig
   const isNewOrLearning = card.status === 'new' || card.status === 'learning'
 
   if (isNewOrLearning) {
-    // 學習階段：直接畢業，使用 easyInterval
-    return `${config.easyInterval ?? 60}天`
+    // 學習階段：直接畢業
+    return '直接畢業'
   } else {
-    // 複習階段：間隔 * easeFactor * easyBonus
-    const interval = Math.round(card.srs.interval * card.srs.easeFactor * (config.easyBonus ?? 1.3))
-    return `${Math.max(interval, config.minimumInterval ?? 2)}天`
+    // 複習階段：最長間隔
+    const stability = card.srs.stability
+    const config = deck.value.srsConfig
+    const estimated = Math.round(stability * 4)
+    return `約${Math.min(estimated, config.maximumInterval)}天`
   }
 }
 

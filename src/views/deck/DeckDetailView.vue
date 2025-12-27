@@ -199,7 +199,7 @@
                 </label>
                 <input
                   type="number"
-                  :value="deck.srsConfig.newCardsPerDay"
+                  :value="deck.newCardsPerDay"
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
                   disabled
                 />
@@ -210,7 +210,7 @@
                 </label>
                 <input
                   type="number"
-                  :value="deck.srsConfig.reviewsPerDay"
+                  :value="deck.reviewCardsPerDay"
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
                   disabled
                 />
@@ -231,8 +231,36 @@
 
           <!-- SRS 演算法參數 -->
           <div>
-            <h3 class="text-lg font-semibold text-primary-color mb-3">SRS 演算法參數</h3>
+            <h3 class="text-lg font-semibold text-primary-color mb-3">FSRS-6 演算法參數</h3>
             <div class="grid md:grid-cols-2 gap-4">
+              <!-- 期望保留率 -->
+              <div>
+                <label class="block text-sm font-medium text-secondary-color mb-1">
+                  期望保留率
+                </label>
+                <input
+                  type="number"
+                  :value="deck.srsConfig.desiredRetention"
+                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
+                  disabled
+                />
+                <p class="text-xs text-tertiary-color mt-1">目標記憶保留率（建議 0.85-0.95）</p>
+              </div>
+
+              <!-- 最大間隔 -->
+              <div>
+                <label class="block text-sm font-medium text-secondary-color mb-1">
+                  最大間隔（天）
+                </label>
+                <input
+                  type="number"
+                  :value="deck.srsConfig.maximumInterval"
+                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
+                  disabled
+                />
+                <p class="text-xs text-tertiary-color mt-1">複習間隔的上限</p>
+              </div>
+
               <!-- 學習步驟 -->
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-secondary-color mb-1">
@@ -244,32 +272,7 @@
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
                   disabled
                 />
-              </div>
-
-              <!-- 畢業間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  畢業間隔（天）
-                </label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.graduatingInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
-              </div>
-
-              <!-- 簡單間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  簡單間隔（天）
-                </label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.easyInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
+                <p class="text-xs text-tertiary-color mt-1">新卡片的學習間隔，用逗號分隔</p>
               </div>
 
               <!-- 重學步驟 -->
@@ -283,47 +286,13 @@
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
                   disabled
                 />
-              </div>
-
-              <!-- 最小間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最小間隔（天）
-                </label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.minimumInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
-              </div>
-
-              <!-- 困難倍數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">困難倍數</label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.hardInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
-              </div>
-
-              <!-- 簡單加成 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">簡單加成</label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.easyBonus"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
+                <p class="text-xs text-tertiary-color mt-1">忘記卡片後的重學間隔</p>
               </div>
 
               <!-- 低效臨界值 -->
               <div>
                 <label class="block text-sm font-medium text-secondary-color mb-1">
-                  低效臨界值
+                  低效卡臨界值
                 </label>
                 <input
                   type="number"
@@ -331,32 +300,38 @@
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
                   disabled
                 />
+                <p class="text-xs text-tertiary-color mt-1">忘記多少次後標記為低效卡片</p>
               </div>
 
-              <!-- 最小難度係數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最小難度係數
-                </label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.minEaseFactor"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
-              </div>
-
-              <!-- 最大難度係數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最大難度係數
-                </label>
-                <input
-                  type="number"
-                  :value="deck.srsConfig.maxEaseFactor"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-disabled text-primary-color"
-                  disabled
-                />
+              <!-- Weights 參數（摺疊顯示） -->
+              <div class="md:col-span-2">
+                <details class="group">
+                  <summary
+                    class="cursor-pointer text-sm font-medium text-secondary-color mb-1 flex items-center"
+                  >
+                    <span class="mr-2 transform transition-transform group-open:rotate-90"
+                      >▶</span
+                    >
+                    <span>進階參數 (Weights)</span>
+                  </summary>
+                  <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p class="text-xs text-tertiary-color mb-2">
+                      FSRS-6 權重參數（19個），用於計算記憶穩定度和難度。建議使用預設值，除非您了解其作用。
+                    </p>
+                    <div class="grid grid-cols-5 gap-2">
+                      <div
+                        v-for="(weight, index) in deck.srsConfig.weights"
+                        :key="index"
+                        class="text-center"
+                      >
+                        <div class="text-xs text-tertiary-color">w{{ index }}</div>
+                        <div class="text-sm text-primary-color font-mono">
+                          {{ weight.toFixed(2) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
               </div>
             </div>
           </div>
@@ -408,8 +383,39 @@
 
           <!-- SRS 演算法參數 -->
           <div>
-            <h3 class="text-lg font-semibold text-primary-color mb-3">SRS 演算法參數</h3>
+            <h3 class="text-lg font-semibold text-primary-color mb-3">FSRS-6 演算法參數</h3>
             <div class="grid md:grid-cols-2 gap-4">
+              <!-- 期望保留率 -->
+              <div>
+                <label class="block text-sm font-medium text-secondary-color mb-1">
+                  期望保留率
+                </label>
+                <input
+                  type="number"
+                  v-model.number="editedSettings.srsConfig.desiredRetention"
+                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
+                  min="0.7"
+                  max="0.97"
+                  step="0.01"
+                />
+                <p class="text-xs text-tertiary-color mt-1">目標記憶保留率（建議 0.85-0.95）</p>
+              </div>
+
+              <!-- 最大間隔 -->
+              <div>
+                <label class="block text-sm font-medium text-secondary-color mb-1">
+                  最大間隔（天）
+                </label>
+                <input
+                  type="number"
+                  v-model.number="editedSettings.srsConfig.maximumInterval"
+                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
+                  min="1"
+                  max="36500"
+                />
+                <p class="text-xs text-tertiary-color mt-1">複習間隔的上限（預設 36500 天）</p>
+              </div>
+
               <!-- 學習步驟 -->
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-secondary-color mb-1">
@@ -417,48 +423,14 @@
                 </label>
                 <input
                   type="text"
-                  :value="formatSteps(editedSettings.srsConfig.learningSteps)"
-                  @input="
-                    editedSettings.srsConfig.learningSteps = parseSteps(
-                      ($event.target as HTMLInputElement).value
-                    )
-                  "
+                  v-model="learningStepsInput"
+                  @blur="handleLearningStepsBlur"
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  placeholder="15, 1440, 8640"
+                  placeholder="1, 10, 1h, 1d"
                 />
                 <p class="text-xs text-tertiary-color mt-1">
-                  新卡片的學習間隔，用逗號分隔。例如：15, 1440 表示 15 分鐘後、1 天後
+                  新卡片的學習間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）。例如：1, 10, 1d 表示 1 分鐘、10 分鐘、1 天
                 </p>
-              </div>
-
-              <!-- 畢業間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  畢業間隔（天）
-                </label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.graduatingInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="1"
-                  max="365"
-                />
-                <p class="text-xs text-tertiary-color mt-1">完成學習步驟後的首次複習間隔</p>
-              </div>
-
-              <!-- 簡單間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  簡單間隔（天）
-                </label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.easyInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="1"
-                  max="365"
-                />
-                <p class="text-xs text-tertiary-color mt-1">選擇「簡單」時的首次複習間隔</p>
               </div>
 
               <!-- 重學步驟 -->
@@ -468,69 +440,18 @@
                 </label>
                 <input
                   type="text"
-                  :value="formatSteps(editedSettings.srsConfig.relearningSteps)"
-                  @input="
-                    editedSettings.srsConfig.relearningSteps = parseSteps(
-                      ($event.target as HTMLInputElement).value
-                    )
-                  "
+                  v-model="relearningStepsInput"
+                  @blur="handleRelearningStepsBlur"
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  placeholder="20"
+                  placeholder="10, 1h, 1d"
                 />
-                <p class="text-xs text-tertiary-color mt-1">忘記卡片後的重學間隔，用逗號分隔</p>
-              </div>
-
-              <!-- 最小間隔 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最小間隔（天）
-                </label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.minimumInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="1"
-                  max="365"
-                />
-                <p class="text-xs text-tertiary-color mt-1">複習間隔的最小值，防止過於頻繁</p>
-              </div>
-
-              <!-- 困難倍數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">困難倍數</label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.hardInterval"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="0.5"
-                  max="2.0"
-                  step="0.1"
-                />
-                <p class="text-xs text-tertiary-color mt-1">
-                  選擇「困難」時的間隔倍數（建議 1.0-1.5）
-                </p>
-              </div>
-
-              <!-- 簡單加成 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">簡單加成</label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.easyBonus"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="1.0"
-                  max="3.0"
-                  step="0.1"
-                />
-                <p class="text-xs text-tertiary-color mt-1">
-                  選擇「簡單」時的間隔倍數（建議 1.2-1.5）
-                </p>
+                <p class="text-xs text-tertiary-color mt-1">忘記卡片後的重學間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）</p>
               </div>
 
               <!-- 低效臨界值 -->
               <div>
                 <label class="block text-sm font-medium text-secondary-color mb-1">
-                  低效臨界值
+                  低效卡臨界值
                 </label>
                 <input
                   type="number"
@@ -544,36 +465,59 @@
                 </p>
               </div>
 
-              <!-- 最小難度係數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最小難度係數
-                </label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.minEaseFactor"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="1.0"
-                  max="2.0"
-                  step="0.1"
-                />
-                <p class="text-xs text-tertiary-color mt-1">難度係數的下限（建議 1.3）</p>
-              </div>
-
-              <!-- 最大難度係數 -->
-              <div>
-                <label class="block text-sm font-medium text-secondary-color mb-1">
-                  最大難度係數
-                </label>
-                <input
-                  type="number"
-                  v-model.number="editedSettings.srsConfig.maxEaseFactor"
-                  class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
-                  min="2.0"
-                  max="5.0"
-                  step="0.1"
-                />
-                <p class="text-xs text-tertiary-color mt-1">難度係數的上限（建議 2.5）</p>
+              <!-- Weights 編輯器 -->
+              <div class="md:col-span-2">
+                <details class="group">
+                  <summary
+                    class="cursor-pointer text-sm font-medium text-secondary-color mb-1 flex items-center"
+                  >
+                    <span class="mr-2 transform transition-transform group-open:rotate-90"
+                      >▶</span
+                    >
+                    <span>進階參數 (Weights)</span>
+                    <span
+                      class="ml-2 px-2 py-0.5 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded"
+                    >
+                      進階使用者
+                    </span>
+                  </summary>
+                  <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div
+                      class="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded"
+                    >
+                      <p class="text-xs text-yellow-800 dark:text-yellow-200">
+                        ⚠️
+                        注意：這些參數控制 FSRS 算法的核心計算。建議只有在您充分理解 FSRS-6
+                        算法原理後才修改。不正確的設定可能導致學習效果下降。
+                      </p>
+                    </div>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3"
+                    >
+                      <div
+                        v-for="(weight, index) in editedSettings.srsConfig.weights"
+                        :key="index"
+                      >
+                        <label class="block text-xs text-tertiary-color mb-1"> w{{ index }} </label>
+                        <input
+                          type="number"
+                          v-model.number="editedSettings.srsConfig.weights[index]"
+                          class="w-full px-2 py-1 text-sm border border-primary-color rounded bg-white dark:bg-gray-700 text-primary-color font-mono"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                    <div class="mt-3 flex justify-end">
+                      <button
+                        @click="resetWeightsToDefault"
+                        class="btn btn-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-primary-color border-0"
+                        type="button"
+                      >
+                        重置為預設值
+                      </button>
+                    </div>
+                  </div>
+                </details>
               </div>
             </div>
           </div>
@@ -649,6 +593,16 @@ const cardToDelete = ref<Card | null>(null)
 const isEditingSettings = ref(false)
 const editedSettings = ref<DeckSettings | null>(null)
 const settingsError = ref<string | null>(null)
+
+// 臨時輸入狀態（用於步驟輸入）
+const learningStepsInput = ref<string>('')
+const relearningStepsInput = ref<string>('')
+
+// FSRS-6 預設 weights 參數
+const DEFAULT_WEIGHTS = [
+  0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26,
+  0.29, 2.61, 0.0, 0.0,
+]
 
 // 分頁狀態
 const currentPage = ref(1)
@@ -785,27 +739,34 @@ const getStatusBadgeClass = (status: string) => {
 const startEditing = () => {
   if (!deck.value) return
 
-  // 深拷貝當前設定
+  // 深拷貝當前設定（使用 FSRS-6 結構）
   editedSettings.value = {
-    newCardsPerDay: deck.value.srsConfig.newCardsPerDay,
-    reviewCardsPerDay: deck.value.srsConfig.reviewsPerDay,
+    newCardsPerDay: deck.value.newCardsPerDay || 20,
+    reviewCardsPerDay: deck.value.reviewCardsPerDay || 200,
     isPublic: deck.value.isPublic,
     srsConfig: {
+      weights: [...(deck.value.srsConfig.weights || DEFAULT_WEIGHTS)],
+      desiredRetention: deck.value.srsConfig.desiredRetention || 0.9,
       learningSteps: [...deck.value.srsConfig.learningSteps],
-      graduatingInterval: deck.value.srsConfig.graduatingInterval,
-      easyInterval: deck.value.srsConfig.easyInterval,
       relearningSteps: [...deck.value.srsConfig.relearningSteps],
-      minimumInterval: deck.value.srsConfig.minimumInterval,
-      leechThreshold: deck.value.srsConfig.leechThreshold,
-      easyBonus: deck.value.srsConfig.easyBonus,
-      hardInterval: deck.value.srsConfig.hardInterval,
-      minEaseFactor: deck.value.srsConfig.minEaseFactor,
-      maxEaseFactor: deck.value.srsConfig.maxEaseFactor,
-    }
+      maximumInterval: deck.value.srsConfig.maximumInterval || 36500,
+      leechThreshold: deck.value.srsConfig.leechThreshold || 8,
+    },
   }
+
+  // 初始化臨時輸入值
+  learningStepsInput.value = formatSteps(deck.value.srsConfig.learningSteps)
+  relearningStepsInput.value = formatSteps(deck.value.srsConfig.relearningSteps)
 
   isEditingSettings.value = true
   settingsError.value = null
+}
+
+// 重置 weights 為預設值
+const resetWeightsToDefault = () => {
+  if (editedSettings.value) {
+    editedSettings.value.srsConfig.weights = [...DEFAULT_WEIGHTS]
+  }
 }
 
 // 取消編輯
@@ -817,50 +778,51 @@ const cancelEditing = () => {
 
 // 驗證設定
 const validateSettings = (settings: DeckSettings): string | null => {
+  // 基本設定驗證
   if (settings.newCardsPerDay < 0 || settings.newCardsPerDay > 1000) {
     return '每日新卡片數必須在 0-1000 之間'
   }
   if (settings.reviewCardsPerDay < 0 || settings.reviewCardsPerDay > 9999) {
     return '每日複習數必須在 0-9999 之間'
   }
-  if (settings.srsConfig.learningSteps.length === 0) {
+
+  // FSRS-6 參數驗證
+  const config = settings.srsConfig
+
+  // 期望保留率
+  if (config.desiredRetention < 0.7 || config.desiredRetention > 0.97) {
+    return '期望保留率必須在 0.7-0.97 之間'
+  }
+
+  // 最大間隔
+  if (config.maximumInterval < 1 || config.maximumInterval > 36500) {
+    return '最大間隔必須在 1-36500 天之間'
+  }
+
+  // 學習步驟
+  if (!config.learningSteps || config.learningSteps.length === 0) {
     return '學習步驟至少需要一個間隔'
   }
-  if (settings.srsConfig.learningSteps.some(step => step <= 0)) {
+  if (config.learningSteps.some((step) => step <= 0)) {
     return '學習步驟必須大於 0'
   }
-  if (settings.srsConfig.graduatingInterval < 1 || settings.srsConfig.graduatingInterval > 365) {
-    return '畢業間隔必須在 1-365 天之間'
-  }
-  if (settings.srsConfig.easyInterval < 1 || settings.srsConfig.easyInterval > 365) {
-    return '簡單間隔必須在 1-365 天之間'
-  }
-  if (settings.srsConfig.minimumInterval < 1 || settings.srsConfig.minimumInterval > 365) {
-    return '最小間隔必須在 1-365 天之間'
-  }
-  if (settings.srsConfig.hardInterval < 0.5 || settings.srsConfig.hardInterval > 2.0) {
-    return '困難倍數必須在 0.5-2.0 之間'
-  }
-  if (settings.srsConfig.easyBonus < 1.0 || settings.srsConfig.easyBonus > 3.0) {
-    return '簡單加成必須在 1.0-3.0 之間'
-  }
-  if (settings.srsConfig.minEaseFactor < 1.0 || settings.srsConfig.minEaseFactor > 2.0) {
-    return '最小難度係數必須在 1.0-2.0 之間'
-  }
-  if (settings.srsConfig.maxEaseFactor < 2.0 || settings.srsConfig.maxEaseFactor > 5.0) {
-    return '最大難度係數必須在 2.0-5.0 之間'
-  }
-  if (settings.srsConfig.minEaseFactor >= settings.srsConfig.maxEaseFactor) {
-    return '最小難度係數必須小於最大難度係數'
-  }
-  if (settings.srsConfig.leechThreshold < 2 || settings.srsConfig.leechThreshold > 20) {
-    return '低效臨界值必須在 2-20 之間'
-  }
-  if (settings.srsConfig.relearningSteps.length === 0) {
+
+  // 重學步驟
+  if (!config.relearningSteps || config.relearningSteps.length === 0) {
     return '重學步驟至少需要一個間隔'
   }
-  if (settings.srsConfig.relearningSteps.some(step => step <= 0)) {
+  if (config.relearningSteps.some((step) => step <= 0)) {
     return '重學步驟必須大於 0'
+  }
+
+  // 低效臨界值
+  if (config.leechThreshold < 2 || config.leechThreshold > 20) {
+    return '低效臨界值必須在 2-20 之間'
+  }
+
+  // Weights 驗證
+  if (!config.weights || config.weights.length !== 19) {
+    return 'Weights 參數必須包含 19 個數值'
   }
 
   return null
@@ -898,13 +860,52 @@ const formatSteps = (steps: number[]): string => {
 }
 
 // 解析字串為陣列（用於輸入）
+// 支援格式：數字 (分鐘)、數字h (小時)、數字d (天)
+// 例如：1, 10, 1h, 2d → [1, 10, 60, 2880]
 const parseSteps = (input: string): number[] => {
   return input
     .split(',')
-    .map(s => s.trim())
+    .map(s => s.trim().toLowerCase())
     .filter(s => s.length > 0)
-    .map(s => parseInt(s, 10))
-    .filter(n => !isNaN(n))
+    .map(s => {
+      // 檢查是否有單位後綴
+      if (s.endsWith('d')) {
+        // 天數：轉換為分鐘 (1d = 24 * 60 = 1440 分鐘)
+        const days = parseFloat(s.slice(0, -1))
+        return isNaN(days) ? NaN : days * 24 * 60
+      } else if (s.endsWith('h')) {
+        // 小時：轉換為分鐘 (1h = 60 分鐘)
+        const hours = parseFloat(s.slice(0, -1))
+        return isNaN(hours) ? NaN : hours * 60
+      } else {
+        // 純數字：直接當作分鐘
+        return parseFloat(s)
+      }
+    })
+    .filter(n => !isNaN(n) && n > 0)
+    .map(n => Math.round(n)) // 確保是整數
+}
+
+// 處理學習步驟輸入失去焦點
+const handleLearningStepsBlur = () => {
+  if (!editedSettings.value) return
+  const parsed = parseSteps(learningStepsInput.value)
+  if (parsed.length > 0) {
+    editedSettings.value.srsConfig.learningSteps = parsed
+  }
+  // 重新格式化顯示（移除多餘空格等）
+  learningStepsInput.value = formatSteps(editedSettings.value.srsConfig.learningSteps)
+}
+
+// 處理重學步驟輸入失去焦點
+const handleRelearningStepsBlur = () => {
+  if (!editedSettings.value) return
+  const parsed = parseSteps(relearningStepsInput.value)
+  if (parsed.length > 0) {
+    editedSettings.value.srsConfig.relearningSteps = parsed
+  }
+  // 重新格式化顯示（移除多餘空格等）
+  relearningStepsInput.value = formatSteps(editedSettings.value.srsConfig.relearningSteps)
 }
 
 // 格式化卡片間隔顯示

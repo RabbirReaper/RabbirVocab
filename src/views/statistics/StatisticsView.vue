@@ -186,7 +186,7 @@ const cardStats = computed(() => {
   const newCards = cards.filter((c) => c.status === 'new').length
   const learning = cards.filter((c) => c.status === 'learning').length
   const review = cards.filter((c) => c.status === 'review').length
-  const mastered = cards.filter((c) => c.interval >= 21).length
+  const mastered = cards.filter((c) => c.srs.stability >= 21).length
 
   return {
     new: newCards,

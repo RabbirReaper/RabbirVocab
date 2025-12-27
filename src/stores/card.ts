@@ -9,7 +9,6 @@ import type {
   CardImage,
   CardAudio,
   CardSRS,
-  ReviewHistoryItem,
   ApiError,
 } from '@/api/types'
 import type { DeckStats } from './deck'
@@ -26,11 +25,7 @@ export interface Card {
   tags: string[] // TODO: 未來改為 Tag ObjectId 陣列
   status: 'new' | 'learning' | 'review'
   srs: CardSRS
-  reviewHistory: ReviewHistoryItem[]
-  // 向後兼容屬性
-  easeFactor: number
-  interval: number
-  dueDate: string
+  dueDate: string // 從 srs.dueDate 直接提取
   createdAt: string
   updatedAt: string
 }
@@ -56,11 +51,7 @@ export const useCardStore = defineStore('card', () => {
       tags: dto.tags,
       status: dto.status,
       srs: dto.srs,
-      reviewHistory: dto.reviewHistory,
-      // 向後兼容屬性
-      easeFactor: dto.srs.easeFactor,
-      interval: dto.srs.interval,
-      dueDate: dto.srs.dueDate,
+      dueDate: dto.srs.dueDate, // 直接從 srs 提取
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,
     }
@@ -77,7 +68,7 @@ export const useCardStore = defineStore('card', () => {
       reviewCount: deckCards.filter(
         (c) => c.status === 'review' && new Date(c.srs.dueDate) <= now,
       ).length,
-      masteredCount: deckCards.filter((c) => c.interval >= 21).length, // TODO: masteredCount 判斷邏輯可根據業務需求調整
+      masteredCount: deckCards.filter((c) => c.srs.stability >= 21).length, // 使用 FSRS-6 的 stability
     }
   }
 
@@ -193,7 +184,6 @@ export const useCardStore = defineStore('card', () => {
   async function reviewCard(
     id: string,
     rating: 'again' | 'hard' | 'good' | 'easy',
-    duration?: number,
   ) {
     loading.value = true
     error.value = null
@@ -203,17 +193,17 @@ export const useCardStore = defineStore('card', () => {
         throw new Error('找不到此字卡')
       }
 
-      // 將 rating 轉換為 quality (0-3)
+      // 將 rating 轉換為 quality (1-4)
       const qualityMap = {
-        again: 0,
-        hard: 1,
-        good: 2,
-        easy: 3,
+        again: 1, // 修改: 0 -> 1
+        hard: 2,  // 修改: 1 -> 2
+        good: 3,  // 修改: 2 -> 3
+        easy: 4,  // 修改: 3 -> 4
       }
       const quality = qualityMap[rating]
 
       // 調用 API 進行複習
-      const response = await api.card.reviewCard(id, { quality, duration })
+      const response = await api.card.reviewCard(id, { quality })
       const updatedCard = transformCardDto(response.card)
 
       // 更新本地狀態

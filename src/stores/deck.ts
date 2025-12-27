@@ -1,22 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { api } from '@/api/modules'
-import type { DeckDto, UpdateDeckRequest, ApiError, DeckSettings } from '@/api/types'
-
-export interface SRSConfig {
-  newCardsPerDay: number
-  reviewsPerDay: number
-  learningSteps: number[]
-  graduatingInterval: number
-  easyInterval: number
-  relearningSteps: number[]
-  minimumInterval: number
-  leechThreshold: number
-  easyBonus: number
-  hardInterval: number
-  minEaseFactor: number
-  maxEaseFactor: number
-}
+import type { DeckDto, UpdateDeckRequest, ApiError, DeckSettings, SRSConfig } from '@/api/types'
 
 export interface DeckStats {
   cardCount: number
@@ -34,6 +19,8 @@ export interface Deck {
   newCount: number
   reviewCount: number
   masteredCount: number
+  newCardsPerDay: number
+  reviewCardsPerDay: number
   srsConfig: SRSConfig
   isPublic: boolean
   createdAt: string
@@ -63,19 +50,15 @@ export const useDeckStore = defineStore('deck', () => {
       newCount: stats?.newCount || 0,
       reviewCount: stats?.reviewCount || 0,
       masteredCount: stats?.masteredCount || 0,
+      newCardsPerDay: dto.settings.newCardsPerDay || 20,
+      reviewCardsPerDay: dto.settings.reviewCardsPerDay || 200,
       srsConfig: {
-        newCardsPerDay: dto.settings.newCardsPerDay,
-        reviewsPerDay: dto.settings.reviewCardsPerDay,
-        learningSteps: dto.settings.srsConfig.learningSteps,
-        graduatingInterval: dto.settings.srsConfig.graduatingInterval,
-        easyInterval: dto.settings.srsConfig.easyInterval,
-        relearningSteps: dto.settings.srsConfig.relearningSteps,
-        minimumInterval: dto.settings.srsConfig.minimumInterval,
-        leechThreshold: dto.settings.srsConfig.leechThreshold,
-        easyBonus: dto.settings.srsConfig.easyBonus,
-        hardInterval: dto.settings.srsConfig.hardInterval,
-        minEaseFactor: dto.settings.srsConfig.minEaseFactor,
-        maxEaseFactor: dto.settings.srsConfig.maxEaseFactor,
+        weights: dto.settings.srsConfig.weights || [],
+        desiredRetention: dto.settings.srsConfig.desiredRetention || 0.9,
+        learningSteps: dto.settings.srsConfig.learningSteps || [1, 10],
+        relearningSteps: dto.settings.srsConfig.relearningSteps || [10],
+        maximumInterval: dto.settings.srsConfig.maximumInterval || 36500,
+        leechThreshold: dto.settings.srsConfig.leechThreshold || 8,
       },
       isPublic: dto.settings.isPublic,
       createdAt: dto.createdAt,
