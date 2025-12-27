@@ -148,6 +148,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useDeckStore } from '@/stores/deck'
 import { useCardStore, type Card } from '@/stores/card'
+import { api } from '@/api/modules'
+import type { SchedulingInfoResponse } from '@/api/types'
 import MarkdownIt from 'markdown-it'
 
 const route = useRoute()
@@ -170,6 +172,7 @@ const currentCardIndex = ref(0)
 const showAnswer = ref(false)
 const studiedCount = ref(0)
 const reviewStartTime = ref<number>(0) // 記錄開始複習時間
+const schedulingInfo = ref<SchedulingInfoResponse | null>(null) // 調度信息
 
 const currentCard = computed(() => dueCards.value[currentCardIndex.value])
 const totalDueCards = computed(() => dueCards.value.length)
@@ -186,6 +189,21 @@ const renderedContent = computed(() => {
 
 const loadDueCards = () => {
   dueCards.value = cardStore.getDueCards(deckId)
+}
+
+// 載入當前卡片的調度信息
+const loadSchedulingInfo = async () => {
+  if (!currentCard.value) {
+    schedulingInfo.value = null
+    return
+  }
+
+  try {
+    schedulingInfo.value = await api.card.getCardScheduling(currentCard.value.id)
+  } catch (error) {
+    console.error('載入調度信息失敗:', error)
+    schedulingInfo.value = null
+  }
 }
 
 const handleReview = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
@@ -205,84 +223,17 @@ const handleReview = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
   }
 }
 
-// 格式化時間間隔（分鐘 -> 可讀格式）
-const formatInterval = (minutes: number): string => {
-  if (minutes < 60) {
-    return `${minutes}分`
-  }
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) {
-    return `${hours}小時`
-  }
-  const days = Math.floor(hours / 24)
-  return `${days}天`
-}
-
-// 根據 deck 的 SRS 配置和 card 狀態計算間隔（FSRS-6 簡化版）
+// 使用實際的調度信息來顯示間隔
 const getHardInterval = () => {
-  if (!currentCard.value || !deck.value) return '較短間隔'
-
-  const card = currentCard.value
-  const config = deck.value.srsConfig
-  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
-
-  if (isNewOrLearning) {
-    // 學習階段：進入下一步或維持當前步驟
-    const currentStep = card.srs.learningStep
-    const steps = config.learningSteps || []
-    if (currentStep < steps.length - 1) {
-      const nextStep = steps[currentStep + 1]
-      return formatInterval(nextStep ?? 0)
-    } else {
-      return '即將畢業'
-    }
-  } else {
-    // 複習階段：使用當前穩定度的較短版本
-    const stability = card.srs.stability
-    return stability < 1 ? '<1天' : `約${Math.round(stability * 0.8)}天`
-  }
+  return schedulingInfo.value?.schedulingOptions.hard.interval || '載入中...'
 }
 
 const getGoodInterval = () => {
-  if (!currentCard.value || !deck.value) return '標準間隔'
-
-  const card = currentCard.value
-  const config = deck.value.srsConfig
-  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
-
-  if (isNewOrLearning) {
-    // 學習階段：完成所有步驟後畢業
-    const currentStep = card.srs.learningStep
-    const steps = config.learningSteps || []
-    if (currentStep < steps.length - 1) {
-      const nextStep = steps[currentStep + 1]
-      return formatInterval(nextStep ?? 0)
-    } else {
-      return '畢業'
-    }
-  } else {
-    // 複習階段：基於當前穩定度
-    const stability = card.srs.stability
-    return `約${Math.round(stability * 2.5)}天`
-  }
+  return schedulingInfo.value?.schedulingOptions.good.interval || '載入中...'
 }
 
 const getEasyInterval = () => {
-  if (!currentCard.value || !deck.value) return '較長間隔'
-
-  const card = currentCard.value
-  const isNewOrLearning = card.status === 'new' || card.status === 'learning'
-
-  if (isNewOrLearning) {
-    // 學習階段：直接畢業
-    return '直接畢業'
-  } else {
-    // 複習階段：最長間隔
-    const stability = card.srs.stability
-    const config = deck.value.srsConfig
-    const estimated = Math.round(stability * 4)
-    return `約${Math.min(estimated, config.maximumInterval)}天`
-  }
+  return schedulingInfo.value?.schedulingOptions.easy.interval || '載入中...'
 }
 
 // 播放音檔
@@ -307,6 +258,13 @@ watch(currentCard, (newCard) => {
         playAudio()
       }, 300)
     }
+  }
+})
+
+// 監聽顯示答案狀態，載入調度信息
+watch(showAnswer, (isShowing) => {
+  if (isShowing) {
+    loadSchedulingInfo()
   }
 })
 

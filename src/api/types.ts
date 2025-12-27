@@ -177,6 +177,30 @@ export interface ReviewCardResponse {
   card: CardDto
 }
 
+export interface SchedulingState {
+  status: CardStatus
+  learningStep: number
+  stability: number
+  difficulty: number
+  dueDate: string
+}
+
+export interface SchedulingOption {
+  interval: string // 格式化的間隔字符串 (例如 "10m", "1d")
+  intervalDays: number // 間隔天數
+  nextState: SchedulingState
+}
+
+export interface SchedulingInfoResponse {
+  currentState: SchedulingState
+  schedulingOptions: {
+    again: SchedulingOption
+    hard: SchedulingOption
+    good: SchedulingOption
+    easy: SchedulingOption
+  }
+}
+
 // ==================== AI 相關類型 ====================
 
 export interface GenerateContentRequest {

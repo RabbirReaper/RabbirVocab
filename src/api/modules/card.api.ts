@@ -7,6 +7,7 @@ import type {
   GetCardResponse,
   ReviewCardRequest,
   ReviewCardResponse,
+  SchedulingInfoResponse,
 } from '../types'
 
 export const cardApi = {
@@ -96,6 +97,16 @@ export const cardApi = {
       `/cards/${cardId}/review`,
       data,
     )) as ApiResponse<ReviewCardResponse>
+    return response.data
+  },
+
+  /**
+   * 獲取卡片調度信息（預覽四個按鈕的結果）
+   */
+  getCardScheduling: async (cardId: string): Promise<SchedulingInfoResponse> => {
+    const response = (await apiClient.get(
+      `/cards/${cardId}/scheduling`,
+    )) as ApiResponse<SchedulingInfoResponse>
     return response.data
   },
 }

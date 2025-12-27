@@ -376,7 +376,30 @@ function reviewInLearning(
     };
   }
 
-  // Good (3) 或 Hard (2): 前進到下一步
+  // Hard (2): 計算當前步驟和下一步驟的中間值
+  if (rating === 2) {
+    const currentStepMinutes = config.learningSteps[currentState.learningStep];
+    const nextStepMinutes = currentState.learningStep + 1 < config.learningSteps.length
+      ? config.learningSteps[currentState.learningStep + 1]
+      : currentStepMinutes * 1.5;  // 如果是最後一步，使用 1.5 倍
+
+    const hardInterval = Math.round((currentStepMinutes + nextStepMinutes) / 2);
+
+    const nextDueDate = new Date(now);
+    nextDueDate.setMinutes(nextDueDate.getMinutes() + hardInterval);
+
+    return {
+      state: {
+        ...currentState,
+        learningStep: currentState.learningStep,  // 保持當前步驟
+        dueDate: nextDueDate,
+        lastReviewed: now,
+      },
+      scheduledDays: hardInterval / 1440,
+    };
+  }
+
+  // Good (3): 前進到下一步
   const nextStep = currentState.learningStep + 1;
 
   // 檢查是否完成所有學習步驟

@@ -7,6 +7,7 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import { ValidationError, NotFoundError, ForbiddenError, InternalServerError } from '../utils/errors.js'
 import * as r2Service from '../services/r2.service.js'
 import type { ISRSConfig } from '../model/types.js'
+import { getSchedulingInfo, type IFSRSConfig, DEFAULT_FSRS_CONFIG } from '../utils/fsrs-algorithm.js'
 
 // 定義 Card 創建時的數據類型
 interface CardDataInput {
@@ -511,5 +512,163 @@ export const reviewCard = asyncHandler(async (req: Request, res: Response) => {
     data: {
       card,
     },
+  })
+})
+
+/**
+ * 輔助函數：將天數轉換為人類可讀的間隔字符串
+ * @param days 天數
+ * @returns 格式化的間隔字符串 (例如 "10m", "1d", "2.5d")
+ */
+function formatInterval(days: number): string {
+  if (days < 1) {
+    // 小於一天，轉換為分鐘
+    const minutes = Math.round(days * 1440)
+    if (minutes < 60) {
+      return `${minutes}m`
+    }
+    // 小時
+    const hours = Math.round(minutes / 60)
+    return `${hours}h`
+  }
+
+  // 大於等於一天
+  if (days < 2) {
+    return `${days.toFixed(1)}d`.replace('.0d', 'd')
+  }
+
+  return `${Math.round(days)}d`
+}
+
+/**
+ * 將 ISRSConfig 轉換為 IFSRSConfig
+ * 補充預設值
+ */
+function toFSRSConfig(config: Required<ISRSConfig>): IFSRSConfig {
+  return {
+    weights: config.weights || DEFAULT_FSRS_CONFIG.weights,
+    desiredRetention: config.desiredRetention || DEFAULT_FSRS_CONFIG.desiredRetention,
+    learningSteps: config.learningSteps || DEFAULT_FSRS_CONFIG.learningSteps,
+    relearningSteps: config.relearningSteps || DEFAULT_FSRS_CONFIG.relearningSteps,
+    maximumInterval: config.maximumInterval || DEFAULT_FSRS_CONFIG.maximumInterval,
+    leechThreshold: config.leechThreshold || DEFAULT_FSRS_CONFIG.leechThreshold,
+  }
+}
+
+/**
+ * @desc    獲取卡片調度信息（預覽四個按鈕的結果）
+ * @route   GET /api/cards/:cardId/scheduling
+ * @access  Private
+ */
+export const getCardScheduling = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.session.userId
+
+  if (!userId) {
+    throw new ForbiddenError('未登入')
+  }
+
+  const { cardId } = req.params
+
+  // 獲取卡片
+  const card = await Card.findOne({
+    _id: cardId,
+    isDeleted: false,
+  })
+
+  if (!card) {
+    throw new NotFoundError('找不到此字卡')
+  }
+
+  // 檢查權限：只有擁有者可以查看調度信息
+  if (card.user.toString() !== userId) {
+    throw new ForbiddenError('您沒有權限查看此字卡的調度信息')
+  }
+
+  // 獲取所屬 Deck 的 SRS 配置
+  const deck = await Deck.findOne({
+    _id: card.deck,
+    isDeleted: false,
+  })
+
+  if (!deck) {
+    throw new NotFoundError('找不到此字卡所屬的卡組')
+  }
+
+  const srsConfig = deck.settings.srsConfig as Required<ISRSConfig>
+  const fsrsConfig = toFSRSConfig(srsConfig)
+
+  // 構建當前的 FSRS 狀態
+  const currentState = {
+    stability: card.srs.stability,
+    difficulty: card.srs.difficulty,
+    learningStep: card.srs.learningStep,
+    lapseCount: card.srs.lapseCount,
+    dueDate: card.srs.dueDate,
+    lastReviewed: card.srs.lastReviewed,
+  }
+
+  // 獲取四個選項的調度信息
+  const schedulingInfo = getSchedulingInfo(currentState, fsrsConfig)
+
+  // 格式化響應
+  const response = {
+    currentState: {
+      status: card.status,
+      learningStep: currentState.learningStep,
+      stability: currentState.stability,
+      difficulty: currentState.difficulty,
+      dueDate: currentState.dueDate,
+    },
+    schedulingOptions: {
+      again: {
+        interval: formatInterval(schedulingInfo.again.scheduledDays),
+        intervalDays: schedulingInfo.again.scheduledDays,
+        nextState: {
+          status: schedulingInfo.again.state.learningStep >= 0 ? 'learning' : 'review',
+          learningStep: schedulingInfo.again.state.learningStep,
+          stability: schedulingInfo.again.state.stability,
+          difficulty: schedulingInfo.again.state.difficulty,
+          dueDate: schedulingInfo.again.state.dueDate,
+        },
+      },
+      hard: {
+        interval: formatInterval(schedulingInfo.hard.scheduledDays),
+        intervalDays: schedulingInfo.hard.scheduledDays,
+        nextState: {
+          status: schedulingInfo.hard.state.learningStep >= 0 ? 'learning' : 'review',
+          learningStep: schedulingInfo.hard.state.learningStep,
+          stability: schedulingInfo.hard.state.stability,
+          difficulty: schedulingInfo.hard.state.difficulty,
+          dueDate: schedulingInfo.hard.state.dueDate,
+        },
+      },
+      good: {
+        interval: formatInterval(schedulingInfo.good.scheduledDays),
+        intervalDays: schedulingInfo.good.scheduledDays,
+        nextState: {
+          status: schedulingInfo.good.state.learningStep >= 0 ? 'learning' : 'review',
+          learningStep: schedulingInfo.good.state.learningStep,
+          stability: schedulingInfo.good.state.stability,
+          difficulty: schedulingInfo.good.state.difficulty,
+          dueDate: schedulingInfo.good.state.dueDate,
+        },
+      },
+      easy: {
+        interval: formatInterval(schedulingInfo.easy.scheduledDays),
+        intervalDays: schedulingInfo.easy.scheduledDays,
+        nextState: {
+          status: schedulingInfo.easy.state.learningStep >= 0 ? 'learning' : 'review',
+          learningStep: schedulingInfo.easy.state.learningStep,
+          stability: schedulingInfo.easy.state.stability,
+          difficulty: schedulingInfo.easy.state.difficulty,
+          dueDate: schedulingInfo.easy.state.dueDate,
+        },
+      },
+    },
+  }
+
+  res.status(200).json({
+    message: 'success',
+    data: response,
   })
 })
