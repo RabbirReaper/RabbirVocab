@@ -235,3 +235,33 @@ export interface GenerateContentResponse {
   }
   previous_response_id: string | null
 }
+
+// ==================== 統計相關類型 ====================
+
+export interface OverviewStats {
+  totalDecks: number
+  totalCards: number
+  dueCards: number
+  reviewsToday: number
+}
+
+export interface ActivityStats {
+  _id: string // 日期字符串 (YYYY-MM-DD)
+  totalReviews: number
+  correctReviews: number
+  totalTime: number
+  avgQuality: number
+}
+
+export interface RecentActivityResponse {
+  stats: ActivityStats[]
+}
+
+export interface DeckStats {
+  deckId: string
+  cardCount: number
+  newCount: number
+  learningCount: number
+  reviewCount: number
+  masteredCount: number
+}

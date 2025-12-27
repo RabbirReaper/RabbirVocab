@@ -114,10 +114,9 @@ const cardSchema = new Schema<ICard>(
 )
 
 // 索引
-cardSchema.index({ user: 1 })
-cardSchema.index({ deck: 1, status: 1 })
-cardSchema.index({ deck: 1, status: 1, 'srs.dueDate': 1 })
-cardSchema.index({ 'srs.dueDate': 1 })
+cardSchema.index({ user: 1, deck: 1, isDeleted: 1 }) // ⭐ 最重要：查詢用戶的卡片
+cardSchema.index({ user: 1, deck: 1, status: 1, 'srs.dueDate': 1 }) // 複習查詢
+cardSchema.index({ deck: 1, isDeleted: 1 }) // deck 的卡片查詢
 
 /**
  * 將 ISRSConfig 轉換為 IFSRSConfig

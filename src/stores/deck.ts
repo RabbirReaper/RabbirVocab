@@ -15,10 +15,13 @@ export interface Deck {
   name: string
   description: string
   user: string
-  cardCount: number
-  newCount: number
-  reviewCount: number
-  masteredCount: number
+  // 統計數據（需要額外查詢）
+  cardCount?: number
+  newCount?: number
+  reviewCount?: number
+  learningCount?: number
+  masteredCount?: number
+  // 設定
   newCardsPerDay: number
   reviewCardsPerDay: number
   srsConfig: SRSConfig
@@ -36,8 +39,9 @@ export const useDeckStore = defineStore('deck', () => {
 
   // 計算屬性
   const totalDecks = computed(() => decks.value.length)
-  const totalCards = computed(() => decks.value.reduce((sum, deck) => sum + deck.cardCount, 0))
-  const totalReviews = computed(() => decks.value.reduce((sum, deck) => sum + deck.reviewCount, 0))
+
+  // ❌ 已移除：totalCards 和 totalReviews（改用統計 API 獲取）
+  // 這些計算屬性會觸發不必要的卡片查詢，影響效能
 
   // 轉換函數：將 API 返回的 DeckDto 轉換為前端 Deck
   function transformDeckDto(dto: DeckDto, stats?: DeckStats): Deck {
@@ -46,10 +50,13 @@ export const useDeckStore = defineStore('deck', () => {
       name: dto.name,
       description: dto.description,
       user: dto.user,
-      cardCount: stats?.cardCount || 0,
-      newCount: stats?.newCount || 0,
-      reviewCount: stats?.reviewCount || 0,
-      masteredCount: stats?.masteredCount || 0,
+      // 統計數據（可選，需要額外查詢）
+      cardCount: stats?.cardCount,
+      newCount: stats?.newCount,
+      reviewCount: stats?.reviewCount,
+      learningCount: undefined, // 暫時未使用
+      masteredCount: stats?.masteredCount,
+      // 設定
       newCardsPerDay: dto.settings.newCardsPerDay || 20,
       reviewCardsPerDay: dto.settings.reviewCardsPerDay || 200,
       srsConfig: {
@@ -176,6 +183,26 @@ export const useDeckStore = defineStore('deck', () => {
     currentDeck.value = getDeckById(id) || null
   }
 
+  // ✅ 新增：按需查詢 deck 統計
+  async function fetchDeckStats(deckId: string) {
+    try {
+      const stats = await api.stats.getDeckStats(deckId)
+      const deck = decks.value.find((d) => d.id === deckId)
+      if (deck) {
+        deck.cardCount = stats.cardCount
+        deck.newCount = stats.newCount
+        deck.learningCount = stats.learningCount
+        deck.reviewCount = stats.reviewCount
+        deck.masteredCount = stats.masteredCount
+      }
+      return stats
+    } catch (err) {
+      const apiError = err as ApiError
+      console.error('獲取 deck 統計失敗:', apiError.message)
+      throw err
+    }
+  }
+
   function updateDeckStats(deckId: string, stats: DeckStats) {
     const deck = decks.value.find((d) => d.id === deckId)
     if (deck) {
@@ -192,12 +219,11 @@ export const useDeckStore = defineStore('deck', () => {
     loading,
     error,
     totalDecks,
-    totalCards,
-    totalReviews,
     getDeckById,
     setCurrentDeck,
     fetchDecks,
     fetchDeck,
+    fetchDeckStats, // ✅ 新增
     createDeck,
     updateDeck,
     deleteDeck,

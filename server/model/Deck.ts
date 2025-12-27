@@ -82,7 +82,8 @@ const deckSchema = new Schema<IDeck>(
 );
 
 // 索引
-deckSchema.index({ user: 1 });
+deckSchema.index({ user: 1, isDeleted: 1 }); // ⭐ 查詢用戶的未刪除 deck
+deckSchema.index({ user: 1, createdAt: -1 }); // 按創建時間排序
 
 const Deck: Model<IDeck> = mongoose.model<IDeck>('Deck', deckSchema);
 

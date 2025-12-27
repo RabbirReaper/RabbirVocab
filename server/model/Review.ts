@@ -88,9 +88,10 @@ const reviewSchema = new Schema<IReview>(
 );
 
 // 索引
-reviewSchema.index({ user: 1, reviewedAt: -1 });
-reviewSchema.index({ card: 1, reviewedAt: -1 });
-reviewSchema.index({ deck: 1, reviewedAt: -1 });
+reviewSchema.index({ user: 1, reviewedAt: -1 }); // ⭐ 用戶統計查詢
+reviewSchema.index({ user: 1, deck: 1, reviewedAt: -1 }); // deck 統計查詢
+reviewSchema.index({ card: 1, reviewedAt: -1 }); // 卡片歷史
+reviewSchema.index({ deck: 1, reviewedAt: -1 }); // deck 歷史
 
 // 靜態方法：獲取用戶學習統計
 reviewSchema.statics.getUserStats = async function (

@@ -6,14 +6,20 @@
       </h1>
     </div>
 
-    <!-- 統計卡片 -->
+    <!-- 統計卡片 - 使用真實 API -->
     <div class="grid md:grid-cols-4 gap-6">
       <div class="card">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-secondary-color">總卡組數</p>
-            <p class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
-              {{ deckStore.totalDecks }}
+            <p
+              v-if="loading"
+              class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1 animate-pulse"
+            >
+              --
+            </p>
+            <p v-else class="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
+              {{ stats.totalDecks }}
             </p>
           </div>
           <div class="text-4xl">📚</div>
@@ -24,8 +30,14 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-secondary-color">總卡片數</p>
-            <p class="text-3xl font-bold text-secondary-600 dark:text-secondary-400 mt-1">
-              {{ deckStore.totalCards }}
+            <p
+              v-if="loading"
+              class="text-3xl font-bold text-secondary-600 dark:text-secondary-400 mt-1 animate-pulse"
+            >
+              --
+            </p>
+            <p v-else class="text-3xl font-bold text-secondary-600 dark:text-secondary-400 mt-1">
+              {{ stats.totalCards }}
             </p>
           </div>
           <div class="text-4xl">🎴</div>
@@ -36,8 +48,14 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-secondary-color">待複習</p>
-            <p class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">
-              {{ deckStore.totalReviews }}
+            <p
+              v-if="loading"
+              class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1 animate-pulse"
+            >
+              --
+            </p>
+            <p v-else class="text-3xl font-bold text-warning-600 dark:text-warning-400 mt-1">
+              {{ stats.dueCards }}
             </p>
           </div>
           <div class="text-4xl">⏰</div>
@@ -47,42 +65,18 @@
       <div class="card">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-secondary-color">連續學習</p>
-            <p class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">7天</p>
+            <p class="text-sm text-secondary-color">今日已複習</p>
+            <p
+              v-if="loading"
+              class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1 animate-pulse"
+            >
+              --
+            </p>
+            <p v-else class="text-3xl font-bold text-success-600 dark:text-success-400 mt-1">
+              {{ stats.reviewsToday }}
+            </p>
           </div>
-          <div class="text-4xl">🔥</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 今日學習進度 -->
-    <div class="card">
-      <h2 class="text-xl font-bold text-primary-color mb-4">今日學習進度</h2>
-      <div class="space-y-4">
-        <div>
-          <div class="flex justify-between text-sm mb-2">
-            <span class="text-secondary-color">複習卡片</span>
-            <span class="text-primary-color font-medium">15 / 50</span>
-          </div>
-          <div class="w-full bg-progress rounded-full h-2">
-            <div
-              class="bg-primary-600 dark:bg-primary-500 h-2 rounded-full"
-              style="width: 30%"
-            ></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex justify-between text-sm mb-2">
-            <span class="text-secondary-color">新卡片</span>
-            <span class="text-primary-color font-medium">8 / 20</span>
-          </div>
-          <div class="w-full bg-progress rounded-full h-2">
-            <div
-              class="bg-secondary-600 dark:bg-secondary-500 h-2 rounded-full"
-              style="width: 40%"
-            ></div>
-          </div>
+          <div class="text-4xl">✅</div>
         </div>
       </div>
     </div>
@@ -115,39 +109,21 @@
         <RouterLink to="/app/decks" class="btn btn-primary">建立第一個卡組</RouterLink>
       </div>
 
-      <!-- 卡組列表 -->
+      <!-- 卡組列表 - 簡化版，不顯示統計 -->
       <div v-else class="grid md:grid-cols-3 gap-4">
         <RouterLink
-          v-for="deck in deckStore.decks"
+          v-for="deck in deckStore.decks.slice(0, 6)"
           :key="deck.id"
           :to="`/app/decks/${deck.id}`"
           class="study-card group"
         >
-          <h3 class="text-lg font-semibold text-primary-color mb-2">
-            {{ deck.name }}
-          </h3>
-          <p class="text-sm text-secondary-color mb-4">{{ deck.description }}</p>
-
-          <div class="grid grid-cols-3 gap-2 text-center text-sm">
-            <div>
-              <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                {{ deck.newCount }}
-              </div>
-              <div class="text-xs text-tertiary-color">新卡</div>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-warning-600 dark:text-warning-400">
-                {{ deck.reviewCount }}
-              </div>
-              <div class="text-xs text-tertiary-color">複習</div>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-success-600 dark:text-success-400">
-                {{ deck.masteredCount }}
-              </div>
-              <div class="text-xs text-tertiary-color">已掌握</div>
-            </div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold text-primary-color">
+              {{ deck.name }}
+            </h3>
+            <span class="text-2xl">📚</span>
           </div>
+          <p class="text-sm text-secondary-color line-clamp-2">{{ deck.description }}</p>
         </RouterLink>
       </div>
     </div>
@@ -155,15 +131,33 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useDeckStore } from '@/stores/deck'
+import { api } from '@/api/modules'
 
 const authStore = useAuthStore()
 const deckStore = useDeckStore()
 
+const stats = ref({
+  totalDecks: 0,
+  totalCards: 0,
+  dueCards: 0,
+  reviewsToday: 0,
+})
+const loading = ref(false)
+
 onMounted(async () => {
-  await deckStore.fetchDecks()
+  // 並行載入統計和卡組列表
+  loading.value = true
+  try {
+    const [statsData] = await Promise.all([api.stats.getOverview(), deckStore.fetchDecks()])
+    stats.value = statsData
+  } catch (error) {
+    console.error('載入統計失敗:', error)
+  } finally {
+    loading.value = false
+  }
 })
 </script>

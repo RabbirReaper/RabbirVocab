@@ -50,11 +50,14 @@ export const getDecks = asyncHandler(async (req: Request, res: Response) => {
     throw new ForbiddenError('未登入')
   }
 
-  // 獲取未刪除的 Decks
+  // 只查詢基本資訊，不查詢卡片統計（效能優化）
   const decks = await Deck.find({
     user: userId,
     isDeleted: false,
-  }).sort({ createdAt: -1 })
+  })
+    .select('name description settings createdAt updatedAt') // ⭐ 明確指定欄位
+    .sort({ createdAt: -1 })
+    .lean() // ⭐ 使用 lean() 提升效能
 
   res.status(200).json({
     message: 'success',

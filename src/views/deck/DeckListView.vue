@@ -43,32 +43,11 @@
           <span class="text-2xl">📚</span>
         </div>
 
-        <p class="text-secondary-color mb-4 line-clamp-2">
+        <p class="text-secondary-color mb-6 line-clamp-2">
           {{ deck.description }}
         </p>
 
-        <div class="flex items-center justify-between text-sm">
-          <div class="flex space-x-4">
-            <div>
-              <span class="text-tertiary-color">總計</span>
-              <span class="ml-1 font-semibold text-primary-color">{{ deck.cardCount }}</span>
-            </div>
-            <div>
-              <span class="text-tertiary-color">新卡</span>
-              <span class="ml-1 font-semibold text-primary-600 dark:text-primary-400">{{
-                deck.newCount
-              }}</span>
-            </div>
-            <div>
-              <span class="text-tertiary-color">複習</span>
-              <span class="ml-1 font-semibold text-warning-600 dark:text-warning-400">{{
-                deck.reviewCount
-              }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-primary-color">
+        <div class="mt-auto">
           <RouterLink
             :to="`/app/study/${deck.id}`"
             class="btn btn-primary btn-sm w-full"
