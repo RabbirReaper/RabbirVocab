@@ -228,6 +228,147 @@ cardSchema.methods.calculateNextReview = function (
 }
 
 /**
+ * 輔助函數：將天數轉換為人類可讀的間隔字符串
+ */
+function formatInterval(days: number): string {
+  if (days < 1) {
+    // 小於一天，轉換為分鐘
+    const minutes = Math.round(days * 1440)
+    if (minutes < 60) {
+      return `${minutes}m`
+    }
+    // 小時
+    const hours = Math.round(minutes / 60)
+    return `${hours}h`
+  }
+
+  // 大於等於一天
+  if (days < 2) {
+    return `${days.toFixed(1)}d`.replace('.0d', 'd')
+  }
+
+  return `${Math.round(days)}d`
+}
+
+/**
+ * 獲取調度信息（預覽四個按鈕的結果）
+ * 此方法不會修改卡片狀態，僅用於預覽
+ */
+cardSchema.methods.getSchedulingInfo = function (config: Required<ISRSConfig>) {
+  const now = new Date()
+  const fsrsConfig = toFSRSConfig(config)
+
+  interface SchedulingOption {
+    interval: string
+    intervalDays: number
+    nextState: {
+      status: CardStatus
+      learningStep: number
+      stability: number
+      difficulty: number
+      dueDate: Date
+    }
+  }
+
+  const calculateOption = (quality: number): SchedulingOption => {
+    // 處理新卡片的特殊邏輯
+    if (this.status === 'new') {
+      if (quality === 4) {
+        // Easy: 直接畢業
+        const initialState = createInitialState(quality, fsrsConfig)
+        const scheduledDays =
+          (initialState.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+
+        return {
+          interval: formatInterval(scheduledDays),
+          intervalDays: scheduledDays,
+          nextState: {
+            status: 'review',
+            learningStep: -1,
+            stability: initialState.stability,
+            difficulty: initialState.difficulty,
+            dueDate: initialState.dueDate,
+          },
+        }
+      } else {
+        // Again/Hard/Good: 進入學習階段
+        let stepIndex = 0
+
+        // Good: 如果有第二步，直接進入第二步
+        if (quality === 3 && fsrsConfig.learningSteps.length > 1) {
+          stepIndex = 1
+        }
+
+        const nextDueDate = new Date(now)
+        nextDueDate.setMinutes(nextDueDate.getMinutes() + fsrsConfig.learningSteps[stepIndex])
+        const scheduledDays = fsrsConfig.learningSteps[stepIndex] / 1440
+
+        return {
+          interval: formatInterval(scheduledDays),
+          intervalDays: scheduledDays,
+          nextState: {
+            status: 'learning',
+            learningStep: stepIndex,
+            stability: 0,
+            difficulty: 5,
+            dueDate: nextDueDate,
+          },
+        }
+      }
+    }
+
+    // 學習中或複習中的卡片：使用 FSRS review 函數
+    const currentState = {
+      stability: this.srs.stability,
+      difficulty: this.srs.difficulty,
+      learningStep: this.srs.learningStep,
+      lapseCount: this.srs.lapseCount,
+      dueDate: this.srs.dueDate,
+      lastReviewed: this.srs.lastReviewed,
+    }
+
+    const result = review(currentState, quality, fsrsConfig)
+
+    // 判斷狀態
+    let status: CardStatus
+    if (quality === 1 || result.state.learningStep >= 0) {
+      status = 'learning'
+    } else {
+      status = 'review'
+    }
+
+    return {
+      interval: formatInterval(result.scheduledDays),
+      intervalDays: result.scheduledDays,
+      nextState: {
+        status,
+        learningStep: result.state.learningStep,
+        stability: result.state.stability,
+        difficulty: result.state.difficulty,
+        dueDate: result.state.dueDate,
+      },
+    }
+  }
+
+  // 返回四個選項的調度信息
+  return {
+    currentState: {
+      status: this.status,
+      learningStep: this.srs.learningStep,
+      stability: this.srs.stability,
+      difficulty: this.srs.difficulty,
+      dueDate: this.srs.dueDate,
+    },
+    schedulingOptions: {
+      again: calculateOption(1),
+      hard: calculateOption(2),
+      good: calculateOption(3),
+      easy: calculateOption(4),
+    },
+  }
+}
+
+/**
  * 檢查是否到期需要複習
  */
 cardSchema.methods.isDue = function (): boolean {

@@ -200,6 +200,61 @@ export interface ICard extends Document {
 
   // 方法（使用 Deck 的 SRS 配置）
   calculateNextReview(quality: number, config: Required<ISRSConfig>): void;
+  getSchedulingInfo(config: Required<ISRSConfig>): {
+    currentState: {
+      status: CardStatus;
+      learningStep: number;
+      stability: number;
+      difficulty: number;
+      dueDate: Date;
+    };
+    schedulingOptions: {
+      again: {
+        interval: string;
+        intervalDays: number;
+        nextState: {
+          status: CardStatus;
+          learningStep: number;
+          stability: number;
+          difficulty: number;
+          dueDate: Date;
+        };
+      };
+      hard: {
+        interval: string;
+        intervalDays: number;
+        nextState: {
+          status: CardStatus;
+          learningStep: number;
+          stability: number;
+          difficulty: number;
+          dueDate: Date;
+        };
+      };
+      good: {
+        interval: string;
+        intervalDays: number;
+        nextState: {
+          status: CardStatus;
+          learningStep: number;
+          stability: number;
+          difficulty: number;
+          dueDate: Date;
+        };
+      };
+      easy: {
+        interval: string;
+        intervalDays: number;
+        nextState: {
+          status: CardStatus;
+          learningStep: number;
+          stability: number;
+          difficulty: number;
+          dueDate: Date;
+        };
+      };
+    };
+  };
   isDue(): boolean;
   isLeech(threshold?: number): boolean;
 }

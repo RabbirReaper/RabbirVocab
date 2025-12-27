@@ -103,7 +103,7 @@
             class="btn bg-red-500 hover:bg-red-600 text-white border-0"
           >
             <div class="text-sm font-semibold">Again</div>
-            <div class="text-xs opacity-80 mt-1">&lt;1 min</div>
+            <div class="text-xs opacity-80 mt-1">{{ getAgainInterval() }}</div>
           </button>
 
           <button
@@ -224,6 +224,10 @@ const handleReview = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
 }
 
 // 使用實際的調度信息來顯示間隔
+const getAgainInterval = () => {
+  return schedulingInfo.value?.schedulingOptions.again.interval || '載入中...'
+}
+
 const getHardInterval = () => {
   return schedulingInfo.value?.schedulingOptions.hard.interval || '載入中...'
 }
