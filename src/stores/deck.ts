@@ -128,7 +128,7 @@ export const useDeckStore = defineStore('deck', () => {
       name?: string
       description?: string
       settings?: Partial<DeckSettings>
-    }
+    },
   ) {
     loading.value = true
     error.value = null

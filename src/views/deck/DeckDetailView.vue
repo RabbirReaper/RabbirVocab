@@ -15,10 +15,7 @@
     </div>
 
     <!-- Error 狀態 -->
-    <div
-      v-else-if="deckStore.error || cardStore.error"
-      class="card bg-red-50 dark:bg-red-900/20"
-    >
+    <div v-else-if="deckStore.error || cardStore.error" class="card bg-red-50 dark:bg-red-900/20">
       <p class="text-red-600 dark:text-red-400">
         {{ deckStore.error || cardStore.error }}
       </p>
@@ -39,9 +36,7 @@
           <h1 class="text-3xl font-bold text-primary-color">{{ deck.name }}</h1>
           <p class="text-secondary-color mt-2">{{ deck.description }}</p>
         </div>
-        <RouterLink :to="`/app/study/${deck.id}`" class="btn btn-primary">
-          🎯 開始學習
-        </RouterLink>
+        <RouterLink :to="`/app/study/${deck.id}`" class="btn btn-primary"> 🎯 開始學習 </RouterLink>
       </div>
 
       <!-- 統計卡片 -->
@@ -74,10 +69,7 @@
       <div class="card">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold text-primary-color">卡片列表</h2>
-          <RouterLink
-            :to="`/app/cards/create?deck=${deckId}`"
-            class="btn btn-primary btn-sm"
-          >
+          <RouterLink :to="`/app/cards/create?deck=${deckId}`" class="btn btn-primary btn-sm">
             ➕ 新增卡片
           </RouterLink>
         </div>
@@ -95,7 +87,9 @@
               <span :class="getStatusBadgeClass(card.status)" class="badge">
                 {{ getStatusText(card.status) }}
               </span>
-              <span class="text-sm text-tertiary-color"> 間隔: {{ formatCardInterval(card) }} </span>
+              <span class="text-sm text-tertiary-color">
+                間隔: {{ formatCardInterval(card) }}
+              </span>
               <!-- 操作按鈕 -->
               <div class="flex items-center space-x-2">
                 <button @click="handleEditCard(card.id)" class="btn btn-sm btn-secondary">
@@ -140,7 +134,7 @@
                 :class="{
                   'bg-primary-500 text-white border-primary-500': page === currentPage,
                   'btn-outline': page !== currentPage && page > 0,
-                  'cursor-default': page === -1
+                  'cursor-default': page === -1,
                 }"
                 class="btn btn-sm min-w-10"
               >
@@ -176,7 +170,11 @@
           </div>
           <div v-else class="flex space-x-2">
             <button @click="cancelEditing" class="btn btn-outline btn-sm">取消</button>
-            <button @click="saveSettings" class="btn btn-primary btn-sm" :disabled="deckStore.loading">
+            <button
+              @click="saveSettings"
+              class="btn btn-primary btn-sm"
+              :disabled="deckStore.loading"
+            >
               {{ deckStore.loading ? '儲存中...' : '確認修改' }}
             </button>
           </div>
@@ -309,14 +307,13 @@
                   <summary
                     class="cursor-pointer text-sm font-medium text-secondary-color mb-1 flex items-center"
                   >
-                    <span class="mr-2 transform transition-transform group-open:rotate-90"
-                      >▶</span
-                    >
+                    <span class="mr-2 transform transition-transform group-open:rotate-90">▶</span>
                     <span>進階參數 (Weights)</span>
                   </summary>
                   <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p class="text-xs text-tertiary-color mb-2">
-                      FSRS-6 權重參數（19個），用於計算記憶穩定度和難度。建議使用預設值，除非您了解其作用。
+                      FSRS-6
+                      權重參數（19個），用於計算記憶穩定度和難度。建議使用預設值，除非您了解其作用。
                     </p>
                     <div class="grid grid-cols-5 gap-2">
                       <div
@@ -429,7 +426,8 @@
                   placeholder="1, 10, 1h, 1d"
                 />
                 <p class="text-xs text-tertiary-color mt-1">
-                  新卡片的學習間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）。例如：1, 10, 1d 表示 1 分鐘、10 分鐘、1 天
+                  新卡片的學習間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）。例如：1,
+                  10, 1d 表示 1 分鐘、10 分鐘、1 天
                 </p>
               </div>
 
@@ -445,7 +443,9 @@
                   class="w-full px-4 py-2 border border-primary-color rounded-lg bg-secondary-color text-primary-color"
                   placeholder="10, 1h, 1d"
                 />
-                <p class="text-xs text-tertiary-color mt-1">忘記卡片後的重學間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）</p>
+                <p class="text-xs text-tertiary-color mt-1">
+                  忘記卡片後的重學間隔，用逗號分隔。支援單位：分鐘（預設）、h（小時）、d（天）
+                </p>
               </div>
 
               <!-- 低效臨界值 -->
@@ -471,9 +471,7 @@
                   <summary
                     class="cursor-pointer text-sm font-medium text-secondary-color mb-1 flex items-center"
                   >
-                    <span class="mr-2 transform transition-transform group-open:rotate-90"
-                      >▶</span
-                    >
+                    <span class="mr-2 transform transition-transform group-open:rotate-90">▶</span>
                     <span>進階參數 (Weights)</span>
                     <span
                       class="ml-2 px-2 py-0.5 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded"
@@ -486,18 +484,14 @@
                       class="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded"
                     >
                       <p class="text-xs text-yellow-800 dark:text-yellow-200">
-                        ⚠️
-                        注意：這些參數控制 FSRS 算法的核心計算。建議只有在您充分理解 FSRS-6
+                        ⚠️ 注意：這些參數控制 FSRS 算法的核心計算。建議只有在您充分理解 FSRS-6
                         算法原理後才修改。不正確的設定可能導致學習效果下降。
                       </p>
                     </div>
                     <div
                       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3"
                     >
-                      <div
-                        v-for="(weight, index) in editedSettings.srsConfig.weights"
-                        :key="index"
-                      >
+                      <div v-for="(weight, index) in editedSettings.srsConfig.weights" :key="index">
                         <label class="block text-xs text-tertiary-color mb-1"> w{{ index }} </label>
                         <input
                           type="number"
@@ -600,8 +594,8 @@ const relearningStepsInput = ref<string>('')
 
 // FSRS-6 預設 weights 參數
 const DEFAULT_WEIGHTS = [
-  0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26,
-  0.29, 2.61, 0.0, 0.0,
+  0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61,
+  0.0, 0.0,
 ]
 
 // 分頁狀態
@@ -673,7 +667,7 @@ watch(
     if (currentPage.value > totalPages.value && totalPages.value > 0) {
       currentPage.value = 1
     }
-  }
+  },
 )
 
 // 載入數據
@@ -843,7 +837,7 @@ const saveSettings = async () => {
     await deckStore.updateDeck(deck.value.id, {
       name: deck.value.name,
       description: deck.value.description,
-      settings: editedSettings.value
+      settings: editedSettings.value,
     })
     isEditingSettings.value = false
     editedSettings.value = null
@@ -865,9 +859,9 @@ const formatSteps = (steps: number[]): string => {
 const parseSteps = (input: string): number[] => {
   return input
     .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(s => s.length > 0)
-    .map(s => {
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => s.length > 0)
+    .map((s) => {
       // 檢查是否有單位後綴
       if (s.endsWith('d')) {
         // 天數：轉換為分鐘 (1d = 24 * 60 = 1440 分鐘)
@@ -882,8 +876,8 @@ const parseSteps = (input: string): number[] => {
         return parseFloat(s)
       }
     })
-    .filter(n => !isNaN(n) && n > 0)
-    .map(n => Math.round(n)) // 確保是整數
+    .filter((n) => !isNaN(n) && n > 0)
+    .map((n) => Math.round(n)) // 確保是整數
 }
 
 // 處理學習步驟輸入失去焦點

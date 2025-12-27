@@ -45,9 +45,7 @@ export const cardApi = {
    * 獲取指定 Deck 的所有 Cards (使用路由參數)
    */
   getAllCardsInDeck: async (deckId: string): Promise<GetCardsResponse> => {
-    const response = (await apiClient.get(
-      `/cards/deck/${deckId}`,
-    )) as ApiResponse<GetCardsResponse>
+    const response = (await apiClient.get(`/cards/deck/${deckId}`)) as ApiResponse<GetCardsResponse>
     return response.data
   },
 

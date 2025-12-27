@@ -24,9 +24,7 @@
             {{ deck.name }}
           </option>
         </select>
-        <p v-if="isEditMode" class="text-xs text-tertiary-color mt-1">
-          編輯模式下無法變更卡組
-        </p>
+        <p v-if="isEditMode" class="text-xs text-tertiary-color mt-1">編輯模式下無法變更卡組</p>
       </div>
 
       <!-- 2. 正面 -->
@@ -189,16 +187,10 @@
                 accept="image/jpeg,image/png,image/webp"
                 class="hidden"
               />
-              <button
-                type="button"
-                @click="imageInput?.click()"
-                class="btn btn-secondary"
-              >
+              <button type="button" @click="imageInput?.click()" class="btn btn-secondary">
                 📁 選擇圖片
               </button>
-              <p class="text-xs text-tertiary-color mt-2">
-                支援 JPG、PNG、WebP 格式，最大 1MB
-              </p>
+              <p class="text-xs text-tertiary-color mt-2">支援 JPG、PNG、WebP 格式，最大 1MB</p>
             </div>
 
             <!-- 預覽區域 -->
@@ -322,12 +314,7 @@
       <!-- 6. 提交按鈕 -->
       <!-- 編輯模式按鈕 -->
       <div v-if="isEditMode" class="flex space-x-3">
-        <button
-          type="button"
-          @click="handleReset"
-          class="btn btn-outline"
-          :disabled="loading"
-        >
+        <button type="button" @click="handleReset" class="btn btn-outline" :disabled="loading">
           重製
         </button>
         <button
@@ -834,7 +821,8 @@ const handleSubmit = async () => {
       router.push(`/app/decks/${formData.value.deck}`)
     }
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : (isEditMode.value ? '更新卡片失敗' : '建立卡片失敗')
+    error.value =
+      err instanceof Error ? err.message : isEditMode.value ? '更新卡片失敗' : '建立卡片失敗'
     console.error('Submit failed:', err)
   } finally {
     loading.value = false

@@ -65,9 +65,8 @@ export const useCardStore = defineStore('card', () => {
     return {
       cardCount: deckCards.length,
       newCount: deckCards.filter((c) => c.status === 'new').length,
-      reviewCount: deckCards.filter(
-        (c) => c.status === 'review' && new Date(c.srs.dueDate) <= now,
-      ).length,
+      reviewCount: deckCards.filter((c) => c.status === 'review' && new Date(c.srs.dueDate) <= now)
+        .length,
       masteredCount: deckCards.filter((c) => c.srs.stability >= 21).length, // 使用 FSRS-6 的 stability
     }
   }
@@ -181,10 +180,7 @@ export const useCardStore = defineStore('card', () => {
     return cards.value.find((card) => card.id === id)
   }
 
-  async function reviewCard(
-    id: string,
-    rating: 'again' | 'hard' | 'good' | 'easy',
-  ) {
+  async function reviewCard(id: string, rating: 'again' | 'hard' | 'good' | 'easy') {
     loading.value = true
     error.value = null
     try {
@@ -196,9 +192,9 @@ export const useCardStore = defineStore('card', () => {
       // 將 rating 轉換為 quality (1-4)
       const qualityMap = {
         again: 1, // 修改: 0 -> 1
-        hard: 2,  // 修改: 1 -> 2
-        good: 3,  // 修改: 2 -> 3
-        easy: 4,  // 修改: 3 -> 4
+        hard: 2, // 修改: 1 -> 2
+        good: 3, // 修改: 2 -> 3
+        easy: 4, // 修改: 3 -> 4
       }
       const quality = qualityMap[rating]
 
