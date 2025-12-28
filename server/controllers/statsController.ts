@@ -100,10 +100,16 @@ export const getDeckStats = asyncHandler(async (req: Request, res: Response) => 
   }
 
   // 並行查詢統計
-  const [cardCount, newCount, learningCount, reviewCount, masteredCount] = await Promise.all([
+  const [cardCount, totalNewCount, learningCount, reviewCount, masteredCount] = await Promise.all([
     Card.countDocuments({ deck: deckId, isDeleted: false }),
     Card.countDocuments({ deck: deckId, status: 'new', isDeleted: false }),
-    Card.countDocuments({ deck: deckId, status: 'learning', isDeleted: false }),
+    // 學習中且已到期的卡片
+    Card.countDocuments({
+      deck: deckId,
+      status: 'learning',
+      'srs.dueDate': { $lte: new Date() },
+      isDeleted: false,
+    }),
     Card.countDocuments({
       deck: deckId,
       status: 'review',
@@ -116,6 +122,9 @@ export const getDeckStats = asyncHandler(async (req: Request, res: Response) => 
       isDeleted: false,
     }),
   ])
+
+  // 新卡片數量受每日限制約束
+  const newCount = Math.min(totalNewCount, deck.settings.newCardsPerDay)
 
   res.json({
     message: 'success',
